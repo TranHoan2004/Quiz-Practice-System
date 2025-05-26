@@ -1,0 +1,27 @@
+.service-item {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.service-item > label {
+  margin-bottom: 0.5rem;
+}
+
+.service-item > div {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.service-item > div > .form-select {
+  flex-grow: 1;
+}
+
+.service-item button {
+  color: white !important;
+}
+
+.service-item button:hover {
+  color: white !important;
+}

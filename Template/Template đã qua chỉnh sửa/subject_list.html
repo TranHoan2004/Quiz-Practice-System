@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Quezee</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    <link href="img/favicon.ico" rel="icon">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="css/lib/css2.css" rel="stylesheet">
+    <link href="fontawesome/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/practicelist.css" rel="stylesheet">
+    <link href="css/notification.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+        <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+            <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Quezee</h2>
+        </a>
+        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto p-4 p-lg-0">
+                <a href="index.html" class="nav-item nav-link active">Home</a>
+                <a href="courses.html" class="nav-item nav-link">Courses</a>
+                <a href="contact.html" class="nav-item nav-link">Contact</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
+                    <div class="dropdown-menu fade-down m-0">
+                        <a href="about.html" class="dropdown-item">About Us</a>
+                        <a href="team.html" class="dropdown-item">Our Team</a>
+                        <a href="testimonial.html" class="dropdown-item">Testimonials</a>
+                    </div>
+                </div>
+            </div>
+            <!-- User Authentication Section -->
+            <div class="d-flex align-items-center px-4 px-lg-5">
+                <!-- Not Logged In -->
+                <div class="not-logged-in d-flex align-items-center">
+                    <a href="login.html"
+                        class="btn btn-outline-primary me-2 d-flex align-items-center justify-content-center"
+                        style="height: 40px;">Login</a>
+                    <a href="register.html" class="btn btn-primary d-flex align-items-center justify-content-center"
+                        style="height: 40px;">Register</a>
+                </div>
+                <!-- Logged In -->
+                <div class="logged-in d-none">
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
+                            id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="img/user-avatar.jpg" alt="User Avatar" class="rounded-circle me-2" width="32"
+                                height="32">
+                            <span class="d-none d-md-inline">John Doe</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>Profile</a>
+                            </li>
+                            <li><a class="dropdown-item" href="my-courses.html"><i
+                                        class="fas fa-graduation-cap me-2"></i>My Courses</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="logout.html"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Start -->
+    <div class="container-fluid bg-primary py-5 mb-5 page-header">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center">
+                    <h1 class="display-3 text-white animated slideInDown">Subjects</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a class="text-white" href="#">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Subjects</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row">
+                <div class="text-center wow fadeInUp mb-3" data-wow-delay="0.1s">
+                    <h6 class="section-title bg-white text-center text-primary px-3">Subjects</h6>
+                    <h1 class="mb-3">Subjects List</h1>
+                </div>
+
+                <!-- Sidebar Start -->
+                <aside class="col-lg-3 mb-4 mb-lg-0">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <form class="mb-3">
+                                <label for="subjectSearch" class="form-label fw-semibold text-primary-emphasis">
+                                    <i class="bi bi-search me-1"></i>
+                                    <span style="color: #1a237e;">Tìm kiếm chủ đề</span>
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" id="subjectSearch" class="form-control"
+                                        placeholder="Nhập tên chủ đề..." style="color: #212529;">
+                                    <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                                </div>
+                            </form>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-primary-emphasis">
+                                    <i class="bi bi-filter me-1"></i>
+                                    <span style="color: #1a237e;">Danh mục chủ đề</span>
+                                </label>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item"><a href="#" class="text-decoration-none"
+                                            style="color: #333;">Lập trình Web</a></li>
+                                    <li class="list-group-item"><a href="#" class="text-decoration-none"
+                                            style="color: #333;">Thiết kế</a></li>
+                                    <li class="list-group-item"><a href="#" class="text-decoration-none"
+                                            style="color: #333;">Marketing</a></li>
+                                    <li class="list-group-item"><a href="#" class="text-decoration-none"
+                                            style="color: #333;">Kinh doanh</a></li>
+                                    <li class="list-group-item"><a href="#" class="text-decoration-none"
+                                            style="color: #333;">Khác</a></li>
+                                </ul>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold text-primary-emphasis">
+                                    <i class="bi bi-star-fill me-1"></i>
+                                    <span style="color: #1a237e;">Chủ đề tiêu biểu</span>
+                                </label>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <a href="subject-detail.html"
+                                            class="d-flex align-items-center text-decoration-none"
+                                            style="color: #212529;">
+                                            <img src="img/course-1.jpg" alt="Featured 1" class="rounded me-2" width="40"
+                                                height="40">
+                                            <span>Lập trình Python cơ bản</span>
+                                        </a>
+                                    </li>
+                                    <li class="mb-2">
+                                        <a href="subject-detail.html"
+                                            class="d-flex align-items-center text-decoration-none"
+                                            style="color: #212529;">
+                                            <img src="img/course-2.jpg" alt="Featured 2" class="rounded me-2" width="40"
+                                                height="40">
+                                            <span>Thiết kế UI/UX</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="subject-detail.html"
+                                            class="d-flex align-items-center text-decoration-none"
+                                            style="color: #212529;">
+                                            <img src="img/course-3.jpg" alt="Featured 3" class="rounded me-2" width="40"
+                                                height="40">
+                                            <span>Digital Marketing</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Subjects List Start -->
+                <section class="col-lg-8">
+                    <div class="row g-4">
+                        <!-- Subject Card Start -->
+                        <div class="col-md-6 wow fadeInUp subject-card" data-wow-delay="0.1s">
+                            <div class="card h-100 shadow-sm">
+                                <a href="subject-detail.html">
+                                    <img src="img/cat-1.jpg" class="card-img-top" alt="Subject 1" width="100%"
+                                        height="200px">
+                                </a>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">
+                                        <a href="subject-detail.html" class="text-decoration-none"
+                                            style="color: #1a237e;">Lập trình Web với HTML, CSS & JS</a>
+                                    </h5>
+                                    <p class="card-text flex-grow-1" style="color: #333;">
+                                        Khám phá các kiến thức nền tảng về phát triển web hiện đại, xây dựng giao diện
+                                        và tương tác người dùng.
+                                    </p>
+                                    <div class="mt-2">
+                                        <span class="text-muted text-decoration-line-through me-2"
+                                            style="color: #888 !important;">1.200.000đ</span>
+                                        <span class="fw-bold" style="color: #1976d2;">900.000đ</span>
+                                    </div>
+                                    <a href="#" class="btn btn-primary mt-3 w-100">Đăng ký</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subject Card Start -->
+                        <div class="col-md-6 wow fadeInUp subject-card" data-wow-delay="0.2s">
+                            <div class="card h-100 shadow-sm">
+                                <a href="subject-detail.html">
+                                    <img src="img/cat-2.jpg" class="card-img-top" alt="Subject 2" width="100%"
+                                        height="200px">
+                                </a>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">
+                                        <a href="subject-detail.html" class="text-decoration-none"
+                                            style="color: #1a237e;">Thiết kế Đồ họa Cơ bản</a>
+                                    </h5>
+                                    <p class="card-text flex-grow-1" style="color: #333;">
+                                        Học cách sử dụng các công cụ thiết kế phổ biến để tạo ra sản phẩm sáng tạo và
+                                        chuyên nghiệp.
+                                    </p>
+                                    <div class="mt-2">
+                                        <span class="text-muted text-decoration-line-through me-2"
+                                            style="color: #888 !important;">1.000.000đ</span>
+                                        <span class="fw-bold" style="color: #1976d2;">750.000đ</span>
+                                    </div>
+                                    <a href="#" class="btn btn-primary mt-3 w-100">Đăng ký</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subject Card Start -->
+                        <div class="col-md-6 wow fadeInUp subject-card" data-wow-delay="0.3s">
+                            <div class="card h-100 shadow-sm">
+                                <a href="subject-detail.html">
+                                    <img src="img/cat-3.jpg" class="card-img-top" alt="Subject 3" width="100%"
+                                        height="200px">
+                                </a>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">
+                                        <a href="subject-detail.html" class="text-decoration-none"
+                                            style="color: #1a237e;">Digital Marketing 101</a>
+                                    </h5>
+                                    <p class="card-text flex-grow-1" style="color: #333;">
+                                        Nắm vững các chiến lược marketing số, quảng cáo trực tuyến và xây dựng thương
+                                        hiệu cá nhân.
+                                    </p>
+                                    <div class="mt-2">
+                                        <span class="text-muted text-decoration-line-through me-2"
+                                            style="color: #888 !important;">1.500.000đ</span>
+                                        <span class="fw-bold" style="color: #1976d2;">1.200.000đ</span>
+                                    </div>
+                                    <a href="#" class="btn btn-primary mt-3 w-100">Đăng ký</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subject Card Start -->
+                        <div class="col-md-6 wow fadeInUp subject-card" data-wow-delay="0.4s">
+                            <div class="card h-100 shadow-sm">
+                                <a href="subject-detail.html">
+                                    <img src="img/cat-4.jpg" class="card-img-top" alt="Subject 4" width="100%"
+                                        height="200px">
+                                </a>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">
+                                        <a href="subject-detail.html" class="text-decoration-none"
+                                            style="color: #1a237e;">Kinh doanh Khởi nghiệp</a>
+                                    </h5>
+                                    <p class="card-text flex-grow-1" style="color: #333;">
+                                        Tìm hiểu các bước xây dựng và phát triển doanh nghiệp từ ý tưởng đến thực tế.
+                                    </p>
+                                    <div class="mt-2">
+                                        <span class="text-muted text-decoration-line-through me-2"
+                                            style="color: #888 !important;">2.000.000đ</span>
+                                        <span class="fw-bold" style="color: #1976d2;">1.600.000đ</span>
+                                    </div>
+                                    <a href="#" class="btn btn-primary mt-3 w-100">Đăng ký</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Subject Card Start -->
+                        <div class="col-md-6 wow fadeInUp subject-card" data-wow-delay="0.4s">
+                            <div class="card h-100 shadow-sm">
+                                <a href="subject-detail.html">
+                                    <img src="img/cat-4.jpg" class="card-img-top" alt="Subject 4" width="100%"
+                                        height="200px">
+                                </a>
+                                <div class="card-body d-flex flex-column">
+                                    <h5 class="card-title">
+                                        <a href="subject-detail.html" class="text-decoration-none"
+                                            style="color: #1a237e;">Kinh doanh Khởi nghiệp</a>
+                                    </h5>
+                                    <p class="card-text flex-grow-1" style="color: #333;">
+                                        Tìm hiểu các bước xây dựng và phát triển doanh nghiệp từ ý tưởng đến thực tế.
+                                    </p>
+                                    <div class="mt-2">
+                                        <span class="text-muted text-decoration-line-through me-2"
+                                            style="color: #888 !important;">2.000.000đ</span>
+                                        <span class="fw-bold" style="color: #1976d2;">1.600.000đ</span>
+                                    </div>
+                                    <a href="#" class="btn btn-primary mt-3 w-100">Đăng ký</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pagination Start -->
+                    <nav class="mt-4 d-flex justify-content-center">
+                        <ul class="pagination" id="pagination"></ul>
+                    </nav>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject Registration Modal -->
+    <div class="modal fade" id="subjectRegisterModal" tabindex="-1" aria-labelledby="subjectRegisterModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form class="modal-content" id="subjectRegisterForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="subjectRegisterModalLabel">Đăng ký chủ đề</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Chọn gói giá</label>
+                        <select class="form-select" name="package" required>
+                            <option value="">-- Chọn gói --</option>
+                            <option value="basic">Cơ bản - 500.000đ</option>
+                            <option value="advanced">Nâng cao - 900.000đ</option>
+                            <option value="premium">Chuyên sâu - 1.200.000đ</option>
+                        </select>
+                    </div>
+                    <div id="userInfoFields">
+                        <div class="mb-3">
+                            <label class="form-label">Họ và tên</label>
+                            <input type="text" class="form-control" name="fullname" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-control" name="phone" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Giới tính</label>
+                            <select class="form-select" name="gender" required>
+                                <option value="">-- Chọn giới tính --</option>
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                                <option value="other">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="userInfoNotice" class="alert alert-info d-none" role="alert">
+                        Thông tin liên hệ của bạn đã được tự động điền.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary w-100">Xác nhận đăng ký</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Hiển thị modal khi nhấn nút Đăng ký
+        document.querySelectorAll('.subject-card .btn-primary').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                // Có thể truyền thông tin chủ đề vào modal nếu cần
+                var modal = new bootstrap.Modal(document.getElementById('subjectRegisterModal'));
+                modal.show();
+            });
+        });
+
+        // Ẩn/hiện trường thông tin cá nhân dựa vào trạng thái đăng nhập
+        function updateUserInfoFields() {
+            // Giả lập kiểm tra đăng nhập: nếu có class 'd-none' ở .not-logged-in thì đã đăng nhập
+            const isLoggedIn = !document.querySelector('.not-logged-in').classList.contains('d-flex');
+            document.getElementById('userInfoFields').classList.toggle('d-none', isLoggedIn);
+            document.getElementById('userInfoNotice').classList.toggle('d-none', !isLoggedIn);
+        }
+        updateUserInfoFields();
+
+        // Nếu có hệ thống đăng nhập thực tế, hãy cập nhật lại updateUserInfoFields khi trạng thái thay đổi
+
+        // Xử lý submit form (demo)
+        document.getElementById('subjectRegisterForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            // Xử lý đăng ký ở đây (gửi dữ liệu lên server, hiển thị thông báo, ...)
+            alert('Đăng ký thành công!');
+            bootstrap.Modal.getInstance(document.getElementById('subjectRegisterModal')).hide();
+            this.reset();
+        });
+    </script>
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Quick Link</h4>
+                    <a class="btn btn-link" href="">About Us</a>
+                    <a class="btn btn-link" href="">Contact Us</a>
+                    <a class="btn btn-link" href="">Privacy Policy</a>
+                    <a class="btn btn-link" href="">Terms & Condition</a>
+                    <a class="btn btn-link" href="">FAQs & Help</a>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Contact</h4>
+                    <p class="mb-2">
+                        <i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA
+                    </p>
+                    <p class="mb-2">
+                        <i class="fa fa-phone-alt me-3"></i>+012 345 67890
+                    </p>
+                    <p class="mb-2">
+                        <i class="fa fa-envelope me-3"></i>info@example.com
+                    </p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-outline-light btn-social" href="" title="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a class="btn btn-outline-light btn-social" href="" title="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a class="btn btn-outline-light btn-social" href="" title="Youtube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a class="btn btn-outline-light btn-social" href="" title="Linkedin">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Gallery</h4>
+                    <div class="row g-2 pt-2">
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-1.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-2.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-3.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-2.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-3.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-1.jpg" alt="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Newsletter</h4>
+                    <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                        <button type="button"
+                            class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
+
+                        <!--/*** This template is free as long as you keep the footer author's credit link/attribution link/backlink. If you'd like to use the template without the footer author's credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                        Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a><br><br>
+                        Distributed By <a class="border-bottom" href="https://themewagon.com">ThemeWagon</a>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <div class="footer-menu">
+                            <a href="">Home</a>
+                            <a href="">Cookies</a>
+                            <a href="">Help</a>
+                            <a href="">FQAs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top" title="Back to Top">
+        <i class="bi bi-arrow-up"></i>
+    </a>
+
+    <script>
+        const itemsPerPage = 4;
+        const items = document.querySelectorAll('.subject-card');
+        const pagination = document.getElementById('pagination');
+
+        let currentPage = 1;
+        const totalPages = Math.ceil(items.length / itemsPerPage);
+
+        function showPage(page) {
+            currentPage = page;
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+
+            items.forEach((item, index) => {
+                item.style.display = (index >= start && index < end) ? 'block' : 'none';
+            });
+
+            renderPagination();
+        }
+
+        function renderPagination() {
+            pagination.innerHTML = '';
+
+            // Prev button
+            const prev = document.createElement('li');
+            prev.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            prev.innerHTML = `<a class="page-link" href="#">Trước</a>`;
+            prev.onclick = (e) => {
+                e.preventDefault();
+                if (currentPage > 1) showPage(currentPage - 1);
+            };
+            pagination.appendChild(prev);
+
+            // Page numbers
+            console.log(totalPages);
+            for (let i = 1; i <= totalPages; i++) {
+                const page = document.createElement('li');
+                page.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                page.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                page.onclick = (e) => {
+                    e.preventDefault();
+                    showPage(i);
+                };
+                pagination.appendChild(page);
+            }
+
+            // Next button
+            const next = document.createElement('li');
+            next.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            next.innerHTML = `<a class="page-link" href="#">Sau</a>`;
+            next.onclick = (e) => {
+                e.preventDefault();
+                if (currentPage < totalPages) showPage(currentPage + 1);
+            };
+            pagination.appendChild(next);
+        }
+
+        // Khởi động
+        showPage(1);
+    </script>
+    <script src="js/lib/jquery-3.4.1.min.js"></script>
+    <script src="js/lib/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

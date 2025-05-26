@@ -1,0 +1,27 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Quezee - Cảnh báo đăng nhập</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+    <div class="warning-container">
+        <div class="warning-box">
+            <h1>🔒 Quezee</h1>
+            <p class="sub">Sign in to your account</p>
+            <img src="img/canhbao.jpg" alt="Cảnh báo" class="warning-icon">
+            <p class="message">Tài khoản bị tạm dừng <span id="duration">--</span> do đăng nhập sai liên tục</p>
+            <a class="back-button">QUAY LẠI TRANG ĐĂNG NHẬP</a>
+        </div>
+    </div>
+
+    <script>
+        // Lấy thời gian từ query param ?duration=xxs/phút/ngày
+        const urlParams = new URLSearchParams(window.location.search);
+        const dur = urlParams.get("duration");
+        document.getElementById("duration").innerText = dur ? dur + " giây" : "30 giây";
+    </script>
+</body>
+</html>

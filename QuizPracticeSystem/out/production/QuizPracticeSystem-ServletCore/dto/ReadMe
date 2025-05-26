@@ -1,0 +1,3 @@
+DTO dùng để đóng gói dữ liệu cần thiết rồi ném về views
+VD: My Registration cần dữ liệu của Subject, Personal Course, Price Package nhưng không cần lấy hết dữ liệu
+=> Tạo đối tượng DTO nhận dữ liệu cần thiết để trả về

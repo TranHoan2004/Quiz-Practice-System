@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Quezee</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    <link href="img/favicon.ico" rel="icon">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="css/lib/css2.css" rel="stylesheet">
+    <link href="fontawesome/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/practicelist.css" rel="stylesheet">
+    <link href="css/notification.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner"
+        class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light shadow sticky-top p-0">
+        <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+            <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>Quezee</h2>
+        </a>
+        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto p-4 p-lg-0">
+                <a href="index.html" class="nav-item nav-link active">Home</a>
+                <a href="courses.html" class="nav-item nav-link">Courses</a>
+                <a href="contact.html" class="nav-item nav-link">Contact</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
+                    <div class="dropdown-menu fade-down m-0">
+                        <a href="about.html" class="dropdown-item">About Us</a>
+                        <a href="team.html" class="dropdown-item">Our Team</a>
+                        <a href="testimonial.html" class="dropdown-item">Testimonials</a>
+                    </div>
+                </div>
+            </div>
+            <!-- User Authentication Section -->
+            <div class="d-flex align-items-center px-4 px-lg-5">
+                <!-- Not Logged In -->
+                <div class="not-logged-in d-flex align-items-center">
+                    <a href="login.html"
+                        class="btn btn-outline-primary me-2 d-flex align-items-center justify-content-center"
+                        style="height: 40px;">Login</a>
+                    <a href="register.html" class="btn btn-primary d-flex align-items-center justify-content-center"
+                        style="height: 40px;">Register</a>
+                </div>
+                <!-- Logged In -->
+                <div class="logged-in d-none">
+                    <div class="dropdown">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
+                            id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="img/user-avatar.jpg" alt="User Avatar" class="rounded-circle me-2" width="32"
+                                height="32">
+                            <span class="d-none d-md-inline">John Doe</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>Profile</a>
+                            </li>
+                            <li><a class="dropdown-item" href="my-courses.html"><i
+                                        class="fas fa-graduation-cap me-2"></i>My Courses</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item" href="logout.html"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header Start -->
+    <div class="container-fluid bg-primary py-5 mb-5 page-header">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center">
+                    <h1 class="display-3 text-white animated slideInDown">Courses</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a class="text-white" href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a class="text-white" href="#">Subjects</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">Courses</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Courses Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center wow fadeInUp mb-3" data-wow-delay="0.1s">
+                <h6 class="section-title bg-white text-center text-primary px-3">Courses</h6>
+                <h1 class="mb-3">My Registration</h1>
+                <div class="row g-3 mb-4 justify-content-center">
+                    <div class="col-lg-3 col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="service-item p-3 rounded shadow-sm bg-white h-100 d-flex flex-column justify-content-center align-items-center">
+                            <label for="practiceSearcher" class="form-label mb-2">
+                                <span class="fw-semibold text-primary"><i class="bi bi-search me-1"></i>Search</span>
+                            </label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="practiceSearcher" class="form-control" placeholder="Search...">
+                                <button class="btn btn-primary" type="button"><i class="bi bi-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.2s">
+                        <div class="service-item p-3 rounded shadow-sm bg-white h-100 d-flex flex-column justify-content-center align-items-center">
+                            <label for="subjectFilter" class="form-label mb-2">
+                                <span class="fw-semibold text-primary"><i class="bi bi-filter me-1"></i>Subject</span>
+                            </label>
+                            <select class="form-select form-select-sm" id="subjectFilter">
+                                <option value="" default>All Subjects</option>
+                                <option value="web-development">Web Development</option>
+                                <option value="design">Design</option>
+                                <option value="marketing">Marketing</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Registered Courses List Start -->
+            <div class="card mb-4 wow fadeInUp">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-journal-check me-2"></i>Registered Courses</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Subject</th>
+                                <th>Registration Time</th>
+                                <th>Package</th>
+                                <th>Total Cost</th>
+                                <th>Status</th>
+                                <th>Valid From</th>
+                                <th>Valid To</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Example Row: Pending Registration -->
+                            <tr>
+                                <td>#1001</td>
+                                <td>Web Development</td>
+                                <td>2024-06-01 10:30</td>
+                                <td>Premium</td>
+                                <td>$120</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">Đã gửi</span>
+                                </td>
+                                <td>2024-06-02</td>
+                                <td>2024-09-02</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger me-1"><i class="bi bi-x-circle"></i>
+                                        Hủy</button>
+                                    <a href="register.html?edit=1001" class="btn btn-sm btn-secondary"><i
+                                            class="bi bi-pencil-square"></i> Chỉnh sửa</a>
+                                </td>
+                            </tr>
+                            <!-- Example Row: Completed Registration -->
+                            <tr>
+                                <td>#1002</td>
+                                <td>Design</td>
+                                <td>2024-05-15 14:20</td>
+                                <td>Standard</td>
+                                <td>$80</td>
+                                <td>
+                                    <span class="badge bg-success">Hoàn thành</span>
+                                </td>
+                                <td>2024-05-16</td>
+                                <td>2024-08-16</td>
+                                <td>
+                                    <span class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            <!-- Example Row: Expired Registration -->
+                            <tr>
+                                <td>#1003</td>
+                                <td>Marketing</td>
+                                <td>2024-03-10 09:00</td>
+                                <td>Basic</td>
+                                <td>$50</td>
+                                <td>
+                                    <span class="badge bg-secondary">Hết hạn</span>
+                                </td>
+                                <td>2024-03-11</td>
+                                <td>2024-06-11</td>
+                                <td>
+                                    <span class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            <!-- New Example Rows -->
+                            <tr>
+                                <td>#1004</td>
+                                <td>Data Science</td>
+                                <td>2024-04-22 11:45</td>
+                                <td>Premium</td>
+                                <td>$150</td>
+                                <td>
+                                    <span class="badge bg-success">Hoàn thành</span>
+                                </td>
+                                <td>2024-04-23</td>
+                                <td>2024-07-23</td>
+                                <td>
+                                    <span class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#1005</td>
+                                <td>UI/UX Design</td>
+                                <td>2024-06-05 08:15</td>
+                                <td>Standard</td>
+                                <td>$90</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">Đã gửi</span>
+                                </td>
+                                <td>2024-06-06</td>
+                                <td>2024-09-06</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger me-1"><i class="bi bi-x-circle"></i>
+                                        Hủy</button>
+                                    <a href="register.html?edit=1005" class="btn btn-sm btn-secondary"><i
+                                            class="bi bi-pencil-square"></i> Chỉnh sửa</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#1006</td>
+                                <td>Business Analysis</td>
+                                <td>2024-02-18 16:00</td>
+                                <td>Basic</td>
+                                <td>$60</td>
+                                <td>
+                                    <span class="badge bg-secondary">Hết hạn</span>
+                                </td>
+                                <td>2024-02-19</td>
+                                <td>2024-05-19</td>
+                                <td>
+                                    <span class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#1007</td>
+                                <td>Python Programming</td>
+                                <td>2024-05-25 13:10</td>
+                                <td>Premium</td>
+                                <td>$130</td>
+                                <td>
+                                    <span class="badge bg-success">Hoàn thành</span>
+                                </td>
+                                <td>2024-05-26</td>
+                                <td>2024-08-26</td>
+                                <td>
+                                    <span class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#1008</td>
+                                <td>Digital Marketing</td>
+                                <td>2024-06-10 09:30</td>
+                                <td>Standard</td>
+                                <td>$100</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">Đã gửi</span>
+                                </td>
+                                <td>2024-06-11</td>
+                                <td>2024-09-11</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger me-1"><i class="bi bi-x-circle"></i>
+                                        Hủy</button>
+                                    <a href="register.html?edit=1008" class="btn btn-sm btn-secondary"><i
+                                            class="bi bi-pencil-square"></i> Chỉnh sửa</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#1009</td>
+                                <td>Project Management</td>
+                                <td>2024-04-01 15:40</td>
+                                <td>Basic</td>
+                                <td>$70</td>
+                                <td>
+                                    <span class="badge bg-success">Hoàn thành</span>
+                                </td>
+                                <td>2024-04-02</td>
+                                <td>2024-07-02</td>
+                                <td>
+                                    <span class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#1010</td>
+                                <td>Cloud Computing</td>
+                                <td>2024-03-28 12:00</td>
+                                <td>Premium</td>
+                                <td>$140</td>
+                                <td>
+                                    <span class="badge bg-secondary">Hết hạn</span>
+                                </td>
+                                <td>2024-03-29</td>
+                                <td>2024-06-29</td>
+                                <td>
+                                    <span class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            <!-- 5 More Records for Page 1 (Total 10 records on page 1) -->
+                            <tr>
+                                <td>#1011</td>
+                                <td>Machine Learning</td>
+                                <td>2024-05-12 10:00</td>
+                                <td>Premium</td>
+                                <td>$160</td>
+                                <td>
+                                    <span class="badge bg-success">Hoàn thành</span>
+                                </td>
+                                <td>2024-05-13</td>
+                                <td>2024-08-13</td>
+                                <td>
+                                    <span class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#1012</td>
+                                <td>Mobile App Dev</td>
+                                <td>2024-06-12 09:00</td>
+                                <td>Standard</td>
+                                <td>$110</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">Đã gửi</span>
+                                </td>
+                                <td>2024-06-13</td>
+                                <td>2024-09-13</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger me-1"><i class="bi bi-x-circle"></i>
+                                        Hủy</button>
+                                    <a href="register.html?edit=1012" class="btn btn-sm btn-secondary"><i
+                                            class="bi bi-pencil-square"></i> Chỉnh sửa</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#1013</td>
+                                <td>Cyber Security</td>
+                                <td>2024-04-18 14:30</td>
+                                <td>Basic</td>
+                                <td>$75</td>
+                                <td>
+                                    <span class="badge bg-secondary">Hết hạn</span>
+                                </td>
+                                <td>2024-04-19</td>
+                                <td>2024-07-19</td>
+                                <td>
+                                    <span class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#1014</td>
+                                <td>AI Fundamentals</td>
+                                <td>2024-05-30 17:20</td>
+                                <td>Premium</td>
+                                <td>$170</td>
+                                <td>
+                                    <span class="badge bg-success">Hoàn thành</span>
+                                </td>
+                                <td>2024-05-31</td>
+                                <td>2024-08-31</td>
+                                <td>
+                                    <span class="text-muted">-</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#1015</td>
+                                <td>DevOps</td>
+                                <td>2024-06-15 11:50</td>
+                                <td>Standard</td>
+                                <td>$115</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">Đã gửi</span>
+                                </td>
+                                <td>2024-06-16</td>
+                                <td>2024-09-16</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger me-1"><i class="bi bi-x-circle"></i>
+                                        Hủy</button>
+                                    <a href="register.html?edit=1015" class="btn btn-sm btn-secondary"><i
+                                            class="bi bi-pencil-square"></i> Chỉnh sửa</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card-footer d-flex justify-content-between align-items-center">
+                    <span>Showing 1 to 10 of 15 entries</span>
+                    <nav aria-label="Course pagination">
+                        <ul class="pagination mb-0"
+                            style="font-size: 1rem; --bs-pagination-active-bg: #0d6efd; --bs-pagination-active-border-color: #0d6efd;">
+                            <!-- Prev Button: disabled if on page 1 -->
+                            <li class="page-item disabled">
+                                <a class="page-link rounded-pill px-3" href="#" tabindex="-1" aria-disabled="true">
+                                    <i class="bi bi-chevron-left"></i> Prev
+                                </a>
+                            </li>
+
+                            <!-- Page Numbers -->
+                            <li class="page-item active">
+                                <a class="page-link rounded-pill px-3" href="#">1</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link rounded-pill px-3" href="#">2</a>
+                            </li>
+
+                            <!-- Next Button: enabled if not on last page -->
+                            <li class="page-item">
+                                <a class="page-link rounded-pill px-3" href="#">
+                                    Next <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Quick Link</h4>
+                    <a class="btn btn-link" href="">About Us</a>
+                    <a class="btn btn-link" href="">Contact Us</a>
+                    <a class="btn btn-link" href="">Privacy Policy</a>
+                    <a class="btn btn-link" href="">Terms & Condition</a>
+                    <a class="btn btn-link" href="">FAQs & Help</a>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Contact</h4>
+                    <p class="mb-2">
+                        <i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA
+                    </p>
+                    <p class="mb-2">
+                        <i class="fa fa-phone-alt me-3"></i>+012 345 67890
+                    </p>
+                    <p class="mb-2">
+                        <i class="fa fa-envelope me-3"></i>info@example.com
+                    </p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-outline-light btn-social" href="" title="Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a class="btn btn-outline-light btn-social" href="" title="Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a class="btn btn-outline-light btn-social" href="" title="Youtube">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a class="btn btn-outline-light btn-social" href="" title="Linkedin">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Gallery</h4>
+                    <div class="row g-2 pt-2">
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-1.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-2.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-3.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-2.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-3.jpg" alt="">
+                        </div>
+                        <div class="col-4">
+                            <img class="img-fluid bg-light p-1" src="img/course-1.jpg" alt="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-white mb-3">Newsletter</h4>
+                    <p>Haha đoán xem nào.</p>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                        <button type="button"
+                            class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
+
+                        Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a><br><br>
+                        Distributed By <a class="border-bottom" href="https://themewagon.com">ThemeWagon</a>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <div class="footer-menu">
+                            <a href="">Home</a>
+                            <a href="">Cookies</a>
+                            <a href="">Help</a>
+                            <a href="">FQAs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top" title="Back to Top">
+        <i class="bi bi-arrow-up"></i>
+    </a>
+
+    <script src="js/lib/jquery-3.4.1.min.js"></script>
+    <script src="js/lib/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/TableRender.js"></script>
+</body>
+
+</html>
