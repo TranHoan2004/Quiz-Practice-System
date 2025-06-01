@@ -18,6 +18,7 @@ import lombok.*;
 public class Slider {
 
     private UUID id;
+    private String title;
     private String imageUrl;
     private String backlinkUrl;
     private boolean status;

@@ -73,10 +73,10 @@ public class MyRegistrationController extends HttpServlet {
 
     // Lấy ra các khóa học của người dùng đăng nhập đã đăng ký
     private List<PersonalCourse> getPersonalCoursesByRecentUser(HttpServletRequest request) throws Exception {
-        Account account = (Account) request.getSession().getAttribute("account");
+        Account account = (Account) request.getSession().getAttribute("currentUser");
         String id = account != null ? account.getId().toString() : "b283bfb8-397a-11f0-84a1-088fc33f56c7";
-        return pcDAO.getAllByAccount(id);
-//        return pcDAO.getAll();
+//        return pcDAO.getAllByAccount(id);
+        return pcDAO.getAll();
     }
 
     // Truy vấn database để lấy ra dữ liệu cần thiết rồi đóng gói vào đối tượng RegistrationCourse
@@ -87,6 +87,7 @@ public class MyRegistrationController extends HttpServlet {
             Course c = cDAO.getById(course.getCourseId());
             Topic t = tDAO.getTopicById(c.getTopicId());
             Subject s = sDAO.getById(t.getSubjectId());
+            System.out.println(s.getName());
             registrationCourses.add(RegistrationCourse.builder()
                     .courseId(Encoder.encode(course.getCourseId()))
                     .subject(s.getName())

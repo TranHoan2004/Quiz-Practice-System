@@ -25,7 +25,7 @@ public class PricePackageDAO extends DBContext {
     public List<PricePackage> getAll() throws Exception {
         List<PricePackage> list = new ArrayList<>();
         String sql = """
-                SELECT * FROM pricepackage
+                SELECT * FROM `swp391`.pricepackage
                 """;
         try (Connection connection = getConnection();
              PreparedStatement pre = connection.prepareStatement(sql);
@@ -44,7 +44,7 @@ public class PricePackageDAO extends DBContext {
         log.info("getByCourse");
         PricePackage pp = PricePackage.builder().build();
         String sql = """
-                SELECT * FROM pricepackage p
+                SELECT * FROM `swp391`.pricepackage p
                 WHERE p.course_id=?
                 """;
         try (Connection connection = getConnection();
@@ -64,7 +64,7 @@ public class PricePackageDAO extends DBContext {
 
     public void deleteById(String id) throws Exception {
         String sql = """
-                DELETE FROM pricepackage p
+                DELETE FROM `swp391`.pricepackage p
                 WHERE p.id=?
                 """;
         try (Connection connection = getConnection();
@@ -79,7 +79,7 @@ public class PricePackageDAO extends DBContext {
 
     public void create(PricePackage pp) throws Exception {
         String sql = """
-                INSERT INTO pricepackage (id, course_id, title, price, sale_price, access_duration, status, description)
+                INSERT INTO `swp391`.pricepackage (id, course_id, title, price, sale_price, access_duration, status, description)
                 VALUES (?,?,?,?,?,?,?,?)
                 """;
         try (Connection connection = getConnection();

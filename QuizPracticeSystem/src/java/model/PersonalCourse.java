@@ -5,7 +5,9 @@
 package model;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
+import enumerate.PersonalCourseStatus;
 import lombok.*;
 
 /**
@@ -16,7 +18,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class PersonalCourse {
-
+    private UUID id;
     private String accountId;
     private String courseId;
     private LocalDate expireDate;

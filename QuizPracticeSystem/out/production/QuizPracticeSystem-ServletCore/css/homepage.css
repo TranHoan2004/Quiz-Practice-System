@@ -72,18 +72,7 @@
     align-items: center;
     justify-content: center;
     font-weight: normal;
-    border-radius: 0px;
-}
-
-
-/*** Navbar ***/
-.navbar .dropdown-toggle::after {
-    border: none;
-    content: "\f107";
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    vertical-align: middle;
-    margin-left: 8px;
+    border-radius: 0;
 }
 
 .navbar-light .navbar-nav .nav-link {
@@ -138,7 +127,7 @@
     .navbar .dropdown-menu.fade-down {
         top: 100%;
         transform: rotateX(-75deg);
-        transform-origin: 0% 0%;
+        transform-origin: 0 0;
     }
 
     .navbar .nav-item:hover .dropdown-menu {
@@ -198,7 +187,7 @@
 }
 
 .page-header {
-    background: linear-gradient(rgba(24, 29, 56, .7), rgba(24, 29, 56, .7)), url(../img/carousel-1.jpg);
+    background: linear-gradient(rgba(24, 29, 56, .7), rgba(24, 29, 56, .7)), url(../img/slider1.jpg);
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -211,7 +200,6 @@
 .breadcrumb-item+.breadcrumb-item::before {
     color: var(--light);
 }
-
 
 /*** Section Title ***/
 .section-title {
@@ -253,125 +241,6 @@
 }
 
 
-/*** Service ***/
-.service-item {
-    background: var(--light);
-    transition: .5s;
-}
-
-.service-item:hover {
-    margin-top: -10px;
-    background: var(--primary);
-}
-
-.service-item * {
-    transition: .5s;
-}
-
-.service-item:hover * {
-    color: var(--dark);
-}
-
-
-/*** Categories & Courses ***/
-.category img,
-.course-item img {
-    transition: .5s;
-}
-
-.category a:hover img,
-.course-item:hover img {
-    transform: scale(1.1);
-}
-
-
-/*** Team ***/
-.team-item img {
-    transition: .5s;
-}
-
-.team-item:hover img {
-    transform: scale(1.1);
-}
-
-
-/*** Testimonial ***/
-.testimonial-carousel::before {
-    position: absolute;
-    content: "";
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 0;
-    background: linear-gradient(to right, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
-    z-index: 1;
-}
-
-.testimonial-carousel::after {
-    position: absolute;
-    content: "";
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 0;
-    background: linear-gradient(to left, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0) 100%);
-    z-index: 1;
-}
-
-
-
-@media (min-width: 768px) {
-
-    .testimonial-carousel::before,
-    .testimonial-carousel::after {
-        width: 200px;
-    }
-}
-
-@media (min-width: 992px) {
-
-    .testimonial-carousel::before,
-    .testimonial-carousel::after {
-        width: 300px;
-    }
-}
-
-.testimonial-carousel .owl-item .testimonial-text,
-.testimonial-carousel .owl-item.center .testimonial-text * {
-    transition: .5s;
-}
-
-.testimonial-carousel .owl-item.center .testimonial-text {
-    background: var(--primary) !important;
-}
-
-.testimonial-carousel .owl-item.center .testimonial-text * {
-    color: #FFFFFF !important;
-}
-
-.testimonial-carousel .owl-dots {
-    margin-top: 24px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-}
-
-.testimonial-carousel .owl-dot {
-    position: relative;
-    display: inline-block;
-    margin: 0 5px;
-    width: 15px;
-    height: 15px;
-    border: 1px solid #CCCCCC;
-    transition: .5s;
-}
-
-.testimonial-carousel .owl-dot.active {
-    background: var(--primary);
-    border-color: var(--primary);
-}
-
-
 /*** Footer ***/
 .footer .btn.btn-social {
     margin-right: 5px;
@@ -406,7 +275,7 @@
 .footer .btn.btn-link::before {
     position: relative;
     content: "\f105";
-    font-family: "Font Awesome 5 Free";
+    font-family: "Font Awesome 5 Free", sans-serif;
     font-weight: 900;
     margin-right: 10px;
 }
@@ -578,4 +447,38 @@
 .user-info > div {
     font-size: 14px;
 }
+
+.link-primary:hover {
+    color: var(--primary) !important;
+    cursor: pointer;
+    transform: translateY(-4px) scale(1.1);
+    transition: transform 0.3s, color 0.3s;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

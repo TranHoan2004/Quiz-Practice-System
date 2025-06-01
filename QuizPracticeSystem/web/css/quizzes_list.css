@@ -1,0 +1,292 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.add-btn {
+    background: linear-gradient(90deg, #ff6b6b, #ff8787);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.add-btn:hover {
+    background: linear-gradient(90deg, #ff4d4d, #ff6b6b);
+    transform: translateY(-2px);
+}
+
+.search-form {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    align-items: flex-end; /* Căn chỉnh các phần tử theo chiều dọc */
+}
+
+.search-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.search-group label {
+    font-weight: 500;
+    color: #34495e;
+}
+
+.dropdown, .search-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    transition: border-color 0.3s;
+}
+
+.dropdown:focus, .search-input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+.search-input.extended {
+    width: 300px; /* Giữ nguyên chiều dài ô nhập tiêu đề */
+}
+
+.search-btn {
+    background: linear-gradient(90deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    padding: 10px 25px; /* Tăng chiều dài nút để thành hình chữ nhật dài */
+    border-radius: 4px; /* Giảm độ cong cho kiểu chữ nhật phổ thông */
+    cursor: pointer;
+    font-size: 14px;
+    height: 40px; /* Đảm bảo chiều cao đồng đều */
+    transition: background 0.3s;
+}
+
+.search-btn:hover {
+    background: linear-gradient(90deg, #2980b9, #1e6ba8);
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+}
+
+table th, table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+table th {
+    background: #ecf0f1;
+    color: #2c3e50;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+}
+
+table tr:hover {
+    background: #f9f9f9;
+}
+
+.edit-btn {
+    background: linear-gradient(90deg, #2ecc71, #27ae60);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-right: 5px;
+    transition: background 0.3s;
+}
+
+.edit-btn:hover {
+    background: linear-gradient(90deg, #27ae60, #219653);
+}
+
+.delete-btn {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.delete-btn:hover {
+    background: linear-gradient(90deg, #c0392b, #a93226);
+}
+
+.actions {
+    display: flex;
+    gap: 5px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination-link {
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #3498db;
+    border: 1px solid #3498db;
+    border-radius: 6px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.pagination-link:hover, .pagination-link.active {
+    background: #3498db;
+    color: white;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 30px; /* Tăng padding để không gian rộng rãi hơn */
+    border-radius: 12px;
+    width: 500px; /* Tăng chiều rộng modal cho đẹp mắt */
+    max-width: 90%;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* Tăng độ bóng để nổi bật */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Khoảng cách giữa các phần tử bên trong */
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #2ecc71;
+    font-size: 22px; /* Tăng kích thước tiêu đề */
+    text-align: center; /* Căn giữa tiêu đề */
+}
+
+.delete-modal h2 {
+    color: #e74c3c;
+}
+
+.add-form, .delete-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px; /* Tăng khoảng cách giữa label và input */
+}
+
+.form-group label {
+    font-weight: 500;
+    color: #34495e;
+    font-size: 14px; /* Kích thước chữ nhỏ hơn để cân đối */
+}
+
+.input-field {
+    padding: 10px 12px; /* Tăng padding cho ô nhập liệu */
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    height: 40px; /* Đảm bảo chiều cao đồng đều */
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px; /* Tăng khoảng cách giữa các nút */
+}
+
+.cancel-btn {
+    background: #95a5a6;
+    color: white;
+    border: none;
+    padding: 10px 20px; /* Tăng kích thước nút */
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 14px;
+    width: 100px; /* Đặt chiều rộng cố định */
+}
+
+.cancel-btn:hover {
+    background: #7f8c8d;
+}
+
+.submit-btn, .delete-btn-modal {
+    background: linear-gradient(90deg, #2ecc71, #27ae60);
+    color: white;
+    border: none;
+    padding: 10px 20px; /* Tăng kích thước nút */
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 14px;
+    width: 120px; /* Tăng chiều rộng cho nút chính */
+}
+
+.submit-btn:hover, .delete-btn-modal:hover {
+    background: linear-gradient(90deg, #27ae60, #219653);
+}
+
+.delete-btn-modal {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+}
+
+.delete-btn-modal:hover {
+    background: linear-gradient(90deg, #c0392b, #a93226);
+}

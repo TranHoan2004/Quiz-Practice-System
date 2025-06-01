@@ -26,7 +26,7 @@ public class CourseDAO extends DBContext {
 
     public List<Course> getAllCourses() throws Exception {
         List<Course> list = new ArrayList<>();
-        String sql = "SELECT * FROM course";
+        String sql = "SELECT * FROM `swp391`.course";
         try (Connection connection = getConnection();
              PreparedStatement pre = connection.prepareStatement(sql);
              ResultSet rs = pre.executeQuery()) {
@@ -42,7 +42,7 @@ public class CourseDAO extends DBContext {
 
     public Course getById(String id) throws Exception {
         Course s = Course.builder().build();
-        String sql = "SELECT * FROM course s WHERE s.id = ?";
+        String sql = "SELECT * FROM `swp391`.course s WHERE s.id = ?";
         try (Connection connection = getConnection();
              PreparedStatement pre = connection.prepareStatement(sql)) {
             pre.setString(1, id);
@@ -59,7 +59,7 @@ public class CourseDAO extends DBContext {
     public Course getByTopic(String topicId) throws Exception {
         logger.info("getByTopic " + topicId);
         Course s = Course.builder().build();
-        String sql = "SELECT * FROM course s WHERE s.topic_id = ?";
+        String sql = "SELECT * FROM `swp391`.course s WHERE s.topic_id = ?";
         try (Connection connection = getConnection();
              PreparedStatement pre = connection.prepareStatement(sql)) {
             pre.setString(1, topicId);
@@ -75,7 +75,7 @@ public class CourseDAO extends DBContext {
 
     public void deleteById(String id) throws Exception {
         logger.info("Deleting course with id " + id);
-        String sql = "DELETE FROM course s WHERE s.id = ?";
+        String sql = "DELETE FROM `swp391`.course s WHERE s.id = ?";
         try (Connection connection = getConnection();
              PreparedStatement pre = connection.prepareStatement(sql)) {
             pre.setString(1, id);
@@ -88,8 +88,8 @@ public class CourseDAO extends DBContext {
 
     public void create(Course c) throws Exception {
         String sql = """
-                INSERT INTO course (id, title, duration, status, description, created_date, updated_date, thumbnail_url, number_of_lessons, topic_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO `swp391`.course (id, title, duration, description, created_date, updated_date, thumbnail_url, number_of_lessons, topic_id, contact, expert_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
         try (Connection connection = getConnection();
              PreparedStatement pre = connection.prepareStatement(sql)) {
@@ -104,6 +104,7 @@ public class CourseDAO extends DBContext {
             pre.setString(9, c.getThumbnailUrl());
             pre.setInt(10, c.getNumberOfLessons());
             pre.setString(11, c.getTopicId());
+            pre.setString(12, c.getExpertId());
             pre.executeUpdate();
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage());
@@ -123,6 +124,7 @@ public class CourseDAO extends DBContext {
                 .id(UUID.fromString(rs.getString("id")))
                 .title(rs.getString("title"))
                 .duration(rs.getFloat("duration"))
+                .status(rs.getInt("status") == 1) 
                 .description(rs.getString("description"))
                 .createdDate(rs.getObject("created_date", LocalDate.class))
                 .updatedDate(rs.getObject("updated_date", LocalDate.class))
@@ -130,6 +132,7 @@ public class CourseDAO extends DBContext {
                 .numberOfLessons(rs.getInt("number_of_lessons"))
                 .topicId(rs.getString("topic_id"))
                 .contact(rs.getString("contact"))
+                .expertId(rs.getString("expert_id"))
                 .build();
     }
 }

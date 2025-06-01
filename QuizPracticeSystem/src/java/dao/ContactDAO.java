@@ -25,8 +25,7 @@ public class ContactDAO extends DBContext {
 
     public List<Contact> getAllContacts() throws Exception {
         List<Contact> contacts = new ArrayList<>();
-        String sql = "SELECT * FROM contact";
-
+        String sql = "SELECT * FROM `swp391`.contact";
         try (Connection connection = getConnection(); PreparedStatement pre = connection.prepareStatement(sql); ResultSet rs = pre.executeQuery()) {
             while (rs.next()) {
                 contacts.add(getContact(rs));
@@ -40,7 +39,7 @@ public class ContactDAO extends DBContext {
 
     public Contact getById(String id) throws Exception {
         Contact contact = Contact.builder().build();
-        String sql = "SELECT * FROM contact WHERE id = ?";
+        String sql = "SELECT * FROM `swp391`.contact WHERE id = ?";
         try (PreparedStatement pre = getConnection().prepareStatement(sql)) {
             pre.setString(1, id);
             try (ResultSet rs = pre.executeQuery()) {

@@ -15,7 +15,6 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
-    <link href="img/favicon.ico" rel="icon">
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
     <link href="${pageContext.request.contextPath}/css/lib/css2.css" rel="stylesheet">
@@ -30,6 +29,7 @@
 </head>
 
 <body>
+<jsp:include page="../../component/spinner.html"/>
 <jsp:include page="../../component/navbar.html"/>
 <jsp:include page="../../component/header.html"/>
 
@@ -73,38 +73,49 @@
                         </select>
                     </div>
                 </div>
-                <div class="wow fadeInUp shadow mt-2" data-wow-delay="0.2s">
-                    <div
-                            class="p-3 rounded shadow-sm bg-white h-100 d-flex flex-column justify-content-center align-items-center">
-                        <label for="subjectFilter" class="form-label mb-2">
-                            <span class="fw-semibold text-primary">Contact</span>
-                        </label>
-                        <select class="form-select form-select-sm">
-                            <option value="" default>-- Select organizations --</option>
-                            <option value="web-development">Web Development</option>
-                            <option value="design">Design</option>
-                            <option value="marketing">Marketing</option>
-                        </select>
-                        <%--                        <div class="d-flex flex-column mt-2">--%>
-                        <%--                            <section>--%>
-                        <%--                                <i class="bi bi-telephone-fill"></i>&nbsp;+84111111--%>
-                        <%--                            </section>--%>
-                        <%--                            <section>--%>
-                        <%--                                <i class="bi bi-link-45deg"></i>&nbsp;https://canvas.com--%>
-                        <%--                            </section>--%>
-                        <%--                            <section>--%>
-                        <%--                                <i class="bi bi-globe"></i>&nbsp;https://canvas.com--%>
-                        <%--                            </section>--%>
-                        <%--                            <section>--%>
-                        <%--                                <i class="bi bi-geo-alt-fill"></i>&nbsp;https://canvas.com--%>
-                        <%--                            </section>--%>
-                        <%--                        </div>--%>
+                <c:if test="${contact ne null}">
+                    <div class="wow fadeInUp shadow mt-2" data-wow-delay="0.2s">
+                        <div
+                                class="p-3 rounded shadow-sm bg-white h-100 d-flex flex-column justify-content-center align-items-center">
+                            <label for="subjectFilter" class="form-label mb-2 overflow-hidden" style="max-width: 100%;">
+                                <span class="fw-semibold text-primary">Contact</span>
+                            </label>
+                            <div class="d-flex flex-column mt-2 w-100" style="word-break: break-word;">
+                                <p class="text-center fw-bold">${contact.getName()}</p>
+                                <section class="mb-1 d-flex align-items-center">
+                                    <i class="bi bi-telephone-fill"></i>&nbsp;
+                                        ${contact.getPhone()}
+                                </section>
+                                <c:forEach items="${contact.getLink()}" var="l">
+                                    <section class="mb-1 d-flex align-items-center">
+                                        <a href="${l.value}" target="_blank"
+                                           style="max-width: 140px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                            <c:choose>
+                                                <c:when test="${l.key eq 'social media'}">
+                                                    <i class="bi bi-globe"></i>&nbsp;
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i class="bi bi-link-45deg"></i>&nbsp;
+                                                </c:otherwise>
+                                            </c:choose>
+                                                ${l.value}
+                                        </a>
+                                    </section>
+                                </c:forEach>
+                                <section class="d-flex align-items-start">
+                                    <i class="bi bi-geo-alt-fill mt-1"></i>&nbsp;
+                                    <span style="display: inline-block; max-width: 140px; word-break: break-word;">
+                                            ${contact.getAddress()}
+                                    </span>
+                                </section>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </c:if>
             </div>
 
+            <!-- Registered Courses List Start -->
             <div class="col-lg-10">
-                <!-- Registered Courses List Start -->
                 <div class="card mb-4 wow fadeInUp">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <span><i class="bi bi-journal-check me-2"></i>Registered Courses</span>
@@ -134,7 +145,7 @@
                             <c:if test="${not empty courses}">
                                 <c:set var="size" value="${couses.size()}"/>
                                 <c:forEach items="${courses}" var="c" varStatus="loop">
-                                    <tr>
+                                    <tr class="record" data-id="${c.getCourseId()}">
                                         <td>${loop.count}</td>
                                         <td>${c.getSubject()}</td>
                                         <td>${c.getRegistrationTime()}</td>
@@ -160,7 +171,8 @@
                                         <td>${c.getValidTo()}</td>
                                         <td class="text-center">
                                             <c:if test="${c.status eq 'sent'}">
-                                                <button class="btn btn-sm btn-danger me-1">
+                                                <button class="btn btn-sm btn-danger me-1" type="button"
+                                                        onclick="updateCourse('${c.getCourseId()}')">
                                                     <i class="bi bi-x-circle"></i>
                                                     Hủy
                                                 </button>
@@ -196,7 +208,8 @@
                                 </li>
                                 <c:forEach var="i" begin="1" end="${totalPages}">
                                     <li class="page-item ${i == currentIndex ? "active" : ''}">
-                                        <a class="page-link rounded-pill px-3" href="#">${i}</a>
+                                        <a class="page-link rounded-pill px-3"
+                                           href="${pageContext.request.contextPath}/user/registration?page=${i}">${i}</a>
                                     </li>
                                 </c:forEach>
                                 <li class="page-item ${(currentIndex == totalPages || totalPages == 0) ? "disabled" : ''}">
@@ -216,8 +229,18 @@
 
 <jsp:include page="../../component/footer.html"/>
 <jsp:include page="../../component/back_to_top.html"/>
+<jsp:include page="../../component/notification.html"/>
 
+<script src="${pageContext.request.contextPath}/js/lib/jquery-3.4.1.min.js"></script>
+<script src="${pageContext.request.contextPath}/js/lib/bootstrap.bundle.min.js"></script>
+<script src="${pageContext.request.contextPath}/lib/wow/wow.min.js"></script>
+<script src="${pageContext.request.contextPath}/lib/easing/easing.min.js"></script>
+<script src="${pageContext.request.contextPath}/lib/waypoints/waypoints.min.js"></script>
+<script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="${pageContext.request.contextPath}/js/main.js"></script>
+<script src="${pageContext.request.contextPath}/js/Notification.js"></script>
 <script>
+    let href = `${pageContext.request.contextPath}/user/registration`
     document.getElementById('subjectFilter').addEventListener('change', function () {
         const value = this.value;
         let href = `${pageContext.request.contextPath}/user/registration`
@@ -226,14 +249,45 @@
         }
         window.location.href = href;
     })
+
+    document.querySelectorAll('.record').forEach(function (row) {
+        row.addEventListener('click', function (e) {
+            if (e.target.closest('button') || e.target.closest('a')) {
+                return;
+            }
+            const value = this.dataset.id;
+            if (value !== 'all') {
+                href += '?org=' + value;
+            }
+            window.location.href = href;
+        });
+    });
+
+    function updateCourse(id) {
+        fetch(`${pageContext.request.contextPath}/user/course`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({id: id})
+        })
+            .then(response => {
+                if (!response.ok) throw new Error("Request failed");
+                return response.body;
+            })
+            .then(data => {
+                console.log(data)
+                showNotification("Cancel register successfully", "success")
+                setTimeout(() => {
+                    location.href = href;
+                }, 4500);
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
 </script>
-<script src="../../js/lib/jquery-3.4.1.min.js"></script>
-<script src="../../js/lib/bootstrap.bundle.min.js"></script>
-<script src="../../lib/wow/wow.min.js"></script>
-<script src="../../lib/easing/easing.min.js"></script>
-<script src="../../lib/waypoints/waypoints.min.js"></script>
-<script src="../../lib/owlcarousel/owl.carousel.min.js"></script>
-<script src="../../js/main.js"></script>
+
 </body>
 
 </html>

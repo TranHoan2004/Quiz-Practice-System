@@ -1,7 +1,7 @@
 package dao;
 
 import model.PersonalCourse;
-import model.PersonalCourseStatus;
+import enumerate.PersonalCourseStatus;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,9 +27,7 @@ public class PersonalCourseDAO extends DBContext {
     public List<PersonalCourse> getAll() throws Exception {
         log.info("getAll");
         List<PersonalCourse> list = new ArrayList<>();
-        String sql = """
-                SELECT * FROM personalcourse
-                """;
+        String sql = "SELECT * FROM `swp391`.personalcourse";
         try (Connection connection = getConnection();
              PreparedStatement pre = connection.prepareStatement(sql);
              ResultSet rs = pre.executeQuery()) {
@@ -64,7 +63,7 @@ public class PersonalCourseDAO extends DBContext {
         log.info("getAllByAccountAndCourse");
         PersonalCourse pc = PersonalCourse.builder().build();
         String sql = """
-                SELECT * FROM personalcourse p
+                SELECT * FROM `swp391`.personalcourse p
                 WHERE p.account_id=? AND p.course_id=?
                 """;
         try (Connection connection = getConnection();
@@ -93,7 +92,7 @@ public class PersonalCourseDAO extends DBContext {
     public void deleteByCourseAndAccount(String accountID, String courseID) throws Exception {
         log.info("deleteByCourseAndAccount");
         String sql = """
-                DELETE FROM personalcourse p
+                DELETE FROM `swp391`.personalcourse p
                 WHERE p.course_id=? AND p.account_id=?
                 """;
         try (Connection connection = getConnection();
@@ -110,7 +109,7 @@ public class PersonalCourseDAO extends DBContext {
     public void deleteByAccount(String id) throws Exception {
         log.info("deleteByAccount");
         String sql = """
-                DELETE FROM personalcourse p
+                DELETE FROM `swp391`.personalcourse p
                 WHERE p.account_id=?
                 """;
         try (Connection connection = getConnection();
@@ -126,17 +125,18 @@ public class PersonalCourseDAO extends DBContext {
     public void create(PersonalCourse pc) throws Exception {
         log.info("create");
         String sql = """
-                INSERT INTO personalcourse (account_id, course_id, expire_date, enroll_date, progress, status)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO `swp391`.personalcourse (id, account_id, course_id, expire_date, enroll_date, progress, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 """;
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, pc.getAccountId());
-            ps.setString(2, pc.getCourseId());
-            ps.setObject(3, pc.getExpireDate());
-            ps.setObject(4, pc.getEnrollDate());
-            ps.setInt(5, pc.getProgress());
-            ps.setString(6, pc.getStatus().toString());
+            ps.setString(1, pc.getId().toString());
+            ps.setString(2, pc.getAccountId());
+            ps.setString(3, pc.getCourseId());
+            ps.setObject(4, pc.getExpireDate());
+            ps.setObject(5, pc.getEnrollDate());
+            ps.setInt(6, pc.getProgress());
+            ps.setString(7, pc.getStatus().toString());
             ps.executeUpdate();
         } catch (Exception e) {
             log.log(Level.SEVERE, e.getMessage());
@@ -150,8 +150,9 @@ public class PersonalCourseDAO extends DBContext {
                     .accountId(rs.getString("account_id"))
                     .courseId(rs.getString("course_id"))
                     .expireDate(rs.getObject("expire_date", LocalDate.class))
-                    .enrollDate(rs.getObject("enroll_date", LocalDate.class))
+                    .enrollDate(rs.getObject("expire_date", LocalDate.class))
                     .progress(rs.getInt("progress"))
+                    .id(UUID.fromString(rs.getString("id")))
                     .build();
             if (rs.getString("status") != null) {
                 c.setStatus(PersonalCourseStatus.valueOf(rs.getString("status")));

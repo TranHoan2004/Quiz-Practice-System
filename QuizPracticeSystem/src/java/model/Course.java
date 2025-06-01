@@ -29,4 +29,6 @@ public class Course {
     private int numberOfLessons;
     private String topicId;
     private String contact;
+    private String expertId;
+
 }

@@ -4,3 +4,43 @@
 /QuizPracticeSystem/src/java/common/Constants.java
 /QuizPracticeSystem/web/index.html
 /QuizPracticeSystem/dist/
+
+
+# =========================
+# IntelliJ IDEA
+# =========================
+.idea/
+*.iml
+*.iws
+out/
+
+# =========================
+# Build output folders
+# =========================
+/build/
+/dist/
+/target/
+
+# =========================
+# Compiled class files
+# =========================
+*.class
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Temporary files
+# =========================
+*.log
+*.bak
+*.swp
+*~
+
+# =========================
+# JAR libraries
+# Nếu bạn muốn giữ thư viện JAR riêng cho từng người → bỏ qua:
+/lib/

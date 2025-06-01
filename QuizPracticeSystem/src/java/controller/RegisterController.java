@@ -5,9 +5,12 @@
 package controller;
 
 import dao.AccountDAO;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,17 +18,16 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Account;
-import model.Roles;
 import utils.MailUtil;
 
 /**
- *
  * @author Huong
  */
 @WebServlet(name = "RegisterController", urlPatterns = {"/user/register"})
 public class RegisterController extends HttpServlet {
 
     private final AccountDAO accountDAO;
+    private final Logger logger = Logger.getLogger(RegisterController.class.getName());
 
     public RegisterController() {
         this.accountDAO = new AccountDAO();
@@ -53,26 +55,23 @@ public class RegisterController extends HttpServlet {
                 message = "Email is invalid!";
             } else if (!utils.Validation.isValidVietnamesePhone(phoneNumber)) {
                 message = "Phone number is invalid!";
-            } else if (handleRegister(fullName, gender, phoneNumber, email, request)) {
-                message = "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận.!";
+            } else if (handleRegister(fullName, gender, phoneNumber, email)) {
+                message = "Register successfully! Please check your email to verify.!";
             } else {
-                message = "Đăng ký không thành công. Vui lòng thử lại.";
+                message = "Register failed!. Please try again.";
             }
 
             request.setAttribute("message", message);
             request.getRequestDispatcher("/jsp/register-feature/register.jsp").forward(request, response);
 
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, ex.getMessage(), ex);
             request.setAttribute("error", "Đã xảy ra lỗi trong quá trình đăng ký.");
             request.getRequestDispatcher("/jsp/register-feature/register.jsp").forward(request, response);
         }
     }
 
-
-    private boolean handleRegister(String fullName, int gender, String phoneNumber, String email, HttpServletRequest request) {
-        String verifyUrl = "http://localhost:8080/qps/user/register";
-
+    private boolean handleRegister(String fullName, int gender, String phoneNumber, String email) {
         String generatedPassword = utils.PasswordUtils.generatePassword(16);
 
         String html = "<html><body style='font-family:sans-serif;'>" +
@@ -91,18 +90,12 @@ public class RegisterController extends HttpServlet {
                 "<p style='font-size:12px;color:#888;'>QPS Team, Hanoi, Vietnam</p>" +
                 "</div></body></html>";
 
-
-
         try {
-            System.out.println("Sending mail to " + email);
             MailUtil.sendMail(email, "Welcome to QPS – Set up your account", html);
-            System.out.println("Mail sent successfully");
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Mail sending failed");
+            logger.log(Level.SEVERE, e.getMessage(), e);
             return false;
         }
-
 
         Account account = Account.builder()
                 .id(UUID.randomUUID())
@@ -113,20 +106,9 @@ public class RegisterController extends HttpServlet {
                 .status(false)
                 .phoneNumber(phoneNumber)
                 .createdDate(LocalDate.now())
-                .roleId(String.valueOf(Roles.USER.getId()))
+                .roleId(accountDAO.getRoleIdByRoleName("Admin"))
                 .build();
-
         return this.accountDAO.createAccount(account);
     }
-
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
 
 }

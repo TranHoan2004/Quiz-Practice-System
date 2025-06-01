@@ -38,7 +38,7 @@ public class TopicDAO extends DBContext {
         logger.log(Level.INFO, "getTopicById {0}", id);
         Topic st = Topic.builder().build();
         String sql = """
-                SELECT * FROM topic s
+                SELECT * FROM `swp391`.topic s
                 WHERE s.id = ?
                 """;
         try (Connection connection = getConnection();
@@ -80,7 +80,7 @@ public class TopicDAO extends DBContext {
     public void createTopic(Topic topic) throws Exception {
         logger.info("createTopic");
         String sql = """
-                INSERT INTO topic (id, name, subject_id)
+                INSERT INTO `swp391`.topic (id, name, subject_id)
                 VALUES (?, ?, ?)
                 """;
         try (Connection connection = getConnection();
@@ -96,7 +96,7 @@ public class TopicDAO extends DBContext {
     }
 
     public void deleteTopicById(String id) throws Exception {
-        String sql = "DELETE FROM topic t WHERE t.id = ?";
+        String sql = "DELETE FROM `swp391`.topic t WHERE t.id = ?";
         try (Connection connection = getConnection();
              PreparedStatement pre = connection.prepareStatement(sql)) {
             pre.setString(1, id);
@@ -106,6 +106,54 @@ public class TopicDAO extends DBContext {
             throw e;
         }
     }
+    
+    public String getSubjectIdByTopicId(String topicId) {
+        String sql = "SELECT * FROM topic WHERE id = ?";
+        try (Connection connection = getConnection(); PreparedStatement pre = connection.prepareStatement(sql)) {
+
+            pre.setString(1, topicId);  
+
+            try (ResultSet rs = pre.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("subject_id");
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            
+            return null; 
+        }
+        return null;
+    }
+    
+//    Lấy danh sách Topic từ SubjectId
+    public List<Topic> getTopicsBySubjectId(String subjectId) throws Exception {
+    List<Topic> topicList = new ArrayList<>();
+
+    String sql = "SELECT id, name, subject_id FROM topic WHERE subject_id = ?";
+
+    try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
+        pre.setString(1, subjectId);
+
+        try (ResultSet rs = pre.executeQuery()) {
+            while (rs.next()) {
+                Topic topic = new Topic();
+                topic.setId(UUID.fromString(rs.getString("id")));
+                topic.setName(rs.getString("name"));
+                topic.setSubjectId(rs.getString("subject_id"));
+
+                topicList.add(topic);
+            }
+        }
+    } catch (Exception e) {
+        logger.log(Level.SEVERE, "Error getting topics by subjectId: " + e.getMessage(), e);
+        throw e;
+    }
+
+    return topicList;
+}
+
+
 
     private List<Topic> query(List<Topic> st, String sql) throws Exception {
         try (Connection connection = getConnection();
@@ -125,3 +173,6 @@ public class TopicDAO extends DBContext {
         return st;
     }
 }
+
+
+

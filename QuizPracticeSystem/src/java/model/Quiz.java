@@ -18,9 +18,9 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class Quiz {
-
-    private UUID lessonId;
+    private UUID id;
     private int duration;
+    private boolean status;
     private float passRate;
     private LocalDate updatedDate;
     private int numberOfQuestions;

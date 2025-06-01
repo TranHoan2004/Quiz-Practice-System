@@ -27,7 +27,7 @@ public class Validation {
 
     public static boolean isValidVietnamesePhone(String phone) {
         //Vietnamese phone numer regex 
-        String regex = "^(\\+84|0)(3|5|7|8|9)\\d{8}$";
+        String regex = "^(\\+84|0)([35789])\\d{8}$";
 
         return phone != null && phone.matches(regex);
     }

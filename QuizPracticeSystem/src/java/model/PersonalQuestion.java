@@ -6,6 +6,8 @@ package model;
 
 import lombok.*;
 
+import java.util.UUID;
+
 /**
  * @author Lenovo
  */
@@ -14,10 +16,8 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class PersonalQuestion {
-
+    private UUID id;
     private String accountId;
-    private String lessonId;
-    private String courseId;
     private String questionId;
     private boolean hasAnswer;
     private boolean isMark;

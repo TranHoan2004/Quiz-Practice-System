@@ -1,0 +1,150 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    width: 1000px;
+    background: white;
+    border: 2px solid purple;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    background-color: #c2e0f0;
+    padding: 10px;
+    text-align: center;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    color: #1e90ff;
+    font-size: 24px;
+    margin: 0;
+    font-family: 'Comic Sans MS', cursive;
+}
+
+.back-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    padding: 5px 15px;
+    background-color: #1e90ff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.profile-section {
+    display: flex;
+    justify-content: space-between;
+}
+
+.profile-picture, .personal-details {
+    background-color: #e6f3fa;
+    padding: 20px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.profile-picture {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 40%;
+}
+
+.personal-details {
+    width: 50%;
+}
+
+.profile-img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.upload-btn {
+    padding: 8px 15px;
+    background-color: #1e90ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.upload-btn:hover {
+    background-color: #104e8b;
+}
+
+.personal-details h2 {
+    color: #1e90ff;
+    font-size: 20px;
+    font-family: 'Comic Sans MS', cursive;
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table td {
+    padding: 10px 10px;
+    vertical-align: top;
+}
+
+table label {
+    font-weight: bold;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 10px;
+}
+
+input, select {
+    width: 300px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input[readonly] {
+    background-color: #f0f0f0;
+    cursor: not-allowed;
+}
+
+.error {
+    color: red;
+    font-size: 12px;
+    display: block;
+    margin-top: 5px;
+    min-height: 20px;
+}
+
+.save-btn {
+    padding: 10px 20px;
+    background-color: #1e90ff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.save-btn:hover {
+    background-color: #104e8b;
+}
