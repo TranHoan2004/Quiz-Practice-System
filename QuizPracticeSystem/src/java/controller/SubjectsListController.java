@@ -20,7 +20,7 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet(name = "SubjectsListController", urlPatterns = {"/user/subjectslistcontroller"})
+@WebServlet(name = "SubjectsListController", urlPatterns = {"/user/subject_list"})
 public class SubjectsListController extends HttpServlet {
 
     // Khai báo các DAO để thao tác dữ liệu
@@ -74,13 +74,14 @@ public class SubjectsListController extends HttpServlet {
 
             // Chia trang và truyền danh sách đã phân trang sang JSP
             renderPagination(request, allCourses);
-
+            request.setAttribute("categories", subjectDAO.getAllSubjectCategories());
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             message = e.getMessage(); // Gán lỗi để hiển thị nếu có
         }
 
         // Truyền message nếu có lỗi và forward sang JSP hiển thị
+        
         request.setAttribute("message", message);
         request.getRequestDispatcher("/jsp/course-features/subjects_list.jsp").forward(request, response);
     }
@@ -104,12 +105,13 @@ public class SubjectsListController extends HttpServlet {
             String category = subjectDAO.getCategoryBySubjectId(s.getId().toString());
             // Xây dựng đối tượng CourseDTO
             CourseDTO dto = CourseDTO.builder()
-                    .id(c.getId().hashCode())            // dùng hashCode làm ID tạm
-                    .name(s.getName())                   // tên môn học
+                    .id(Encoder.encode(c.getId().toString()))            // dùng hashCode làm ID tạm
+                    .title(s.getName())                   // tên môn học
                     .category(category)               // tạm dùng tên subject làm category
                     .numberOfLessons(lessonCount)
                     .owner(owner.getFullName())
                     .published(c.isStatus())             // trạng thái đã xuất bản hay chưa
+                    .subjectId(Encoder.encode(s.getId().toString()))
                     .build();
 
             result.add(dto);  
@@ -128,7 +130,7 @@ public class SubjectsListController extends HttpServlet {
             // Lọc theo keyword nếu có
             if (keyword != null && !keyword.trim().isEmpty()) {
                 String kw = keyword.trim().toLowerCase();
-                match &= course.getName().toLowerCase().contains(kw)
+                match &= course.getTitle().toLowerCase().contains(kw)
                         || course.getOwner().toLowerCase().contains(kw)
                         || course.getCategory().toLowerCase().contains(kw);
             }

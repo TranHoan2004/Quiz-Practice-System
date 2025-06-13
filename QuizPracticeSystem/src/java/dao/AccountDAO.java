@@ -51,9 +51,9 @@ public class AccountDAO extends DBContext {
             int rowsInserted = ps.executeUpdate();
             return rowsInserted > 0;
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error creating account: " + e.getMessage(), e);
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, e.getMessage());
         }
+        return false;
     }
 
     public boolean isEmailExist(String email) {
@@ -64,10 +64,8 @@ public class AccountDAO extends DBContext {
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return false;
     }
@@ -80,10 +78,8 @@ public class AccountDAO extends DBContext {
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return false;
     }
@@ -113,13 +109,10 @@ public class AccountDAO extends DBContext {
             }
         } catch (SQLException ex) {
             logger.log(Level.SEVERE, "Lỗi SQL khi cập nhật tài khoản: " + ex.getMessage(), ex);
-            throw new RuntimeException("Không thể cập nhật tài khoản do lỗi cơ sở dữ liệu", ex);
         } catch (IllegalArgumentException ex) {
             logger.log(Level.SEVERE, "Lỗi xác thực: " + ex.getMessage(), ex);
-            throw ex;
         } catch (Exception ex) {
             logger.log(Level.SEVERE, "Lỗi không mong muốn khi cập nhật tài khoản: " + ex.getMessage(), ex);
-            throw new RuntimeException("Lỗi không mong muốn khi cập nhật tài khoản", ex);
         }
     }
 
@@ -167,9 +160,25 @@ public class AccountDAO extends DBContext {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, e.getMessage());
         }
         return null;
+    }
+
+    public void updatePasswordByEmail(String password, String email) {
+        String sql = """
+                UPDATE `swp391`.account a
+                SET a.password = ?
+                WHERE a.email = ?
+                """;
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, password);
+            ps.setString(2, email);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
     }
 
     private Account getAccount(ResultSet rs) throws SQLException {
@@ -197,10 +206,8 @@ public class AccountDAO extends DBContext {
             try (ResultSet rs = ps.executeQuery()) {
                 account = getAccount(rs);
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return account;
     }

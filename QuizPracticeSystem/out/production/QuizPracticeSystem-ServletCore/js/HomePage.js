@@ -82,30 +82,6 @@
         ]
     });
 
-
-    // Testimonials carousel
-    $(".testimonial-carousel").owlCarousel({
-        autoplay: true,
-        smartSpeed: 1000,
-        center: true,
-        margin: 24,
-        dots: true,
-        loop: true,
-        nav: false,
-        responsive: {
-            0: {
-                items: 1
-            },
-            768: {
-                items: 2
-            },
-            992: {
-                items: 3
-            }
-        }
-    });
-
-
     // Blog carousel
     $(document).ready(function () {
         $(".blog-carousel").owlCarousel({
@@ -132,6 +108,29 @@
         });
     });
 
+    $(document).ready(function () {
+        $(".course-carousel").owlCarousel({
+            loop: false,
+            margin: 24,
+            nav: false,
+            dots: false,
+            autoplay: false,
+            smartSpeed: 600,
+            responsive: {
+                0: { items: 1 },
+                576: { items: 2 },
+                992: { items: 3 }
+            }
+        });
+
+        $('#scrollLeft').on('click', function () {
+            $(".course-carousel").trigger('prev.owl.carousel');
+        });
+
+        $('#scrollRight').on('click', function () {
+            $(".course-carousel").trigger('next.owl.carousel');
+        });
+    });
 
 })(jQuery);
 

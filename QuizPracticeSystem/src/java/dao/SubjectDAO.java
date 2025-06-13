@@ -23,7 +23,9 @@ public class SubjectDAO extends DBContext {
     public List<Subject> getAllSubjects() throws Exception {
         List<Subject> list = new ArrayList<>();
         String sql = "SELECT * FROM `swp391`.subject";
-        try (Connection connection = getConnection(); PreparedStatement pre = connection.prepareStatement(sql); ResultSet rs = pre.executeQuery()) {
+        try (Connection connection = getConnection();
+             PreparedStatement pre = connection.prepareStatement(sql);
+             ResultSet rs = pre.executeQuery()) {
             while (rs.next()) {
                 list.add(getEntity(rs));
             }
@@ -37,8 +39,7 @@ public class SubjectDAO extends DBContext {
     public Subject getById(String id) throws Exception {
         Subject s = Subject.builder().build();
         String sql = "SELECT * FROM `swp391`.subject s WHERE s.id = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement pre = connection.prepareStatement(sql)) {
+        try (Connection connection = getConnection(); PreparedStatement pre = connection.prepareStatement(sql)) {
             pre.setString(1, id);
             try (ResultSet rs = pre.executeQuery()) {
                 while (rs.next()) {
@@ -77,8 +78,6 @@ public class SubjectDAO extends DBContext {
             throw e;
         }
     }
-    
-    
 
     public List<Subject> getTopSubjectsFlag(int top) throws SQLException {
         List<Subject> list = new ArrayList<>();
@@ -105,11 +104,10 @@ public class SubjectDAO extends DBContext {
                 FROM `swp391`.setting_subject ss
                 JOIN `swp391`.setting s ON ss.setting_id = s.id
                 JOIN `swp391`.settingtype stt ON s.setting_type_id = stt.id
-                WHERE ss.subject_id = ? AND stt.name = 'Subject Category'
+                WHERE ss.subject_id = ? AND stt.name = 'Blog Category'
                 """;
 
-        try (Connection conn = getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, subjectId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -127,5 +125,25 @@ public class SubjectDAO extends DBContext {
                 .thumbnailURL(rs.getString("thumbnail_url"))
                 .featureFlag(rs.getBoolean("feature_flag"))
                 .build();
+    }
+
+    public List<String> getAllSubjectCategories() throws Exception {
+        List<String> result = new ArrayList<>();
+
+        String sql = """
+        SELECT DISTINCT s.value
+        FROM `swp391`.setting_subject ss
+        JOIN `swp391`.setting s ON ss.setting_id = s.id
+        JOIN `swp391`.settingtype stt ON s.setting_type_id = stt.id
+        WHERE stt.name = 'Blog Category'
+    """;
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                result.add(rs.getString("value"));
+            }
+        }
+
+        return result;
     }
 }

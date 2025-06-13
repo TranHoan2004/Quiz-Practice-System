@@ -11,24 +11,27 @@ import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import model.PersonalQuiz;
+
 public class PersonalQuizDAO extends DBContext {
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-//    kiểm tra xem bài quiz đã có ai làm chưa
+    //    kiểm tra xem bài quiz đã có ai làm chưa
     public boolean checkPersonalQuiz(String quizId) {
-    String sql = "SELECT 1 FROM personalquiz WHERE quiz_id = ?";
-    try (Connection conn = getConnection();
-         PreparedStatement pre = conn.prepareStatement(sql)) {
-        pre.setString(1, quizId);
-        try (ResultSet rs = pre.executeQuery()) {
-            return rs.next(); // Nếu có bản ghi thì trả về true
+        String sql = "SELECT 1 FROM `swp391`.personalquiz WHERE quiz_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pre = conn.prepareStatement(sql)) {
+            pre.setString(1, quizId);
+            try (ResultSet rs = pre.executeQuery()) {
+                return rs.next(); // Nếu có bản ghi thì trả về true
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            return false; // hoặc throw RuntimeException(e); nếu bạn muốn lan truyền lỗi
         }
-    } catch (Exception e) {
-        logger.log(Level.SEVERE, e.getMessage(), e);
-        return false; // hoặc throw RuntimeException(e); nếu bạn muốn lan truyền lỗi
     }
-}
+
     public List<PersonalQuiz> getAllByAccount(String id) throws Exception {
         List<PersonalQuiz> list;
         String sql = "SELECT * FROM `swp391`.personalquiz WHERE account_id = ?";

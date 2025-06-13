@@ -83,7 +83,7 @@
                             </td>
                             <td class="actions">
                                 <c:if test="${quiz.check}">
-                                    <button class="edit-btn">Edit</button>
+                                    <a href="overview?id=${quiz.id}" class="edit-btn">Edit</a>
                                 </c:if>
                                 <button class="delete-btn" onclick="showDeleteConfirm('${quiz.id}')">Delete</button>
                             </td>

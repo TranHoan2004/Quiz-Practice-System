@@ -1,5 +1,6 @@
 package dao;
 
+import dto.StasusPersonalCourseDTO;
 import model.PersonalCourse;
 import enumerate.PersonalCourseStatus;
 
@@ -57,6 +58,33 @@ public class PersonalCourseDAO extends DBContext {
                 WHERE p.course_id=?
                 """;
         return getData(id, list, sql);
+    }
+
+    public List<PersonalCourse> getTopCoursePurchases(int limit) throws Exception {
+        log.info("getTopCoursePurchases");
+        List<PersonalCourse> list = new ArrayList<>();
+        String sql = """
+                SELECT course_id, COUNT(*) AS total_purchases
+                FROM swp391.personalcourse
+                WHERE status = 'PAID'
+                GROUP BY course_id
+                ORDER BY total_purchases DESC
+                LIMIT ?;
+                """;
+        try (Connection connection = getConnection();
+             PreparedStatement pre = connection.prepareStatement(sql)) {
+            pre.setInt(1, limit);
+            try (ResultSet rs = pre.executeQuery()) {
+                while (rs.next()) {
+                    list.add(PersonalCourse.builder()
+                            .courseId(rs.getString("course_id"))
+                            .build());
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, e.getMessage());
+        }
+        return list;
     }
 
     public PersonalCourse getAllByAccountAndCourse(String accountId, String courseId) throws Exception {
@@ -172,6 +200,28 @@ public class PersonalCourseDAO extends DBContext {
             log.log(Level.SEVERE, e.getMessage());
             throw e;
         }
+        return list;
+    }
+    
+    public List<StasusPersonalCourseDTO> getStatus() throws Exception {
+        List<StasusPersonalCourseDTO> list = new ArrayList<>();
+
+        String sql = "SELECT DISTINCT status FROM personalcourse WHERE status IS NOT NULL";
+
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
+            try (ResultSet rs = pre.executeQuery()) {
+                while (rs.next()) {
+                    StasusPersonalCourseDTO dto = StasusPersonalCourseDTO.builder()
+                            .status(rs.getString("status"))
+                            .build();
+                    list.add(dto);
+                }
+            }
+        } catch (Exception e) {
+            log.log(Level.SEVERE, e.getMessage());
+            throw e;
+        }
+
         return list;
     }
 

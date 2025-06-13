@@ -8,9 +8,12 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import dao.*;
 import dto.BlogDTO;
+import dto.CourseDTO;
 import dto.SubjectDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -31,6 +34,10 @@ public class HomeController extends HttpServlet {
     private final SubjectDAO subjectDAO;
     private final TaglineDAO taglineDAO;
     private final SliderDAO sliderDAO;
+    private final CourseDAO courseDAO;
+    private final PersonalCourseDAO personalCourseDAO;
+    private final PricePackageDAO pricePackageDAO;
+    private final Logger logger;
 
     public HomeController() {
         this.blogDAO = new BlogDAO();
@@ -38,6 +45,10 @@ public class HomeController extends HttpServlet {
         this.subjectDAO = new SubjectDAO();
         this.taglineDAO = new TaglineDAO();
         this.sliderDAO = new SliderDAO();
+        this.courseDAO = new CourseDAO();
+        this.personalCourseDAO = new PersonalCourseDAO();
+        this.pricePackageDAO = new PricePackageDAO();
+        this.logger = Logger.getLogger(this.getClass().getName());
     }
 
     @Override
@@ -47,8 +58,10 @@ public class HomeController extends HttpServlet {
         List<BlogDTO> hottestBlogs = handleGetTop5HottestBlogs();
         List<BlogDTO> latestBlogs = handleGetLatestBlogs();
         List<SubjectDTO> featureSubject = getTopFeatureSubjectDTO();
+        List<CourseDTO> courses = getFeatureCourse(10);
 
         request.setAttribute("sliderActive", getTopSliderActive());
+        request.setAttribute("courses", courses);
         request.setAttribute("featureSubject", featureSubject);
         request.setAttribute("hottestBlogs", hottestBlogs);
         request.setAttribute("latestBlogs", latestBlogs);
@@ -60,20 +73,46 @@ public class HomeController extends HttpServlet {
 
     }
 
+    private List<CourseDTO> getFeatureCourse(int limit) {
+        List<CourseDTO> courses = new ArrayList<>();
+        try {
+            List<PersonalCourse> personalCourses = personalCourseDAO.getTopCoursePurchases(limit);
+            for (PersonalCourse personalCourse : personalCourses) {
+                Course course = courseDAO.getById(personalCourse.getCourseId());
+                PricePackage pricePackage = pricePackageDAO.getByCourse(course.getId().toString());
+                CourseDTO courseDTO = CourseDTO.builder()
+                        .price(pricePackage.getPrice())
+                        .salePrice(pricePackage.getSalePrice())
+                        .id(utils.Encoder.encode(course.getId().toString()))
+                        .image(course.getThumbnailUrl())
+                        .description(course.getDescription())
+                        .title(course.getTitle())
+                        .build();
+
+                courses.add(courseDTO);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return courses;
+    }
+
     private List<BlogDTO> handleGetTop5HottestBlogs() {
         try {
-            return getBlogDTO(blogDAO.getTop5HottestBlogs());
+            return getBlogDTO(blogDAO.getHottestBlogs(5));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
+        return null;
     }
 
     private List<BlogDTO> handleGetLatestBlogs() {
         try {
-            return getBlogDTO(blogDAO.getLatestBlogs(3));
+            return getBlogDTO(blogDAO.getLatestBlogs(5));
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
+        return null;
     }
 
     private List<BlogDTO> getBlogDTO(List<Blog> blogs) {
@@ -128,7 +167,8 @@ public class HomeController extends HttpServlet {
         try {
             return sliderDAO.getTopSliderActive(5);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
+        return null;
     }
 }

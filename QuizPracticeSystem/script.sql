@@ -65,7 +65,7 @@ INSERT INTO `account`
 VALUES ('b283bfb8-397a-11f0-84a1-088fc33f56c7', 'user@gmail.com', 'John Doe', 'SecureP@ss1', '1990-01-01', 0,
         '2023-01-01', 1, '0911111111', 'img/john.jpg',
         'b1b69765-397a-11f0-84a1-088fc33f56c7'),
-       ('b287bbd5-397a-11f0-84a1-088fc33f56c7', 'jane.smith@example.com', 'Jane Smith', 'StrongP@ss2', '1992-05-15', 1,
+       ('b287bbd5-397a-11f0-84a1-088fc33f56c7', 'hoana5k44nknd@gmail.com', 'Jane Smith', 'StrongP@ss2', '1992-05-15', 1,
         '2023-01-02', 1, '0922222222', 'img/jane.jpg',
         'b1b69765-397a-11f0-84a1-088fc33f56c7'),
        ('b28b4752-397a-11f0-84a1-088fc33f56c7', 'peter.jones@example.com', 'Peter Jones', 'MyP@ssw0rd3', '1988-11-30',
@@ -91,6 +91,7 @@ CREATE TABLE `blog`
     `created_date`  date         NOT NULL,
     `category`      varchar(36)  NOT NULL,
     `account_id`    varchar(36)  NOT NULL,
+    `flag_feature`  tinyint(1)            DEFAULT true,
     `views`         int          NOT NULL DEFAULT '0',
     PRIMARY KEY (`id`),
     KEY `FKBlog922018` (`account_id`),
@@ -100,25 +101,91 @@ CREATE TABLE `blog`
 );
 INSERT INTO `blog`
 VALUES ('b3d1a1b5-397a-11f0-84a1-088fc33f56c7', '2024-03-01',
-        'img/blog1_thumb.jpg', 'The Future of AI',
-        'A brief look into artificial intelligence trends.', 'Detailed content about AI future...', 1, '2024-02-20',
-        'b1af95b3-397a-11f0-84a1-088fc33f56c7', 'b283bfb8-397a-11f0-84a1-088fc33f56c7', 2500),
+        'img/blog1_thumb.jpg',
+        'The Future of Artificial Intelligence: Navigating a World Transformed by Smart Technologies',
+        'Artificial Intelligence is no longer a futuristic concept—it transforming how we live, work, and interact. Discover how AI will shape the next decade of global innovation.',
+        'Artificial Intelligence (AI) is rapidly evolving from a supporting technology to a driving force behind transformative change across every sector of society. In this article, we examine the major trends shaping the future of AI—from the rise of generative models and neural networks to the ethical concerns surrounding privacy, bias, and transparency.
+		We explore real-world use cases such as AI-assisted healthcare diagnoses, autonomous transportation, and intelligent automation in manufacturing. Experts predict that AI will not only augment human capabilities but also create new roles and industries that were previously unimaginable.
+		However, the rapid development of AI technologies also raises critical questions. How do we ensure that these systems are transparent and accountable? What regulatory frameworks are needed to prevent misuse? How will AI affect job markets and economic inequality?
+		By examining both the promises and the risks, this article aims to provide a balanced view of how AI is shaping a smarter, faster, and more connected future.',
+        1, '2024-02-20',
+        'b1af95b3-397a-11f0-84a1-088fc33f56c7', 'b283bfb8-397a-11f0-84a1-088fc33f56c7', 1, 2500),
        ('b3d1acf8-397a-11f0-84a1-088fc33f56c7', '2024-03-10',
-        'img/blog2_thumb.jpg', 'Mastering Python in 30 Days',
-        'A guide to quick Python learning.', 'Comprehensive guide for Python...', 1, '2024-03-05',
-        'b1b320dd-397a-11f0-84a1-088fc33f56c7', 'b287bbd5-397a-11f0-84a1-088fc33f56c7', 2600),
+        'img/blog2_thumb.jpg', 'Mastering Python in 30 Days: A Full Roadmap from Beginner to Confident Developer',
+        'Want to learn Python fast but effectively? Here’s a comprehensive 30-day plan with hands-on projects, learning milestones, and real-world applications.', 'Python is one of the most beginner-friendly and versatile programming languages today. Whether you`re an aspiring software developer, data analyst, or automation enthusiast, Python has something to offer.
+		This 30-day learning plan is crafted to take you from zero experience to writing structured, functional, and object-oriented Python code. The plan is divided into five 6-day modules covering core concepts:
+
+		Week 1: Data types, variables, loops, and conditionals
+
+		Week 2: Functions, error handling, and file I/O
+
+		Week 3: Object-oriented programming and modules
+
+		Week 4: Working with APIs, data manipulation (pandas), and basic plotting (matplotlib)
+
+		Final Days: Building a mini project (to-do app, budget tracker, or a web scraper)
+		Each week includes coding exercises, reading materials, and small projects to reinforce learning. By the end of the 30 days, you’ll have a GitHub portfolio and the confidence to tackle Python-based projects or dive deeper into fields like web development, data science, or machine learning.',
+        1, '2024-03-05',
+        'b1b320dd-397a-11f0-84a1-088fc33f56c7', 'b287bbd5-397a-11f0-84a1-088fc33f56c7', 0, 2600),
        ('b3d1b01b-397a-11f0-84a1-088fc33f56c7', '2024-03-15',
-        'img/blog3_thumb.jpg', 'Understanding Quantum Physics',
-        'Simplifying complex quantum concepts.', 'Content on quantum physics...', 1, '2024-03-12',
-        'b1af95b3-397a-11f0-84a1-088fc33f56c7', 'b28b4752-397a-11f0-84a1-088fc33f56c7', 4200),
+        'img/blog3_thumb.jpg', 'Quantum Physics Demystified: Making Sense of the Universe’s Most Puzzling Concepts',
+        'Quantum physics often seems abstract and intimidating. This guide breaks down its core ideas in a simple, relatable way—even for those with no science background.',
+        'Quantum physics challenges everything we think we know about how the universe works. It`s a realm where particles can be in multiple places at once, where events seem to occur without cause, and where observation can alter reality.
+		But despite its weirdness, quantum mechanics is the foundation of modern technology—powering everything from lasers and semiconductors to quantum computing and MRI machines.',
+        1, '2024-03-12',
+        'b1af95b3-397a-11f0-84a1-088fc33f56c7', 'b28b4752-397a-11f0-84a1-088fc33f56c7', 0, 4200),
        ('b3d1b1eb-397a-11f0-84a1-088fc33f56c7', '2024-03-20',
-        'img/blog4_thumb.jpg', 'Web Development Trends 2024',
-        'Key trends shaping the web development landscape.', 'Detailed analysis of web trends...', 1, '2024-03-18',
-        'b1b320dd-397a-11f0-84a1-088fc33f56c7', 'b2932a61-397a-11f0-84a1-088fc33f56c7', 2800),
+        'img/blog4_thumb.jpg', 'Web Development in 2024: Top Trends, Tools, and Techniques You Need to Know',
+        'The web is evolving fast. Here are the most important web development trends, frameworks, and best practices that developers must embrace this year.',
+        '2024 marks a turning point in the web development landscape, with modern users demanding faster, more secure, and more personalized experiences. Developers are rising to the challenge by adopting new frameworks, architectures, and AI-powered tools.',
+        1, '2024-03-18',
+        'b1b320dd-397a-11f0-84a1-088fc33f56c7', 'b2932a61-397a-11f0-84a1-088fc33f56c7', 0, 2800),
        ('b3d1b36e-397a-11f0-84a1-088fc33f56c7', '2024-03-25',
         'img/blog5_thumb.jpg', 'Effective Study Habits',
         'Tips and tricks for better learning.', 'Strategies for effective studying...', 1, '2024-03-22',
-        'b1af95b3-397a-11f0-84a1-088fc33f56c7', 'b2971e45-397a-11f0-84a1-088fc33f56c7', 5800);
+        'b1af95b3-397a-11f0-84a1-088fc33f56c7', 'b2971e45-397a-11f0-84a1-088fc33f56c7', 1, 5800);
+
+-- Table structure for table `blog`
+CREATE TABLE `blogmedia`
+(
+    `id`            varchar(36)             NOT NULL,
+    `blog_id`       varchar(36)             NOT NULL,
+    `media_type`    ENUM ('image', 'video') NOT NULL,
+    `file_path`     varchar(1000)           NOT NULL,
+    `caption`       TEXT DEFAULT NULL,
+    `display_order` INT  DEFAULT 0,
+    PRIMARY KEY (`id`),
+    KEY `FK_BlogMedia_Blog` (`blog_id`),
+    CONSTRAINT `FK_BlogMedia_Blog` FOREIGN KEY (`blog_id`) REFERENCES `blog` (`id`) ON DELETE CASCADE
+);
+
+SET @media1 = UUID();
+SET @media2 = UUID();
+SET @media3 = UUID();
+SET @media4 = UUID();
+SET @media5 = UUID();
+SET @media6 = UUID();
+SET @media7 = UUID();
+SET @media8 = UUID();
+SET @media9 = UUID();
+SET @media10 = UUID();
+INSERT INTO `blogmedia`
+VALUES (@media1, 'b3d1a1b5-397a-11f0-84a1-088fc33f56c7', 'image', 'img/ai_future_1.jpg', 'Ảnh mô tả AI', 1),
+       (@media2, 'b3d1a1b5-397a-11f0-84a1-088fc33f56c7', 'image', 'img/ai_future_2.jpg', 'Biểu đồ thống kê', 2),
+       (@media3, 'b3d1a1b5-397a-11f0-84a1-088fc33f56c7', 'video', 'img/ai_future_summary.mp4', 'Video tóm tắt AI', 3),
+       (@media4, 'b3d1acf8-397a-11f0-84a1-088fc33f56c7', 'video', 'img/python_intro.mp4', 'Giới thiệu Python', 1),
+       (@media5, 'b3d1b01b-397a-11f0-84a1-088fc33f56c7', 'image', 'img/quantum_model.jpg', 'Mô hình lượng tử', 1),
+       (@media6, 'b3d1b01b-397a-11f0-84a1-088fc33f56c7', 'image', 'img/quantum_result.jpg', 'Kết quả mô phỏng lượng tử',
+        2),
+       (@media7, 'b3d1acf8-397a-11f0-84a1-088fc33f56c7', 'image', 'img/python_diagram.jpg', 'Biểu đồ kiến trúc Python',
+        2),
+       (@media8, 'b3d1acf8-397a-11f0-84a1-088fc33f56c7', 'image', 'img/python_usecases.jpg',
+        'Ứng dụng thực tế của Python', 3),
+       (@media9, 'b3d1a1b5-397a-11f0-84a1-088fc33f56c7', 'image', 'img/ai_vision.jpg', 'Tầm nhìn AI trong tương lai',
+        4),
+       (@media10, 'b3d1b01b-397a-11f0-84a1-088fc33f56c7', 'video', 'img/quantum_explained.mp4',
+        'Video giải thích lượng tử', 3);
+
 
 -- Table structure for table `chat`
 CREATE TABLE `chat`
@@ -219,6 +286,12 @@ VALUES ('b19fb878-397a-11f0-84a1-088fc33f56c7', 'Mathematics', 'img/subject-thum
        ('b19fbdc2-397a-11f0-84a1-088fc33f56c7', 'Physics', 'img/subject-thumb-3.jpg', 1),
        ('b19fbe33-397a-11f0-84a1-088fc33f56c7', 'Chemistry', 'img/subject-thumb-4.jpg', 1),
        ('b19fbe8f-397a-11f0-84a1-088fc33f56c7', 'Biology', 'img/subject-thumb-5.jpg', 1);
+SET @subject_id1 = 'b19fb878-397a-11f0-84a1-088fc33f56c7'; -- Mathematics
+SET @subject_id2 = 'b19fbc5e-397a-11f0-84a1-088fc33f56c7'; -- Computer Science
+SET @subject_id3 = 'b19fbdc2-397a-11f0-84a1-088fc33f56c7'; -- Physics
+SET @subject_id4 = 'b19fbe33-397a-11f0-84a1-088fc33f56c7'; -- Chemistry
+SET @subject_id5 = 'b19fbe8f-397a-11f0-84a1-088fc33f56c7';
+-- Biology
 
 -- Table structure for table `topic`
 CREATE TABLE `topic`
@@ -406,36 +479,48 @@ CREATE TABLE `quiz`
     `number_of_question` int          NOT NULL DEFAULT 0,
     `description`        varchar(255) NOT NULL,
     `title`              varchar(255) NOT NULL,
-    `topic_id`           varchar(36)  NOT NULL,
+    `subject_id`         varchar(36)  NOT NULL,
     `type`               varchar(36)  NOT NULL,
     `level`              varchar(36)  NOT NULL,
     PRIMARY KEY (`id`),
     KEY `FKQuiz471131` (`level`),
     KEY `FKQuiz75766` (`type`),
-    KEY `FKQuiz767071` (`topic_id`),
+    KEY `FKQuiz767071` (`subject_id`),
     CONSTRAINT `FKQuiz471131` FOREIGN KEY (`level`) REFERENCES `quizlevel` (`id`),
     CONSTRAINT `FKQuiz75766` FOREIGN KEY (`type`) REFERENCES `quiztype` (`id`),
-    CONSTRAINT `FKQuiz767071` FOREIGN KEY (`topic_id`) REFERENCES `topic` (`id`)
+    CONSTRAINT `FKQuiz767071` FOREIGN KEY (`subject_id`) REFERENCES `subject` (`id`)
 );
-INSERT INTO `quiz`
-VALUES ('b2de3b10-397a-11f0-84a1-088fc33f56c7', 20, 1, 0.6, '2024-01-20', 8, 'Introduction to algebraic expressions.',
-        'Intro to Algebra Concepts', 'b240fae5-397a-11f0-84a1-088fc33f56c7', 'b1927452-397a-11f0-84a1-088fc33f56c7',
-        'b18d1436-397a-11f0-84a1-088fc33f56c7'),
-       ('b2e2cb06-397a-11f0-84a1-088fc33f56c7', 30, 0, 0.7, '2024-01-25', 10, 'A quiz on fundamental algebra concepts.',
-        'Algebra Basics Quiz', 'b240fae5-397a-11f0-84a1-088fc33f56c7', 'b1927165-397a-11f0-84a1-088fc33f56c7',
-        'b18d1436-397a-11f0-84a1-088fc33f56c7'),
-       ('b2e6bbf1-397a-11f0-84a1-088fc33f56c7', 35, 1, 0.65, '2024-02-10', 12,
-        'Questions on different types of linked lists.', 'Linked List Deep Dive',
-        'b24459d6-397a-11f0-84a1-088fc33f56c7', 'b1927519-397a-11f0-84a1-088fc33f56c7',
-        'b18d5f4d-397a-11f0-84a1-088fc33f56c7'),
-       ('b2ef4be4-397a-11f0-84a1-088fc33f56c7', 45, 0, 0.75, '2024-02-01', 15,
-        'Test your knowledge on linked lists and arrays.', 'Data Structures Quiz 1',
-        'b24459d6-397a-11f0-84a1-088fc33f56c7', 'b1927165-397a-11f0-84a1-088fc33f56c7',
-        'b18d5f4d-397a-11f0-84a1-088fc33f56c7'),
-       ('b2f36d41-397a-11f0-84a1-088fc33f56c7', 60, 1, 0.8, '2024-03-01', 20,
-        'Comprehensive quiz on Newton\'s Laws of Motion.', 'Newtonian Mechanics Quiz',
-        'b249f6b8-397a-11f0-84a1-088fc33f56c7', 'b1927165-397a-11f0-84a1-088fc33f56c7',
-        'b18d5f4d-397a-11f0-84a1-088fc33f56c7');
+-- Bản ghi hợp lệ với subject_id từ bảng `subject`
+INSERT INTO quiz (id, duration, status, pass_rate, updated_date, number_of_question, description, title, subject_id,
+                  type, level)
+VALUES
+-- Intro to Algebra Concepts
+('b2de3b10-397a-11f0-84a1-088fc33f56c7', 20, 1, 0.6, '2024-01-20', 8, 'Introduction to algebraic expressions.',
+ 'Intro to Algebra Concepts', 'b19fb878-397a-11f0-84a1-088fc33f56c7', 'b1927452-397a-11f0-84a1-088fc33f56c7',
+ 'b18d1436-397a-11f0-84a1-088fc33f56c7'),
+
+-- Algebra Basics Quiz
+('b2e2cb06-397a-11f0-84a1-088fc33f56c7', 30, 0, 0.7, '2024-01-25', 10, 'A quiz on fundamental algebra concepts.',
+ 'Algebra Basics Quiz', 'b19fb878-397a-11f0-84a1-088fc33f56c7', 'b1927165-397a-11f0-84a1-088fc33f56c7',
+ 'b18d1436-397a-11f0-84a1-088fc33f56c7'),
+
+-- Linked List Deep Dive
+('b2e6bbf1-397a-11f0-84a1-088fc33f56c7', 35, 1, 0.65, '2024-02-10', 12,
+ 'Questions on different types of linked lists.', 'Linked List Deep Dive',
+ 'b19fbc5e-397a-11f0-84a1-088fc33f56c7', 'b1927519-397a-11f0-84a1-088fc33f56c7',
+ 'b18d5f4d-397a-11f0-84a1-088fc33f56c7'),
+
+-- Data Structures Quiz 1
+('b2ef4be4-397a-11f0-84a1-088fc33f56c7', 45, 0, 0.75, '2024-02-01', 15,
+ 'Test your knowledge on linked lists and arrays.', 'Data Structures Quiz 1',
+ 'b19fbc5e-397a-11f0-84a1-088fc33f56c7', 'b1927165-397a-11f0-84a1-088fc33f56c7',
+ 'b18d5f4d-397a-11f0-84a1-088fc33f56c7'),
+
+-- Newtonian Mechanics Quiz
+('b2f36d41-397a-11f0-84a1-088fc33f56c7', 60, 1, 0.8, '2024-03-01', 20,
+ 'Comprehensive quiz on Newton\'s Laws of Motion.', 'Newtonian Mechanics Quiz',
+ 'b19fbdc2-397a-11f0-84a1-088fc33f56c7', 'b1927165-397a-11f0-84a1-088fc33f56c7',
+ 'b18d5f4d-397a-11f0-84a1-088fc33f56c7');
 
 -- Table structure for table `question`
 CREATE TABLE `question`
@@ -691,22 +776,23 @@ CREATE TABLE `slider`
     `backlink_url` varchar(500)          DEFAULT NULL,
     `status`       tinyint(1)   NOT NULL DEFAULT TRUE,
     `account_id`   varchar(36)  NOT NULL,
+    `note`         varchar(500)          DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `FKSlider777469` (`account_id`),
     CONSTRAINT `FKSlider777469` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
 );
 INSERT INTO `slider`
 VALUES ('b3dcacb3-397a-11f0-84a1-088fc33f56c7', 'Spring Promotion', 'img/slider1.jpg',
-        'http://example.com/promo1', 1, 'b283bfb8-397a-11f0-84a1-088fc33f56c7'),
+        'http://example.com/promo1', 1, 'b283bfb8-397a-11f0-84a1-088fc33f56c7', NULL),
        ('b3dcb132-397a-11f0-84a1-088fc33f56c7', 'New Courses Available', 'img/slider2.jpg',
-        'http://example.com/new_courses', 1, 'b287bbd5-397a-11f0-84a1-088fc33f56c7'),
+        'http://example.com/new_courses', 1, 'b287bbd5-397a-11f0-84a1-088fc33f56c7', NULL),
        ('b3dcb2ee-397a-11f0-84a1-088fc33f56c7', 'Big Sale Event', 'img/slider3.jpg',
-        'http://example.com/sale', 0, 'b28b4752-397a-11f0-84a1-088fc33f56c7'),
+        'http://example.com/sale', 0, 'b28b4752-397a-11f0-84a1-088fc33f56c7', NULL),
        ('b3dcb3cc-397a-11f0-84a1-088fc33f56c7', 'Emerging Web Development Trends in 2024', 'img/slider4.jpg',
-        'http://example.com/partners', 1, 'b2932a61-397a-11f0-84a1-088fc33f56c7'),
+        'http://example.com/partners', 1, 'b2932a61-397a-11f0-84a1-088fc33f56c7', NULL),
        ('b3dcb470-397a-11f0-84a1-088fc33f56c7', 'Effective Study Habits for Lifelong Learning', 'img/slider5.jpg',
         'http://example.com/testimonials', 1,
-        'b2971e45-397a-11f0-84a1-088fc33f56c7');
+        'b2971e45-397a-11f0-84a1-088fc33f56c7', NULL);
 
 -- Table structure for table `tagline`
 CREATE TABLE `tagline`
@@ -844,39 +930,39 @@ VALUES (@account_id1, 'john.doe@example.com', 'John Doe', 'Abc@12345', '1990-05-
 
 -- Records for blog table
 INSERT INTO `blog` (`id`, `updated_date`, `thumbnail_url`, `title`, `brief_info`, `content`, `status`, `created_date`,
-                    `category`, `account_id`, `views`)
+                    `category`, `account_id`, `flag_feature`, `views`)
 VALUES ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a31', '2023-03-01', 'img/thumb1.jpg', 'The Future of AI',
         'A brief overview of AI advancements.', 'Detailed content about AI and its future.', 1, '2023-02-20',
-        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', @account_id2, 1500),
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', @account_id2, 1, 1500),
        ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a32', '2023-03-05', 'img/thumb2.jpg', 'Healthy Eating Habits',
         'Tips for a healthier lifestyle.', 'Comprehensive guide to healthy eating.', 1, '2023-02-25',
-        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', @account_id1, 2300),
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', @account_id1, 0, 2300),
        ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', '2023-03-10', 'img/thumb3.jpg', 'Introduction to Python',
         'Get started with Python programming.', 'Basics of Python programming for beginners.', 1, '2023-03-01',
-        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', @account_id3, 800),
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', @account_id3, 1, 800),
        ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a34', '2023-03-15', 'img/thumb4.jpg',
         'Mindfulness for Beginners', 'Simple practices to achieve mindfulness.',
         'Daily exercises for mindfulness and stress reduction.', 1, '2023-03-05',
-        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', @account_id2, 1200),
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', @account_id2, 0, 1200),
        ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a35', '2023-03-20', 'img/thumb5.jpg', 'Web Development Trends',
         'Latest trends in web development.', 'Discussing modern web development technologies.', 1, '2023-03-10',
-        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', @account_id4, 1900),
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', @account_id4, 1, 1900),
        ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a36', '2023-03-25', 'img/thumb6.jpg', 'Benefits of Regular Exercise',
-       'Why staying active is crucial.', 'Impact of exercise on physical and mental health.', 1, '2023-03-15',
-       'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', @account_id3, 2500),
+        'Why staying active is crucial.', 'Impact of exercise on physical and mental health.', 1, '2023-03-15',
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', @account_id3, 0, 2500),
        ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a37', '2023-03-30', 'img/thumb7.jpg', 'Understanding Blockchain',
-       'A simple explanation of blockchain technology.', 'How blockchain works and its applications.', 1, '2023-03-20',
-       'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', @account_id5, 1100),
+        'A simple explanation of blockchain technology.', 'How blockchain works and its applications.', 1, '2023-03-20',
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', @account_id5, 0, 1100),
        ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a38', '2023-04-01', 'img/thumb8.jpg',
         'Travel Tips for Solo Explorers', 'Essential advice for traveling alone.',
         'Safety and enjoyment tips for solo travelers.', 1, '2023-03-25', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25',
-        @account_id4, 1700),
+        @account_id4, 1, 1700),
        ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a39', '2023-04-05', 'img/thumb9.jpg',
         'Cybersecurity Best Practices', 'Protecting your digital life.', 'Guidelines for maintaining online security.',
-        1, '2023-03-30', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', @account_id8, 2100),
+        1, '2023-03-30', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', @account_id8, 0, 2100),
        ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a30', '2023-04-10', 'img/thumb10.jpg', 'Home Gardening Guide',
         'Start your own vegetable garden.', 'Detailed steps for successful home gardening.', 1, '2023-04-01',
-        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', @account_id5, 950);
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', @account_id5, 0, 950);
 
 -- Records for chat table
 INSERT INTO `chat` (`id`, `first_person`, `second_person`)
@@ -966,7 +1052,7 @@ VALUES ('f0eebc99-9c0b-4ef8-bb6d-6bb9bd380a61', 'Tech Solutions Inc.', '{
          "website": "https://eventplanners.com",
          "instagram": "https://instagram.com/eventplanners"
        }', 'plan@eventplanners.com', '0990001112', '707 Celebration Lane, Event Village');
- 
+
 -- Records for subject table
 
 SET @subject_id6 = UUID();
@@ -975,7 +1061,7 @@ SET @subject_id8 = UUID();
 SET @subject_id9 = UUID();
 SET @subject_id10 = UUID();
 INSERT INTO `subject` (`id`, `name`, `thumbnail_url`, `feature_flag`)
-VALUES(@subject_id6, 'History', 'img/history_thumb.jpg', 0),
+VALUES (@subject_id6, 'History', 'img/history_thumb.jpg', 0),
        (@subject_id7, 'Literature', 'img/literature_thumb.jpg', 0),
        (@subject_id8, 'Economics', 'img/economics_thumb.jpg', 0),
        (@subject_id9, 'Art & Design', 'img/art_thumb.jpg', 1),
@@ -1197,38 +1283,51 @@ SET @quiz_id7 = UUID();
 SET @quiz_id8 = UUID();
 SET @quiz_id9 = UUID();
 SET @quiz_id10 = UUID();
+
 INSERT INTO `quiz` (`id`, `duration`, `status`, `pass_rate`, `updated_date`, `number_of_question`, `description`,
-                    `title`, `topic_id`, `type`, `level`)
-VALUES (@quiz_id1, 30, 1, 0.7, '2023-05-15', 10, 'Basic algebra concepts quiz.',
-        'Algebra Fundamentals Quiz', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a81', @quiztype_id1,
-        @quizlevel_id1),
-       (@quiz_id2, 45, 1, 0.75, '2023-05-16', 15,
-        'Test your knowledge on data structures.', 'Data Structures Mastery', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a86',
-        @quiztype_id1, @quizlevel_id2),
-       (@quiz_id3, 60, 1, 0.8, '2023-05-17', 20,
-        'Comprehensive quiz on classical mechanics.', 'Mechanics Challenge', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a83',
-        @quiztype_id1, @quizlevel_id3),
-       (@quiz_id4, 20, 1, 0.6, '2023-05-18', 8, 'Quick check on organic chemistry basics.',
-        'Organic Chemistry Quick Test', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a85', @quiztype_id1,
-        @quizlevel_id4),
-       (@quiz_id5, 50, 1, 0.7, '2023-05-19', 18, 'Calculus I concepts assessment.',
-        'Calculus I Assessment', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a82', @quiztype_id2,
-        @quizlevel_id5),
-       (@quiz_id6, 35, 1, 0.65, '2023-05-20', 12, 'Genetics principles quiz.',
-        'Genetics Essentials', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a87', @quiztype_id10,
-        @quizlevel_id6),
-       (@quiz_id7, 25, 1, 0.7, '2023-05-21', 10, 'Quiz on microeconomic concepts.',
-        'Microeconomics Fundamentals', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a80', @quiztype_id2,
-        @quizlevel_id7),
-       (@quiz_id8, 75, 1, 0.85, '2023-05-22', 25,
-        'Extensive quiz on ancient civilizations.', 'Ancient History Exam', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a88',
-        @quiztype_id5, @quizlevel_id8),
-       (@quiz_id9, 40, 1, 0.7, '2023-05-23', 15, 'Thermodynamics principles quiz.',
-        'Thermo Principles', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a84', @quiztype_id3,
-        @quizlevel_id9),
-       (@quiz_id10, 30, 1, 0.6, '2023-05-24', 10, 'Poetry analysis and understanding quiz.',
-        'Poetry Comprehension', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a89', @quiztype_id4,
-        @quizlevel_id10);
+                    `title`, `subject_id`, `type`, `level`)
+VALUES
+-- Algebra → Mathematics
+(@quiz_id1, 30, 1, 0.7, '2023-05-15', 10, 'Basic algebra concepts quiz.',
+ 'Algebra Fundamentals Quiz', 'b19fb878-397a-11f0-84a1-088fc33f56c7', @quiztype_id1, @quizlevel_id1),
+
+-- Data Structures → Computer Science
+(@quiz_id2, 45, 1, 0.75, '2023-05-16', 15, 'Test your knowledge on data structures.',
+ 'Data Structures Mastery', 'b19fbc5e-397a-11f0-84a1-088fc33f56c7', @quiztype_id1, @quizlevel_id2),
+
+-- Mechanics → Physics
+(@quiz_id3, 60, 1, 0.8, '2023-05-17', 20, 'Comprehensive quiz on classical mechanics.',
+ 'Mechanics Challenge', 'b19fbdc2-397a-11f0-84a1-088fc33f56c7', @quiztype_id1, @quizlevel_id3),
+
+-- Organic Chemistry → Chemistry
+(@quiz_id4, 20, 1, 0.6, '2023-05-18', 8, 'Quick check on organic chemistry basics.',
+ 'Organic Chemistry Quick Test', 'b19fbe33-397a-11f0-84a1-088fc33f56c7', @quiztype_id1, @quizlevel_id4),
+
+-- Calculus → Mathematics
+(@quiz_id5, 50, 1, 0.7, '2023-05-19', 18, 'Calculus I concepts assessment.',
+ 'Calculus I Assessment', 'b19fb878-397a-11f0-84a1-088fc33f56c7', @quiztype_id2, @quizlevel_id5),
+
+-- Genetics → Biology
+(@quiz_id6, 35, 1, 0.65, '2023-05-20', 12, 'Genetics principles quiz.',
+ 'Genetics Essentials', 'b19fbe8f-397a-11f0-84a1-088fc33f56c7', @quiztype_id10, @quizlevel_id6),
+
+-- Microeconomics → Không có trong bảng subject hiện tại (cần thêm subject mới hoặc ánh xạ tạm)
+(@quiz_id7, 25, 1, 0.7, '2023-05-21', 10, 'Quiz on microeconomic concepts.',
+ 'Microeconomics Fundamentals', 'b19fb878-397a-11f0-84a1-088fc33f56c7', @quiztype_id2,
+ @quizlevel_id7), -- ánh xạ tạm sang Math
+
+-- Ancient History → Không có subject tương ứng → ánh xạ sang Chemistry (tạm) hoặc thêm mới
+(@quiz_id8, 75, 1, 0.85, '2023-05-22', 25,
+ 'Extensive quiz on ancient civilizations.', 'Ancient History Exam', 'b19fbe33-397a-11f0-84a1-088fc33f56c7',
+ @quiztype_id5, @quizlevel_id8),
+
+-- Thermodynamics → Physics
+(@quiz_id9, 40, 1, 0.7, '2023-05-23', 15, 'Thermodynamics principles quiz.',
+ 'Thermo Principles', 'b19fbdc2-397a-11f0-84a1-088fc33f56c7', @quiztype_id3, @quizlevel_id9),
+
+-- Poetry → Không có trong bảng subject → ánh xạ tạm sang Literature (nếu có), hoặc Biology tạm
+(@quiz_id10, 30, 1, 0.6, '2023-05-24', 10, 'Poetry analysis and understanding quiz.',
+ 'Poetry Comprehension', 'b19fbe8f-397a-11f0-84a1-088fc33f56c7', @quiztype_id4, @quizlevel_id10);
 
 -- Records for question table
 SET @question_id1 = UUID();
@@ -1478,27 +1577,27 @@ SET @slider_id7 = UUID();
 SET @slider_id8 = UUID();
 SET @slider_id9 = UUID();
 SET @slider_id10 = UUID();
-INSERT INTO `slider` (`id`, `title`, `image_url`, `backlink_url`, `status`, `account_id`)
+INSERT INTO `slider` (`id`, `title`, `image_url`, `backlink_url`, `status`, `account_id`, `note`)
 VALUES (@slider_id1, 'Discover Exclusive Deals You Can’t Miss This Week!', 'img/slider1.jpg',
-		'http://example.com/promo1', 1, @account_id1),
+        'http://example.com/promo1', 1, @account_id1, NULL),
        (@slider_id2, 'Step Into the Future with Our Latest 2025 Collection', 'img/slider2.jpg',
-       'http://example.com/promo2', 1, @account_id2),
+        'http://example.com/promo2', 1, @account_id2, NULL),
        (@slider_id3, 'Massive Discounts Just for You – Limited Time Only!', 'img/slider3.jpg',
-       'http://example.com/promo3', 1, @account_id3),
+        'http://example.com/promo3', 1, @account_id3, NULL),
        (@slider_id4, 'Unmatched Quality Meets Unbeatable Prices – Shop Now', 'img/slider4.jpg',
-       'http://example.com/promo4', 1, @account_id2),
+        'http://example.com/promo4', 1, @account_id2, NULL),
        (@slider_id5, 'Top-Selling Products of the Week – Grab Them Fast!', 'img/slider5.jpg',
-       'http://example.com/promo5', 1, @account_id1),
+        'http://example.com/promo5', 1, @account_id1, NULL),
        (@slider_id6, 'Welcome Summer with Fresh Styles and Hot Promotions', 'img/slider6.jpg',
-       'http://example.com/promo6', 1, @account_id4),
+        'http://example.com/promo6', 1, @account_id4, NULL),
        (@slider_id7, 'Enjoy Seamless Shopping with Big Savings Every Day', 'img/slider7.jpg',
-       'http://example.com/promo7', 1, @account_id5),
+        'http://example.com/promo7', 1, @account_id5, NULL),
        (@slider_id8, 'New Arrivals Are Here – Limited Stock Available!', 'img/slider8.jpg',
-       'http://example.com/promo8', 1, @account_id2),
+        'http://example.com/promo8', 1, @account_id2, NULL),
        (@slider_id9, 'Save More with Our Value Combos and Special Offers', 'img/slider9.jpg',
-       'http://example.com/promo9', 1, @account_id4),
+        'http://example.com/promo9', 1, @account_id4, NULL),
        (@slider_id10, 'Upgrade Your Lifestyle – Discover What’s New Today', 'img/slider10.jpg',
-       'http://example.com/promo10', 1, @account_id7);
+        'http://example.com/promo10', 1, @account_id7, NULL);
 
 -- Records for tagline table
 SET @tagline_id1 = UUID();
@@ -1558,3 +1657,132 @@ VALUES (@userlog_id1, '2023-01-01', @account_id1),
        (@userlog_id8, '2023-01-08', @account_id8),
        (@userlog_id9, '2023-01-09', @account_id9),
        (@userlog_id10, '2023-01-10', @account_id10);
+
+ALTER TABLE `question`
+    MODIFY `quiz_id` varchar(36) NULL,
+    MODIFY `topic_id` varchar(36) NULL;
+
+CREATE TABLE `quiz_question_source_config`
+(
+    `id`                  VARCHAR(36) NOT NULL,
+    `quiz_id`             VARCHAR(36) NOT NULL,
+    `source_type`         VARCHAR(10) NOT NULL, -- Sẽ chứa các giá trị như 'topic', 'group', 'domain'
+    `source_id`           VARCHAR(36) NOT NULL, -- ID của topic, hoặc ID của setting (cho group/domain)
+    `number_of_questions` INT         NOT NULL,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `FK_QuizQuestionSourceConfig_Quiz` FOREIGN KEY (`quiz_id`) REFERENCES `quiz` (`id`)
+    -- Bạn có thể cân nhắc thêm một UNIQUE constraint nếu cần, ví dụ:
+    -- UNIQUE KEY `UQ_QuizSourceSelection` (`quiz_id`, `source_type`, `source_id`)
+);
+
+-- Step 1: Define UUIDs for the new questions
+SET @nq1 = UUID();
+SET @nq2 = UUID();
+SET @nq3 = UUID();
+SET @nq4 = UUID();
+SET @nq5 = UUID();
+SET @nq6 = UUID();
+SET @nq7 = UUID();
+SET @nq8 = UUID();
+SET @nq9 = UUID();
+SET @nq10 = UUID();
+SET @nq11 = UUID();
+SET @nq12 = UUID();
+SET @nq13 = UUID();
+SET @nq14 = UUID();
+SET @nq15 = UUID();
+SET @nq16 = UUID();
+SET @nq17 = UUID();
+SET @nq18 = UUID();
+SET @nq19 = UUID();
+SET @nq20 = UUID();
+
+-- Assuming @setting_id1, @setting_id2, @setting_id3, @setting_id4 have been previously set
+-- and used in your INSERT INTO setting statement.
+-- If running in a new session, you might need to re-declare them with the actual UUIDs
+-- that were inserted into the `setting` table. For example:
+-- SET @setting_id1 = 'your_actual_uuid_for_business_setting';
+-- SET @setting_id2 = 'your_actual_uuid_for_process_setting';
+-- SET @setting_id3 = 'your_actual_uuid_for_initialing_setting';
+-- SET @setting_id4 = 'your_actual_uuid_for_planning_setting';
+
+-- For topic_id, using some existing ones from your original script.sql or NULL
+SET @topic_algebra = 'b240fae5-397a-11f0-84a1-088fc33f56c7';
+SET @topic_data_structures = 'b24459d6-397a-11f0-84a1-088fc33f56c7';
+SET @topic_mechanics = 'b249f6b8-397a-11f0-84a1-088fc33f56c7';
+
+-- Step 2: Insert new data into the `question` table (20 records)
+INSERT INTO `question` (`id`, `content`, `topic_id`, `quiz_id`, `level`)
+VALUES (@nq1, 'What is a variable in programming?', @topic_data_structures, NULL, 'Beginner'),
+       (@nq2, 'Explain the difference between Stack and Queue.', @topic_data_structures, NULL, 'Intermediate'),
+       (@nq3, 'What is Big O notation?', @topic_data_structures, NULL, 'Intermediate'),
+       (@nq4, 'Define kinetic energy.', @topic_mechanics, NULL, 'Beginner'),
+       (@nq5, 'What is Newton\'s second law of motion?', @topic_mechanics, NULL, 'Intermediate'),
+       (@nq6, 'Explain the concept of polymorphism in OOP.', NULL, NULL, 'Advanced'),
+       (@nq7, 'What is a foreign key in a database?', NULL, NULL, 'Beginner'),
+       (@nq8, 'Describe the process of normalization in databases.', NULL, NULL, 'Intermediate'),
+       (@nq9, 'What are the main components of an atom?', @topic_mechanics, NULL, 'Beginner'),
+       (@nq10, 'Explain the principle of a lever.', @topic_mechanics, NULL, 'Intermediate'),
+       (@nq11, 'What is 7 multiplied by 8?', @topic_algebra, NULL, 'Beginner'),
+       (@nq12, 'Solve for y: 2y + 10 = 24', @topic_algebra, NULL, 'Beginner'),
+       (@nq13, 'What is a class in Object-Oriented Programming?', NULL, NULL, 'Beginner'),
+       (@nq14, 'Describe inheritance with an example.', NULL, NULL, 'Intermediate'),
+       (@nq15, 'What is recursion?', @topic_data_structures, NULL, 'Intermediate'),
+       (@nq16, 'What is the purpose of an ERD diagram?', NULL, NULL, 'Beginner'),
+       (@nq17, 'Explain the concept of "scope" in JavaScript.', NULL, NULL, 'Intermediate'),
+       (@nq18, 'What is a CPU cache?', NULL, NULL, 'Advanced'),
+       (@nq19, 'Define "potential energy".', @topic_mechanics, NULL, 'Beginner'),
+       (@nq20, 'What is a binary search tree?', @topic_data_structures, NULL, 'Intermediate');
+
+-- Step 3: Insert data into `setting_question`
+-- This links the newly added questions to your 'Group' and 'Domain' settings.
+-- @setting_id1 (Value: 'Business', Type: 'Group')
+-- @setting_id2 (Value: 'Process', Type: 'Group')
+-- @setting_id3 (Value: 'Initialing', Type: 'Domain')
+-- @setting_id4 (Value: 'Planning', Type: 'Domain')
+
+-- Lấy lại ID cho 'Business' (Group)
+-- Giả sử các biến @nq1 đến @nq20 đã được SET giá trị UUID hợp lệ:
+-- SET @nq1 = UUID();
+-- SET @nq2 = UUID();
+-- ... (và các @nqX khác)
+-- SET @nq20 = UUID();
+
+INSERT INTO `setting_question` (`setting_id`, `question_id`)
+VALUES
+-- Gán câu hỏi cho Group 'Business' (@setting_id1)
+(@setting_id1, @nq1),  -- What is a variable in programming?
+(@setting_id1, @nq6),  -- Explain the concept of polymorphism in OOP.
+(@setting_id1, @nq11), -- What is 7 multiplied by 8?
+(@setting_id1, @nq16), -- What is the purpose of an ERD diagram?
+
+-- Gán câu hỏi cho Group 'Process' (@setting_id2)
+(@setting_id2, @nq2),  -- Explain the difference between Stack and Queue.
+(@setting_id2, @nq7),  -- What is a foreign key in a database?
+(@setting_id2, @nq12), -- Solve for y: 2y + 10 = 24
+(@setting_id2, @nq17), -- Explain the concept of "scope" in JavaScript.
+
+-- Gán câu hỏi cho Domain 'Initialing' (@setting_id3)
+(@setting_id3, @nq3),  -- What is Big O notation?
+(@setting_id3, @nq8),  -- Describe the process of normalization in databases.
+(@setting_id3, @nq13), -- What is a class in Object-Oriented Programming?
+(@setting_id3, @nq18), -- What is a CPU cache?
+
+-- Gán câu hỏi cho Domain 'Planning' (@setting_id4)
+(@setting_id4, @nq4),  -- Define kinetic energy.
+(@setting_id4, @nq9),  -- What are the main components of an atom?
+(@setting_id4, @nq14), -- Describe inheritance with an example.
+(@setting_id4, @nq19), -- Define "potential energy".
+
+-- Gán các câu hỏi vào nhiều setting khác nhau để tăng tính đa dạng
+(@setting_id1, @nq5),  -- What is Newton's second law of motion? (Business Group)
+(@setting_id3, @nq5),  -- What is Newton's second law of motion? (Initialing Domain)
+
+(@setting_id2, @nq10), -- Explain the principle of a lever. (Process Group)
+(@setting_id4, @nq10), -- Explain the principle of a lever. (Planning Domain)
+
+(@setting_id1, @nq15), -- What is recursion? (Business Group)
+(@setting_id4, @nq15), -- What is recursion? (Planning Domain)
+
+(@setting_id2, @nq20), -- What is a binary search tree? (Process Group)
+(@setting_id3, @nq20); -- What is a binary search tree? (Initialing Domain)

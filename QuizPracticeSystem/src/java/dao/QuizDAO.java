@@ -53,32 +53,15 @@ public class QuizDAO extends DBContext {
         }
         return quiz;
     }
-    
+
     public int getTotalQuizDto(String subjectId, String type, String title) throws Exception {
         int total = 0;
 
         StringBuilder sql = new StringBuilder(
-                "SELECT q.id "
-                + "FROM quiz q "
-                + "JOIN topic t ON q.topic_id = t.id "
-                + "JOIN subject s ON t.subject_id = s.id "
-                + "WHERE 1=1 "
+                "SELECT q.id FROM quiz q WHERE 1=1 "
         );
 
-        List<Object> params = new ArrayList<>();
-
-        if (subjectId != null && !subjectId.isEmpty()) {
-            sql.append("AND s.id = ? ");
-            params.add(subjectId);
-        }
-        if (type != null && !type.isEmpty()) {
-            sql.append("AND q.type = ? ");
-            params.add(type);
-        }
-        if (title != null && !title.isEmpty()) {
-            sql.append("AND q.title LIKE ? ");
-            params.add("%" + title + "%");
-        }
+        List<Object> params = createObject(subjectId, type, title, sql);
 
         try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {
@@ -98,95 +81,77 @@ public class QuizDAO extends DBContext {
         return total;
     }
 
-    
-//    Lấy danh sách các quiz theo từng trang (phân trang)
+    // Lấy danh sách các quiz theo từng trang (phân trang)
     public List<QuizDTO> pagingQuiz(int index, String subjectId, String type, String title) throws Exception {
-    List<QuizDTO> quizDtoList = new ArrayList<>();
+        List<QuizDTO> quizDtoList = new ArrayList<>();
 
-    StringBuilder sql = new StringBuilder(
-        "SELECT " +
-        "q.id, q.duration, q.status, q.pass_rate, q.updated_date, " +
-        "q.number_of_question, q.description, q.title, q.topic_id, " +
-        "q.type, q.level, s.id AS subject_id " +
-        "FROM quiz q " +
-        "JOIN topic t ON q.topic_id = t.id " +
-        "JOIN subject s ON t.subject_id = s.id " +
-        "WHERE 1=1 "
-    );
+        StringBuilder sql = new StringBuilder(
+                "SELECT " +
+                        "q.id, q.duration, q.status, q.pass_rate, q.updated_date, " +
+                        "q.number_of_question, q.description, q.title, q.subject_id, " +
+                        "q.type, q.level " +
+                        "FROM quiz q " +
+                        "WHERE 1=1 "
+        );
 
-    List<Object> params = new ArrayList<>();
+        List<Object> params = createObject(subjectId, type, title, sql);
 
-    if (subjectId != null && !subjectId.isEmpty()) {
-        sql.append("AND s.id = ? ");
-        params.add(subjectId);
-    }
-    if (type != null && !type.isEmpty()) {
-        sql.append("AND q.type = ? ");
-        params.add(type);
-    }
-    if (title != null && !title.isEmpty()) {
-        sql.append("AND q.title LIKE ? ");
-        params.add("%" + title + "%");
-    }
+        sql.append("ORDER BY q.id LIMIT 5 OFFSET ? ");
+        params.add((index - 1) * 5);
 
-    sql.append("ORDER BY q.id LIMIT 2 OFFSET ? ");
-    params.add((index - 1) * 2);
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql.toString())) {
 
-    try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql.toString())) {
-
-        // Gán giá trị cho các tham số
-        for (int i = 0; i < params.size(); i++) {
-            pre.setObject(i + 1, params.get(i));
-        }
-        PersonalQuizDAO personalQuizDAO = new PersonalQuizDAO();
-        QuizLevelDAO quizLevelDAO = new QuizLevelDAO();
-        try (ResultSet rs = pre.executeQuery()) {
-            while (rs.next()) {
-                QuizDTO dto = new QuizDTO();
-                dto.setId(UUID.fromString(rs.getString("id")));
-                dto.setDuration(rs.getInt("duration"));
-                boolean check = personalQuizDAO.checkPersonalQuiz(rs.getString("id"));
-                dto.setCheck(check);
-                dto.setPassRate(rs.getFloat("pass_rate"));
-                dto.setUpdatedDate(rs.getObject("updated_date", LocalDate.class));
-                dto.setNumberOfQuestions(rs.getInt("number_of_question"));
-                dto.setDescription(rs.getString("description"));
-                dto.setTitle(rs.getString("title"));
-                dto.setLessonId(rs.getString("topic_id"));             
-                dto.setType(rs.getString("type"));
-                String levelName = quizLevelDAO.getNameByLevelId(rs.getString("level"));
-                dto.setLevel(levelName);
-                dto.setSubjectId(rs.getString("subject_id")); // có thể bạn nên sửa thành `subjectId` đúng chính tả
-
-                quizDtoList.add(dto);
+            for (int i = 0; i < params.size(); i++) {
+                pre.setObject(i + 1, params.get(i));
             }
+
+            PersonalQuizDAO personalQuizDAO = new PersonalQuizDAO();
+            QuizLevelDAO quizLevelDAO = new QuizLevelDAO();
+
+            try (ResultSet rs = pre.executeQuery()) {
+                while (rs.next()) {
+                    QuizDTO dto = new QuizDTO();
+                    dto.setId(UUID.fromString(rs.getString("id")));
+                    dto.setDuration(rs.getInt("duration"));
+                    dto.setCheck(personalQuizDAO.checkPersonalQuiz(rs.getString("id")));
+                    dto.setPassRate(rs.getFloat("pass_rate"));
+                    dto.setUpdatedDate(rs.getObject("updated_date", LocalDate.class));
+                    dto.setNumberOfQuestions(rs.getInt("number_of_question"));
+                    dto.setDescription(rs.getString("description"));
+                    dto.setTitle(rs.getString("title"));
+                    dto.setSubjectId(rs.getString("subject_id")); // subject_id now comes directly from quiz
+                    dto.setType(rs.getString("type"));
+                    dto.setLevel(quizLevelDAO.getNameByLevelId(rs.getString("level")));
+
+                    quizDtoList.add(dto);
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            throw e;
         }
-    } catch (Exception e) {
-        logger.log(Level.SEVERE, e.getMessage(), e);
-        throw e;
+
+        return quizDtoList;
     }
 
-    return quizDtoList;
-}
-    
     public void deleteQuiz(String quizId) throws Exception {
-    String sql = "DELETE FROM quiz WHERE id = ?";
+        String sql = "DELETE FROM `swp391`.quiz WHERE id = ?";
 
-    try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
-        pre.setString(1, quizId);
-        pre.executeUpdate();
-    } catch (Exception e) {
-        logger.log(Level.SEVERE, "Error deleting quiz: " + e.getMessage(), e);
-        throw e;
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
+            pre.setString(1, quizId);
+            pre.executeUpdate();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error deleting quiz: " + e.getMessage(), e);
+            throw e;
+        }
     }
-}
 
-public void insertNewQuiz(Quiz quiz) throws Exception {
-        String sql = "INSERT INTO quiz (id, duration, status, pass_rate, updated_date, number_of_question, description, title, topic_id, type, level) "
-                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public void insertNewQuiz(Quiz quiz) throws Exception {
+        String sql = "INSERT INTO `swp391`.quiz (id, duration, status, pass_rate, updated_date, number_of_question, description, title, subject_id, type, level) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql.toString())) {
-
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, quiz.getId().toString());
             ps.setInt(2, quiz.getDuration());
             ps.setBoolean(3, quiz.isStatus());
@@ -195,17 +160,17 @@ public void insertNewQuiz(Quiz quiz) throws Exception {
             ps.setInt(6, quiz.getNumberOfQuestions());
             ps.setString(7, quiz.getDescription());
             ps.setString(8, quiz.getTitle());
-            ps.setString(9, quiz.getTopicId()); // cần có setTopicId trong Quiz
+            ps.setString(9, quiz.getSubjectId()); // cần có setTopicId trong Quiz
             ps.setString(10, quiz.getType());
             ps.setString(11, quiz.getLevel());
 
             ps.executeUpdate();
-
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage());
             throw e;
         }
     }
+
     private Quiz getQuiz(ResultSet rs) throws Exception {
         return Quiz.builder()
                 .id(UUID.fromString(rs.getString("id")))
@@ -215,9 +180,75 @@ public void insertNewQuiz(Quiz quiz) throws Exception {
                 .numberOfQuestions(rs.getInt("number_of_question"))
                 .description(rs.getString("description"))
                 .title(rs.getString("title"))
-                .topicId(rs.getString("topic_id"))
+                .subjectId(rs.getString("subject_id"))
                 .type(rs.getString("type"))
                 .level(rs.getString("level"))
                 .build();
     }
+
+    private List<Object> createObject(String subjectId, String type, String title, StringBuilder sql) {
+        List<Object> params = new ArrayList<>();
+
+        if (subjectId != null && !subjectId.isEmpty()) {
+            sql.append("AND q.subject_id = ? ");
+            params.add(subjectId);
+        }
+        if (type != null && !type.isEmpty()) {
+            sql.append("AND q.type = ? ");
+            params.add(type);
+        }
+        if (title != null && !title.isEmpty()) {
+            sql.append("AND q.title LIKE ? ");
+            params.add("%" + title + "%");
+        }
+        return params;
+    }
+    
+     public void updateBasicInfoOfQuiz(Quiz quiz) throws Exception {
+    String sql = "UPDATE quiz SET " +
+                 "title = ?, " +
+                 "subject_id = ?, " +
+                 "level = ?, " +
+                 "duration = ?, " +
+                 "pass_rate = ?, " +
+                 "type = ?, " +
+                 "description = ?, " +
+                 "updated_date = ? " +
+                 "WHERE id = ?";
+
+    try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
+        pre.setString(1, quiz.getTitle());
+        pre.setString(2, quiz.getSubjectId());
+        pre.setString(3, quiz.getLevel());
+        pre.setInt(4, quiz.getDuration());
+        pre.setFloat(5, quiz.getPassRate());
+        pre.setString(6, quiz.getType());
+        pre.setString(7, quiz.getDescription());
+        pre.setDate(8, java.sql.Date.valueOf(quiz.getUpdatedDate()));
+        pre.setString(9, quiz.getId().toString());
+
+        pre.executeUpdate();
+    } catch (Exception e) {
+        logger.log(Level.SEVERE, e.getMessage(), e);
+        throw e;
+    }
+}
+
+
+
+    public void updateNumberOfQuestion(Quiz quiz) throws Exception {
+        String sql = "UPDATE quiz SET number_of_question = ?, updated_date = ? WHERE id = ?";
+
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
+            pre.setInt(1, quiz.getNumberOfQuestions());
+            pre.setDate(2, java.sql.Date.valueOf(quiz.getUpdatedDate())); // cập nhật ngày sửa đổi
+            pre.setString(3, quiz.getId().toString());
+
+            pre.executeUpdate();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            throw e;
+        }
+    }
+
 }

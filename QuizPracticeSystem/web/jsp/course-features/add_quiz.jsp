@@ -113,26 +113,17 @@
         <form action="addquiz" method="post">
             <!-- SUBJECT SELECTION -->
             <div class="form-group">
-                <label for="subjectId">Subject:</label>
-                <c:forEach var="subject" items="${subjectList}">
-                    <a href="addquiz?subjectId=${subject.id}"
-                       class="btn-outline-primary <c:if test='${subject.id == param.subjectId}'>btn-selected</c:if>">
-                        ${subject.name}
-                    </a>
-                </c:forEach>
+                <label>Subject:</label>
+                <select name="subject" required>
+                    <c:forEach items="${subjectList}" var="s">
+                        <option value="${s.id}">${s.name}</option>
+                    </c:forEach>
+                </select>
+
             </div>
 
             <!-- TOPIC DROPDOWN -->
-            <c:if test="${not empty topicList}">
-                <div class="form-group">
-                    <label for="topicId">Topic:</label>
-                    <select id="topicId" name="topicId" required>
-                        <c:forEach var="topic" items="${topicList}">
-                            <option value="${topic.id}">${topic.name}</option>
-                        </c:forEach>
-                    </select>
-                </div>
-            </c:if>
+            
 
             <!-- TITLE -->
             <div class="form-group">

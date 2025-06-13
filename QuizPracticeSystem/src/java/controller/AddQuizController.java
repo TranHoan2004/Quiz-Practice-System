@@ -41,12 +41,7 @@ public class AddQuizController extends HttpServlet {
             request.setAttribute("quizTypeList", quizTypeList);
             request.setAttribute("levelList", levelList);
 
-            String subjectId = request.getParameter("subjectId");
-            if (subjectId != null && !subjectId.isEmpty()) {
-                TopicDAO topicDao = new TopicDAO();
-                List<Topic> topicList = topicDao.getTopicsBySubjectId(subjectId);
-                request.setAttribute("topicList", topicList);
-            }
+            
 
             request.getRequestDispatcher("/jsp/course-features/add_quiz.jsp").forward(request, response);
         } catch (Exception e) {
@@ -63,7 +58,7 @@ public class AddQuizController extends HttpServlet {
         String description = request.getParameter("description");
         String type = request.getParameter("type");
         String level = request.getParameter("level");
-        String topicId = request.getParameter("topicId");
+        String subjectId = request.getParameter("subject");
         int duration = 0;
         float passRate = 0;
         int numberOfQuestions = 0;
@@ -143,8 +138,8 @@ public class AddQuizController extends HttpServlet {
         quiz.setPassRate(passRate);
         quiz.setStatus(false);
         quiz.setNumberOfQuestions(numberOfQuestions);
-        quiz.setTopicId(type);
-        quiz.setTopicId(topicId);
+        quiz.setSubjectId(subjectId);
+        
         
 
         QuizDAO quizDao = new QuizDAO();

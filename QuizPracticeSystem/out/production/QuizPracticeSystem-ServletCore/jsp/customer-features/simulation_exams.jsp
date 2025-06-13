@@ -28,7 +28,7 @@
 <body>
 <jsp:include page="../../component/spinner.html"/>
 <jsp:include page="../../component/navbar.html"/>
-<jsp:include page="../../component/header.html"/>
+<jsp:include page="../../component/header.jsp"/>
 
 <!-- Courses Start -->
 <div class="container-xxl py-5">

@@ -4,6 +4,7 @@
  */
 package dao;
 
+import dto.SourceItemDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -60,7 +61,7 @@ public class TopicDAO extends DBContext {
         return st;
     }
 
-    public List<Topic> getTopicBySubjectId(int id) throws Exception {
+    public List<Topic> getTopicBySubjectId(String id) throws Exception {
         logger.log(Level.INFO, "getTopicBySubjectId {0}", id);
         List<Topic> st = new ArrayList<>();
         String sql = """
@@ -108,9 +109,9 @@ public class TopicDAO extends DBContext {
     }
     
     public String getSubjectIdByTopicId(String topicId) {
-        String sql = "SELECT * FROM topic WHERE id = ?";
-        try (Connection connection = getConnection(); PreparedStatement pre = connection.prepareStatement(sql)) {
-
+        String sql = "SELECT * FROM `swp391`.topic WHERE id = ?";
+        try (Connection connection = getConnection();
+             PreparedStatement pre = connection.prepareStatement(sql)) {
             pre.setString(1, topicId);  
 
             try (ResultSet rs = pre.executeQuery()) {
@@ -120,8 +121,6 @@ public class TopicDAO extends DBContext {
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
-            
-            return null; 
         }
         return null;
     }
@@ -130,7 +129,7 @@ public class TopicDAO extends DBContext {
     public List<Topic> getTopicsBySubjectId(String subjectId) throws Exception {
     List<Topic> topicList = new ArrayList<>();
 
-    String sql = "SELECT id, name, subject_id FROM topic WHERE subject_id = ?";
+    String sql = "SELECT id, name, subject_id FROM `swp391`.topic WHERE subject_id = ?";
 
     try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql)) {
         pre.setString(1, subjectId);
@@ -153,8 +152,6 @@ public class TopicDAO extends DBContext {
     return topicList;
 }
 
-
-
     private List<Topic> query(List<Topic> st, String sql) throws Exception {
         try (Connection connection = getConnection();
              PreparedStatement pre = connection.prepareStatement(sql);
@@ -172,6 +169,28 @@ public class TopicDAO extends DBContext {
         }
         return st;
     }
+    
+    public List<SourceItemDTO> getListSourceItemTopic(List<Topic> topicList) {
+        List<SourceItemDTO> sourceItemDTOList = new ArrayList<>();
+
+        if (topicList == null || topicList.isEmpty()) {
+            return sourceItemDTOList;
+        }
+
+        for (Topic topic : topicList) {
+            if (topic == null) {
+                continue; // tránh NullPointerException
+            }
+            SourceItemDTO sourceItem = new SourceItemDTO();
+            sourceItem.setId(topic.getId());
+            sourceItem.setValue(topic.getName());
+            sourceItem.setSourceType("topic");
+            sourceItemDTOList.add(sourceItem);
+        }
+
+        return sourceItemDTOList;
+    }
+
 }
 
 

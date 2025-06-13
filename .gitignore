@@ -4,12 +4,15 @@
 /QuizPracticeSystem/src/java/common/Constants.java
 /QuizPracticeSystem/web/index.html
 /QuizPracticeSystem/dist/
+/QuizPracticeSystem/out/
+/QuizPracticeSystem/src/java/dao/DBContext.java
+# /QuizPracticeSystem/.env
 
 
 # =========================
 # IntelliJ IDEA
 # =========================
-.idea/
+.idea/	
 *.iml
 *.iws
 out/
@@ -36,11 +39,7 @@ Thumbs.db
 # Temporary files
 # =========================
 *.log
+*.lck
 *.bak
 *.swp
 *~
-
-# =========================
-# JAR libraries
-# Nếu bạn muốn giữ thư viện JAR riêng cho từng người → bỏ qua:
-/lib/

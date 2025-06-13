@@ -36,7 +36,7 @@ public class RegisterController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        request.getRequestDispatcher("/jsp/register-feature/register.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/common-features/register.jsp").forward(request, response);
     }
 
     @Override
@@ -62,12 +62,12 @@ public class RegisterController extends HttpServlet {
             }
 
             request.setAttribute("message", message);
-            request.getRequestDispatcher("/jsp/register-feature/register.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/common-features/register.jsp").forward(request, response);
 
         } catch (Exception ex) {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
             request.setAttribute("error", "Đã xảy ra lỗi trong quá trình đăng ký.");
-            request.getRequestDispatcher("/jsp/register-feature/register.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/common-features/register.jsp").forward(request, response);
         }
     }
 

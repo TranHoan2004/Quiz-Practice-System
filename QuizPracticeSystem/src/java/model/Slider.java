@@ -22,5 +22,6 @@ public class Slider {
     private String imageUrl;
     private String backlinkUrl;
     private boolean status;
+    private String note;
     private String accountId;
 }

@@ -4,7 +4,6 @@
       <root url="jar://$PROJECT_DIR$/../Lib/jakarta.servlet-api-6.1.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/../Lib/jakarta.servlet.jsp.jstl-2.0.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/../Lib/jakarta.servlet.jsp.jstl-api-2.0.0.jar!/" />
-      <root url="jar://$PROJECT_DIR$/../Lib/javax.mail.jar!/" />
       <root url="jar://$PROJECT_DIR$/../Lib/jaxb-api-2.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/../Lib/lombok.jar!/" />
       <root url="jar://$PROJECT_DIR$/../Lib/mysql-connector-j-9.3.0.jar!/" />
@@ -13,6 +12,13 @@
       <root url="jar://$PROJECT_DIR$/../Lib/jackson-databind-2.15.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/../Lib/jackson-core-2.18.4.jar!/" />
       <root url="jar://$PROJECT_DIR$/../Lib/jackson-annotations-2.18.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Lib/googleauth-1.4.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Lib/dotenv-java-2.2.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Lib/core-3.5.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Lib/javase-3.5.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Lib/jakarta.websocket-api-2.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Lib/tyrus-standalone-client-2.2.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../Lib/gson-2.13.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

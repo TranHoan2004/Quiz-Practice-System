@@ -12,9 +12,9 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarCollapse">
 			<div class="navbar-nav ms-auto p-4 p-lg-0">
-				<a href="/qps/home" class="nav-item nav-link active">Home</a>
+				<a href="${pageContext.request.contextPath}/home" class="nav-item nav-link active">Home</a>
 				<a href="courses.html" class="nav-item nav-link">Courses</a>
-				<a href="contact.html" class="nav-item nav-link">Contact</a>
+				<a href="${pageContext.request.contextPath}/blog-list" class="nav-item nav-link">Blog</a>
 				<div class="nav-item dropdown">
 					<a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
 					<div class="dropdown-menu fade-down m-0">
@@ -29,10 +29,11 @@
 				<!-- Nếu chưa đăng nhập -->
 				<c:if test="${empty sessionScope.currentUser}">
 					<div class="not-logged-in d-flex align-items-center">
-						<a href="/qps/user/login"
+						<a href="${pageContext.request.contextPath}/user/login"
 						   class="btn btn-outline-primary me-2 d-flex align-items-center justify-content-center"
 						   style="height: 40px;">Login</a>
-						<a href="/qps/user/register" class="btn btn-primary d-flex align-items-center justify-content-center"
+						<a href="${pageContext.request.contextPath}/user/register"
+						   class="btn btn-primary d-flex align-items-center justify-content-center"
 						   style="height: 40px;">Register</a>
 					</div>
 				</c:if>
@@ -49,7 +50,7 @@
 											 class="rounded-circle me-2" width="32" height="32">
 									</c:when>
 									<c:otherwise>
-										<img src="${pageContext.request.contextPath}/${sessionScope.currentUser.imageUrl}"
+										<img src="${pageContext.request.contextPath}/${sessionScope.currentUser.imageUrl	}"
 											 alt="User Avatar"
 											 class="rounded-circle me-2" width="32" height="32">
 									</c:otherwise>

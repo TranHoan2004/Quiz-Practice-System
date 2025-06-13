@@ -26,7 +26,8 @@ public class Blog {
     private String content;
     private boolean status;
     private LocalDate createdDate;
-    private String category; // setting
+    private UUID category; // setting
     private String accountId;
     private int views;
+    private boolean flagFeature;
 }

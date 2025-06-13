@@ -61,6 +61,9 @@ public class LoginController extends HttpServlet {
             if (currentUser.getRoleId().equals("c5ae3575-3a5b-11f0-b817-74d713b03787")) {
                 response.sendRedirect(request.getContextPath() + "/user/registration"); //Admin
             }
+            if (currentUser.getRoleId().equals("b1b69765-397a-11f0-84a1-088fc33f56c7")) {
+                response.sendRedirect(request.getContextPath() + "/user/registration"); //Admin
+            }
         } else {
             request.getRequestDispatcher("/jsp/common-features/login_account.jsp").forward(request, response);
         }
@@ -129,6 +132,8 @@ public class LoginController extends HttpServlet {
                 case "3b953efb-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-sale");
                 case "3b953f8d-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-marketing");
                 case "63f7dae0-384c-11f0-9e24-e4a8dfb1bdb7" ->
+                        response.sendRedirect(request.getContextPath() + "/user/registration");
+                case "b1b69765-397a-11f0-84a1-088fc33f56c7" ->
                         response.sendRedirect(request.getContextPath() + "/user/registration");
                 case "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a21" -> response.sendRedirect("/qps/home");
                 default -> response.sendRedirect("error.jsp");

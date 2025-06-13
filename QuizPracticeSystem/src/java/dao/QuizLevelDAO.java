@@ -26,7 +26,7 @@ public class QuizLevelDAO extends DBContext{
     
     public List<QuizLevel> getAllQuizLevel() throws Exception {
         List<QuizLevel> quizLevelList = new ArrayList<>();
-        String sql = "SELECT * FROM quizlevel";
+        String sql = "SELECT * FROM `swp391`.quizlevel";
         try (Connection conn = getConnection();
              PreparedStatement pre = conn.prepareStatement(sql);
              ResultSet rs = pre.executeQuery()) {
@@ -41,8 +41,9 @@ public class QuizLevelDAO extends DBContext{
     }
     
     public String getNameByLevelId(String levelId) throws Exception {
-        String sql = "SELECT * FROM quizlevel WHERE id = ?";
-        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql);) {
+        String sql = "SELECT * FROM `swp391`.quizlevel WHERE id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement pre = conn.prepareStatement(sql);) {
             pre.setString(1, levelId);
             ResultSet rs = pre.executeQuery();
             if (rs.next()) {

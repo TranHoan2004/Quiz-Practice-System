@@ -1,7 +1,6 @@
 package controller;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import controller.utils.HandleRequestBody;
 import dao.*;
 import dto.PracticeExam;
 import jakarta.servlet.ServletException;
@@ -12,9 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import model.*;
 import utils.Encoder;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -31,17 +28,16 @@ public class PracticeListController extends HttpServlet {
     private final SubjectDAO sDAO;
     private final PersonalQuizDAO pDAO;
     private final QuizDAO qDAO;
-    private final TopicDAO tDAO;
     private final SettingDAO stDAO;
-    private final double TIME_TO_DO_A_QUESTION = 90;
+    private final HandleRequestBody hrb;
 
     public PracticeListController() {
         this.logger = Logger.getLogger(this.getClass().getName());
         this.sDAO = new SubjectDAO();
         this.pDAO = new PersonalQuizDAO();
         this.qDAO = new QuizDAO();
-        this.tDAO = new TopicDAO();
         this.stDAO = new SettingDAO();
+        this.hrb = new HandleRequestBody();
     }
 
     @Override
@@ -69,8 +65,7 @@ public class PracticeListController extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        System.out.println("Go go here");
-        Map<String, String> response = getDataFromRequest(req);
+        Map<String, String> response = hrb.getDataFromRequest(req);
         String id = response.get("id");
         try {
             pDAO.deleteById(Encoder.decode(id));
@@ -101,8 +96,7 @@ public class PracticeListController extends HttpServlet {
         List<PracticeExam> exams = new ArrayList<>();
         for (PersonalQuiz quiz : quizzes) {
             Quiz q = qDAO.getById(quiz.getQuizId());
-            Topic t = tDAO.getTopicById(q.getTopicId());
-            Subject s = sDAO.getById(t.getSubjectId());
+            Subject s = sDAO.getById(q.getSubjectId());
             exams.add(PracticeExam.builder()
                     .id(Encoder.encode(quiz.getId().toString()))
                     .subjectName(s.getName())
@@ -123,7 +117,7 @@ public class PracticeListController extends HttpServlet {
     }
 
     private String getDuration(int numberOfQuestions) {
-        Duration d = Duration.ofSeconds((long) (numberOfQuestions * TIME_TO_DO_A_QUESTION));
+        Duration d = Duration.ofSeconds((numberOfQuestions * 90L));
         LocalTime time = LocalTime.MIDNIGHT.plus(d);
         return time.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
@@ -152,18 +146,5 @@ public class PracticeListController extends HttpServlet {
             }
         }
         return results;
-    }
-
-    private Map<String, String> getDataFromRequest(HttpServletRequest req) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(req.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            sb.append(line);
-        }
-        String json = sb.toString();
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(json, new TypeReference<>() {
-        });
     }
 }

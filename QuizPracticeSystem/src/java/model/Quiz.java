@@ -26,7 +26,7 @@ public class Quiz {
     private int numberOfQuestions;
     private String description;
     private String title;
-    private String topicId;
+    private String subjectId;
     private String type; // setting
     private String level; // setting
 }

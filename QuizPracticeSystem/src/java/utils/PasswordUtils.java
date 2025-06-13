@@ -1,7 +1,5 @@
 package utils;
 
-import common.Constants;
-
 import java.security.SecureRandom;
 
 public class PasswordUtils {

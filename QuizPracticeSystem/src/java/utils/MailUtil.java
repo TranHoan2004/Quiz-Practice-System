@@ -1,5 +1,7 @@
 package utils;
 
+import config.DotenvConfig;
+import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -7,14 +9,15 @@ import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 
 public class MailUtil {
-    private static final String FROM_MAIL = "huongnn2201@gmail.com";
-    private static final String PASSWORD = "uycd bord nliy hsnd";
+    private static final String FROM_MAIL = DotenvConfig.get("EMAIL");
+    private static final String PASSWORD = DotenvConfig.get("PASSWORD");
     private static final Logger logger = Logger.getLogger(MailUtil.class.getName());
     private static final String MAIL_SMTP_HOST = "smtp.gmail.com";
     private static final String MAIL_SMTP_PORT = "587";
@@ -22,6 +25,7 @@ public class MailUtil {
     private static final boolean MAIL_SMTP_STARTTLS_ENABLE = true;
 
     public static void sendMail(String toMail, String subject, String htmlContent) {
+        logger.info("Sending mail to " + toMail);
         Properties props = new Properties();
         props.put("mail.smtp.host", MAIL_SMTP_HOST);
         props.put("mail.smtp.port", MAIL_SMTP_PORT);
