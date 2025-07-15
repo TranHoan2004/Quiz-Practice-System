@@ -1,45 +1,70 @@
 package controller.web_socket;
 
-import jakarta.websocket.EndpointConfig;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
+import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ServerEndpoint(value = "/magic-link")
 public class MagicLinkSocket {
-    private static final Map<String, Session> sessions = Collections.synchronizedMap(new HashMap<>());
+
+    private static final Map<String, Session> sessions = new ConcurrentHashMap<>();
     private static final Logger logger = Logger.getLogger(MagicLinkSocket.class.getName());
 
     @OnOpen
-    public void handleOpen(EndpointConfig endpointConfig, Session session) {
-        logger.info("New connection established: " + session.getId() + " " + endpointConfig.getUserProperties().toString());
+    public void onOpen(Session session) {
+        logger.log(Level.INFO, "New connection established: {0}", session.getId());
     }
 
     @OnMessage
     public void onMessage(String message, Session session) {
-        logger.info("Received message: " + message + " from session: " + session.getId());
+        logger.log(Level.INFO, "Received message: {0} from session: {1}", new Object[]{message, session.getId()});
         sessions.put(message, session);
+
+        try {
+            session.getBasicRemote().sendText("CONNECTED");
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error sending ACK", e);
+        }
+    }
+
+    @OnClose
+    public void onClose(Session session) {
+        sessions.values().removeIf(s -> s.getId().equals(session.getId()));
+        logger.log(Level.INFO, "Connection closed: {0}", session.getId());
+    }
+
+    @OnError
+    public void onError(Session session, Throwable throwable) {
+        logger.log(Level.SEVERE, "Error for " + session.getId(), throwable);
     }
 
     public static void notifyClient(String userId, boolean status) {
-        logger.info("Client " + userId + " has been notified.");
+        logger.log(Level.INFO, "Trying to notify client: {0}", userId);
         Session session = sessions.get(userId);
+
+        if (session == null) {
+            logger.log(Level.WARNING, "No session found for user: {0}", userId);
+            return;
+        }
+
+        if (!session.isOpen()) {
+            logger.log(Level.WARNING, "Session exists but closed for user: {0}", userId);
+            sessions.remove(userId);
+            return;
+        }
+
         try {
-            if (session != null && session.isOpen()) {
-                if (status) {
-                    session.getBasicRemote().sendText("VALID_TOKEN");
-                } else {
-                    session.getBasicRemote().sendText("INVALID_TOKEN");
-                }
-            }
+            String message = status ? "VALID_TOKEN" : "INVALID_TOKEN";
+            logger.log(Level.INFO, "Sending message: {0} to user: {1}", new Object[]{message, userId});
+            session.getBasicRemote().sendText(message);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.log(Level.SEVERE, "Error notifying client " + userId, e);
+            sessions.remove(userId);
         }
     }
 }

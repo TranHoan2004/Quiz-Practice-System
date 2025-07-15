@@ -6,18 +6,20 @@ package dao;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * @author TranHoan
  */
 public class DBContext {
+
     private static final String SERVER_NAME = "localhost";
     private static final String DB_NAME = "swp391";
     private static final String PORT_NUMBER = "3306";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "hoan2709";
 
-    public Connection getConnection() throws Exception {
+    public Connection getConnection() throws ClassNotFoundException, SQLException {
         String url = "jdbc:mysql://" + SERVER_NAME + ":" + PORT_NUMBER
                 + "/" + DB_NAME;
         Class.forName("com.mysql.cj.jdbc.Driver");

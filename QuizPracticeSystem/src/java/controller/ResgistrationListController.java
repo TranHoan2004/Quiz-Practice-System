@@ -61,7 +61,6 @@ public class ResgistrationListController extends HttpServlet {
 
             int totalRegistrationDto = courseDao.getTotalRegistrationDto(subject, status, validFrom, validTo, email);
 
-            // ================= LOGIC ĐÃ SỬA =================
             int numberOfLine = 5; // Giá trị mặc định
             if (numberOfLine_raw != null && !numberOfLine_raw.isEmpty()) {
                 try {
@@ -116,13 +115,13 @@ public class ResgistrationListController extends HttpServlet {
             request.setAttribute("RegistrationDtoList", registrationDtoList);
             request.setAttribute("endPage", endPage);
             request.setAttribute("currentPage", page);
-            request.setAttribute("subjectId", subject); // Sửa lại để khớp với tên param
+            request.setAttribute("subjectId", subject); 
             request.setAttribute("email", email);
             request.setAttribute("status", status);
             request.setAttribute("validFrom", validFromStr);
             request.setAttribute("validTo", validToStr);
             request.setAttribute("numberOfLine", numberOfLine);
-            request.setAttribute("selectedColumns", selectedColumns); // Đổi tên để rõ ràng hơn
+            request.setAttribute("selectedColumns", selectedColumns); 
 
         } catch (Exception e) {
             e.printStackTrace();

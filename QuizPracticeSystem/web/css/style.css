@@ -34,8 +34,14 @@
     transition: opacity .5s ease-out, visibility 0s linear 0s;
     visibility: visible;
     opacity: 1;
+    background-color: transparent !important;
+    z-index: 1050;
 }
 
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
 
 /*** Button ***/
 .btn {

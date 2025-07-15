@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import utils.Encoder;
+import utils.Validation;
 
 @WebServlet(name = "SubjectDetailController", urlPatterns = {"/user/subject_detail"})
 public class SubjectDetailController extends HttpServlet {
@@ -47,8 +49,11 @@ public class SubjectDetailController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String encodedId = request.getParameter("id");  // subjectId (encoded)
-        String message = "";
+        String encodedId = request.getParameter("id");
+        String message = (String) request.getAttribute("message");
+        if (message == null) {
+            message = "";
+        }
 
         try {
 
@@ -68,7 +73,6 @@ public class SubjectDetailController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         String deleteType = request.getParameter("deleteType");
         String deleteId = request.getParameter("deleteId");
         String encodedId = request.getParameter("subjectId");
@@ -76,7 +80,7 @@ public class SubjectDetailController extends HttpServlet {
         String action = request.getParameter("action"); // để phân biệt chức năng
 
         try {
-            // ====== THÊM PRICE PACKAGE ======
+
             if ("addPricePackage".equals(action)) {
                 String courseId = request.getParameter("courseId");
                 String name = request.getParameter("packageName");
@@ -84,6 +88,14 @@ public class SubjectDetailController extends HttpServlet {
                 int listPrice = Integer.parseInt(request.getParameter("packagePrice"));
                 int salePrice = Integer.parseInt(request.getParameter("packageSalePrice"));
                 boolean status = Boolean.parseBoolean(request.getParameter("packageStatus"));
+
+                String checkPrice = Validation.validatePricePackage(listPrice, salePrice);
+                if (checkPrice != null) {
+                    request.setAttribute("message", checkPrice);
+                    request.setAttribute("showModal", "add");
+                    doGet(request, response); // render lại trang với message
+                    return;
+                }
 
                 PricePackage pkg = PricePackage.builder()
                         .id(UUID.randomUUID())
@@ -116,7 +128,7 @@ public class SubjectDetailController extends HttpServlet {
                         .status(true) // mặc định true
                         .build();
 
-                settingDAO.createSettingAndAttachToSubject(setting, subjectId, "Dimension of subject");
+                settingDAO.createSettingAndAttachToSubject(setting, subjectId);
 
                 response.sendRedirect(request.getContextPath() + "/user/subject_detail?id=" + encodedSubjectId);
                 return;
@@ -131,6 +143,14 @@ public class SubjectDetailController extends HttpServlet {
                 int salePrice = Integer.parseInt(request.getParameter("packageSalePrice"));
                 boolean status = Boolean.parseBoolean(request.getParameter("packageStatus"));
 
+                String checkPrice = Validation.validatePricePackage(price, salePrice);
+                if (checkPrice != null) {
+                    request.setAttribute("message", checkPrice);
+                    request.setAttribute("showModal", "edit");
+                    doGet(request, response); // render lại trang với message
+                    return;
+                }
+
                 PricePackage pkg = PricePackage.builder()
                         .id(id)
                         .courseId(courseId)
@@ -142,21 +162,18 @@ public class SubjectDetailController extends HttpServlet {
                         .description(null)
                         .build();
 
-                pricePackageDAO.update(pkg); // Bạn cần tạo hàm update() trong DAO nếu chưa có
+                pricePackageDAO.update(pkg);
 
                 response.sendRedirect(request.getContextPath() + "/user/subject_detail?id=" + request.getParameter("id"));
                 return;
             }
 
-            // ====== XOÁ DIMENSION / PRICE PACKAGE ======
             if (deleteType != null && deleteId != null && encodedId != null) {
                 String subjectId = Encoder.decode(encodedId);
 
                 switch (deleteType) {
-                    case "dimension" ->
-                        settingDAO.deleteSubjectDimension(deleteId, subjectId, "Dimension of subject");
-                    case "pricePackage" ->
-                        pricePackageDAO.deleteById(deleteId);
+                    case "dimension" -> settingDAO.deleteSubjectDimension(deleteId, subjectId);
+                    case "pricePackage" -> pricePackageDAO.deleteById(deleteId);
                 }
 
                 response.sendRedirect(request.getContextPath() + "/user/subject_detail?id=" + encodedId);
@@ -164,7 +181,7 @@ public class SubjectDetailController extends HttpServlet {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, e.getMessage(), e);
             request.setAttribute("message", "Action failed: " + e.getMessage());
         }
 
@@ -198,7 +215,7 @@ public class SubjectDetailController extends HttpServlet {
         }
 
         String category = subjectDAO.getCategoryBySubjectId(subjectId);
-        List<SubjectDimensionDTO> dimensions = settingDAO.getDimensionsBySubjectIdAndDescription(subjectId, "Dimension of subject");
+        List<SubjectDimensionDTO> dimensions = settingDAO.getDimensionsBySubjectId(subjectId);
 
         List<PricePackage> packages = course != null
                 ? pricePackageDAO.getByCourseId(course.getId().toString())
@@ -206,7 +223,7 @@ public class SubjectDetailController extends HttpServlet {
 
         String courseId = course != null ? course.getId().toString() : null;
 
-        SubjectDetailDTO detail = SubjectDetailDTO.builder()
+        return SubjectDetailDTO.builder()
                 .id(Encoder.encode(subject.getId().toString()))
                 .name(subject.getName())
                 .thumbnailUrl(subject.getThumbnailURL())
@@ -219,8 +236,5 @@ public class SubjectDetailController extends HttpServlet {
                 .pricePackages(packages)
                 .courseId(courseId)
                 .build();
-
-        return detail;
-
     }
 }

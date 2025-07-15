@@ -30,8 +30,8 @@
 
 <body>
 <jsp:include page="../../component/spinner.html"/>
-<jsp:include page="../../component/navbar.html"/>
-<jsp:include page="../../component/header.jsp"/>
+<jsp:include page="../../component/navbar.jsp"/>
+<jsp:include page="../../component/header.html"/>
 
 <!-- Courses Start -->
 <div class="container-xxl py-5">
@@ -240,53 +240,9 @@
 <script src="${pageContext.request.contextPath}/js/main.js"></script>
 <script src="${pageContext.request.contextPath}/js/Notification.js"></script>
 <script>
-    let href = `${pageContext.request.contextPath}/user/registration`
-    document.getElementById('subjectFilter').addEventListener('change', function () {
-        const value = this.value;
-        let href = `${pageContext.request.contextPath}/user/registration`
-        if (value !== 'all') {
-            href += '?filter=' + value;
-        }
-        window.location.href = href;
-    })
-
-    document.querySelectorAll('.record').forEach(function (row) {
-        row.addEventListener('click', function (e) {
-            if (e.target.closest('button') || e.target.closest('a')) {
-                return;
-            }
-            const value = this.dataset.id;
-            if (value !== 'all') {
-                href += '?org=' + value;
-            }
-            window.location.href = href;
-        });
-    });
-
-    function updateCourse(id) {
-        fetch(`${pageContext.request.contextPath}/user/course`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({id: id})
-        })
-            .then(response => {
-                if (!response.ok) throw new Error("Request failed");
-                return response.body;
-            })
-            .then(data => {
-                console.log(data)
-                showNotification("Cancel register successfully", "success")
-                setTimeout(() => {
-                    location.href = href;
-                }, 4500);
-            })
-            .catch(error => {
-                console.log(error)
-            })
-    }
+    window.contextPath = `${pageContext.request.contextPath}`;
 </script>
+<script src="${pageContext.request.contextPath}/js/MyRegistration.js" type="module"></script>
 
 </body>
 

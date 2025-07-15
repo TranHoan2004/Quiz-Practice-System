@@ -32,4 +32,17 @@ public class Validation {
         return phone != null && phone.matches(regex);
     }
 
+    public static String validatePricePackage(int listPrice, int salePrice) {
+        if (listPrice < 0) {
+            return "List price cannot be negative.";
+        }
+        if (salePrice < 0) {
+            return "Sale price cannot be negative.";
+        }
+        if (salePrice >= listPrice) {
+            return "Sale price must be less than list price.";
+        }
+        return null; 
+    }
+
 }

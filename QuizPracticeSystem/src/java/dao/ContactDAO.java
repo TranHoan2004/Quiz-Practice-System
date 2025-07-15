@@ -5,8 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import model.Contact;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,8 +23,10 @@ public class ContactDAO extends DBContext {
 
     public List<Contact> getAllContacts() throws Exception {
         List<Contact> contacts = new ArrayList<>();
-        String sql = "SELECT * FROM `swp391`.contact";
-        try (Connection connection = getConnection(); PreparedStatement pre = connection.prepareStatement(sql); ResultSet rs = pre.executeQuery()) {
+        var sql = "SELECT * FROM `swp391`.contact";
+        try (var connection = getConnection();
+             var pre = connection.prepareStatement(sql);
+             var rs = pre.executeQuery()) {
             while (rs.next()) {
                 contacts.add(getContact(rs));
             }
@@ -38,11 +38,11 @@ public class ContactDAO extends DBContext {
     }
 
     public Contact getById(String id) throws Exception {
-        Contact contact = Contact.builder().build();
-        String sql = "SELECT * FROM `swp391`.contact WHERE id = ?";
-        try (PreparedStatement pre = getConnection().prepareStatement(sql)) {
+        var contact = Contact.builder().build();
+        var sql = "SELECT * FROM `swp391`.contact WHERE id = ?";
+        try (var pre = getConnection().prepareStatement(sql)) {
             pre.setString(1, id);
-            try (ResultSet rs = pre.executeQuery()) {
+            try (var rs = pre.executeQuery()) {
                 if (rs.next()) {
                     contact = getContact(rs);
                 }
@@ -55,14 +55,14 @@ public class ContactDAO extends DBContext {
     }
 
     private Contact getContact(ResultSet rs) throws SQLException, JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
+        var mapper = new ObjectMapper();
         return Contact.builder()
                 .id(UUID.fromString(rs.getString("id")))
                 .name(rs.getString("name"))
                 .link(mapper.readValue(
                         rs.getString("link"),
                         new TypeReference<>() {
-                }
+                        }
                 ))
                 .email(rs.getString("email"))
                 .phone(rs.getString("phone"))

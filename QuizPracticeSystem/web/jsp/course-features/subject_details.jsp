@@ -23,8 +23,8 @@
     </head>
 
     <body>
-        <jsp:include page="../../component/component.subject/header.jsp"/>
-        <jsp:include page="../../component/component.subject/header.html"/>
+        <jsp:include page="component.subject/header.jsp"/>
+        <jsp:include page="component.subject/header.html"/>
 
         <!-- Courses Start -->
         <div class="container-xxl py-5">
@@ -285,6 +285,7 @@
         <!-- Edit Price Package -->
         <div class="modal fade" id="editPricePackageModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
+
                 <form class="modal-content" method="post" action="${pageContext.request.contextPath}/user/subject_detail">
                     <input type="hidden" name="action" value="editPricePackage">
                     <input type="hidden" name="packageId" id="editPackageId">
@@ -296,6 +297,11 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
+                        <c:if test="${not empty message && showModal == 'edit'}">
+                            <div class="alert alert-danger" role="alert">
+                                ${message}
+                            </div>
+                        </c:if>
                         <div class="mb-3">
                             <label>Package Name</label>
                             <input type="text" class="form-control" name="packageName" id="editPackageName" readonly>
@@ -371,6 +377,7 @@
         <!-- Add Price  --> 
         <div class="modal fade" id="addPricePackageModal" tabindex="-1" aria-labelledby="addPricePackageModalLabel" aria-hidden="true">
             <div class="modal-dialog">
+
                 <form class="modal-content" method="post" action="${pageContext.request.contextPath}/user/subject_detail">
                     <input type="hidden" name="action" value="addPricePackage">
                     <input type="hidden" name="courseId" value="${subjectDetail.courseId}">
@@ -380,8 +387,12 @@
                         <h5 class="modal-title" id="addPricePackageModalLabel">Add Price Package</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-
                     <div class="modal-body">
+                        <c:if test="${not empty message && showModal == 'add'}">
+                            <div class="alert alert-danger" role="alert">
+                                ${message}
+                            </div>
+                        </c:if>
                         <div class="mb-3">
                             <label class="form-label">Package Name</label>
                             <input type="text" class="form-control" name="packageName" required>
@@ -415,7 +426,9 @@
             </div>
         </div>
 
-        
+
+
+
 
         <script src="${pageContext.request.contextPath}/js/lib/jquery-3.4.1.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/lib/bootstrap.bundle.min.js"></script>
@@ -425,39 +438,49 @@
         <script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
         <script src="${pageContext.request.contextPath}/js/Notification.js"></script>
+
+        <c:if test="${not empty message}">
+            <script>
+                                                            document.addEventListener("DOMContentLoaded", function () {
+                                                                var modalId = "${showModal == 'edit' ? 'editPricePackageModal' : 'addPricePackageModal'}";
+                                                                var modal = new bootstrap.Modal(document.getElementById(modalId));
+                                                                modal.show();
+                                                            });
+            </script>
+        </c:if>
         <script>
-                                                    document.addEventListener('DOMContentLoaded', function () {
-                                                        let rowToDelete = null;
-                                                        let lastDeleted = null;
-                                                        let lastDeletedParent = null;
-                                                        let lastDeletedNextSibling = null;
+            document.addEventListener('DOMContentLoaded', function () {
+                let rowToDelete = null;
+                let lastDeleted = null;
+                let lastDeletedParent = null;
+                let lastDeletedNextSibling = null;
 
-                                                        const confirmDeleteModalEl = document.getElementById('confirmDeleteModal');
-                                                        const confirmDeleteModal = new bootstrap.Modal(confirmDeleteModalEl);
-                                                        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+                const confirmDeleteModalEl = document.getElementById('confirmDeleteModal');
+                const confirmDeleteModal = new bootstrap.Modal(confirmDeleteModalEl);
+                const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 
-                                                        document.body.addEventListener('click', function (e) {
-                                                            if (e.target.closest('.btn-delete-row')) {
-                                                                rowToDelete = e.target.closest('tr');
-                                                                confirmDeleteModal.show();
-                                                            }
-                                                        });
+                document.body.addEventListener('click', function (e) {
+                    if (e.target.closest('.btn-delete-row')) {
+                        rowToDelete = e.target.closest('tr');
+                        confirmDeleteModal.show();
+                    }
+                });
 
-                                                        confirmDeleteBtn.addEventListener('click', function () {
-                                                            if (rowToDelete) {
-                                                                lastDeleted = rowToDelete.cloneNode(true);
-                                                                lastDeletedParent = rowToDelete.parentNode;
-                                                                lastDeletedNextSibling = rowToDelete.nextSibling;
+                confirmDeleteBtn.addEventListener('click', function () {
+                    if (rowToDelete) {
+                        lastDeleted = rowToDelete.cloneNode(true);
+                        lastDeletedParent = rowToDelete.parentNode;
+                        lastDeletedNextSibling = rowToDelete.nextSibling;
 
-                                                                rowToDelete.remove();
-                                                                confirmDeleteModal.hide();
-                                                                showUndoNotification();
-                                                                rowToDelete = null;
-                                                            }
-                                                        });
+                        rowToDelete.remove();
+                        confirmDeleteModal.hide();
+                        showUndoNotification();
+                        rowToDelete = null;
+                    }
+                });
 
-                                                        function showUndoNotification() {
-                                                            const undoHtml = `
+                function showUndoNotification() {
+                    const undoHtml = `
                         <div class="d-flex align-items-center">
                             <div class="flex-grow-1">
                                 <span>Item deleted.</span>
@@ -467,61 +490,61 @@
                             </button>
                         </div>
                     `;
-                                                            showNotification(undoHtml, "danger");
+                    showNotification(undoHtml, "danger");
 
-                                                            setTimeout(() => {
-                                                                const container = document.getElementById('notification-container');
-                                                                const toasts = container.querySelectorAll('.toast-notification');
-                                                                const toast = toasts[toasts.length - 1];
-                                                                if (!toast)
-                                                                    return;
-                                                                const undoBtn = toast.querySelector('#undoBtn');
-                                                                if (undoBtn) {
-                                                                    undoBtn.addEventListener('click', function (e) {
-                                                                        e.preventDefault();
-                                                                        if (lastDeleted && lastDeletedParent) {
-                                                                            if (lastDeletedNextSibling) {
-                                                                                lastDeletedParent.insertBefore(lastDeleted, lastDeletedNextSibling);
-                                                                            } else {
-                                                                                lastDeletedParent.appendChild(lastDeleted);
-                                                                            }
-                                                                            lastDeleted = null;
-                                                                            lastDeletedParent = null;
-                                                                            lastDeletedNextSibling = null;
-                                                                            toast.classList.remove('show');
-                                                                            setTimeout(() => {
-                                                                                toast.remove();
-                                                                            }, 500);
-                                                                            showNotification("Restored successfully!", "success");
-                                                                        }
-                                                                    });
-                                                                }
-                                                            }, 20);
-                                                        }
-                                                    });
+                    setTimeout(() => {
+                        const container = document.getElementById('notification-container');
+                        const toasts = container.querySelectorAll('.toast-notification');
+                        const toast = toasts[toasts.length - 1];
+                        if (!toast)
+                            return;
+                        const undoBtn = toast.querySelector('#undoBtn');
+                        if (undoBtn) {
+                            undoBtn.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                if (lastDeleted && lastDeletedParent) {
+                                    if (lastDeletedNextSibling) {
+                                        lastDeletedParent.insertBefore(lastDeleted, lastDeletedNextSibling);
+                                    } else {
+                                        lastDeletedParent.appendChild(lastDeleted);
+                                    }
+                                    lastDeleted = null;
+                                    lastDeletedParent = null;
+                                    lastDeletedNextSibling = null;
+                                    toast.classList.remove('show');
+                                    setTimeout(() => {
+                                        toast.remove();
+                                    }, 500);
+                                    showNotification("Restored successfully!", "success");
+                                }
+                            });
+                        }
+                    }, 20);
+                }
+            });
 
-                                                    document.addEventListener('DOMContentLoaded', function () {
-                                                        const deleteButtons = document.querySelectorAll('.open-delete-modal');
-                                                        deleteButtons.forEach(btn => {
-                                                            btn.addEventListener('click', function () {
-                                                                document.getElementById('modalDeleteId').value = this.dataset.id;
-                                                                document.getElementById('modalDeleteType').value = this.dataset.type;
-                                                                document.getElementById('modalSubjectId').value = this.dataset.subject;
-                                                            });
-                                                        });
-                                                    });
+            document.addEventListener('DOMContentLoaded', function () {
+                const deleteButtons = document.querySelectorAll('.open-delete-modal');
+                deleteButtons.forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        document.getElementById('modalDeleteId').value = this.dataset.id;
+                        document.getElementById('modalDeleteType').value = this.dataset.type;
+                        document.getElementById('modalSubjectId').value = this.dataset.subject;
+                    });
+                });
+            });
 
-                                                    document.querySelectorAll('.open-edit-price').forEach(btn => {
-                                                        btn.addEventListener('click', function () {
-                                                            document.getElementById('editPackageId').value = this.dataset.id;
-                                                            document.getElementById('editCourseId').value = this.dataset.course;
-                                                            document.getElementById('editPackageName').value = this.dataset.title;
-                                                            document.getElementById('editPackageDuration').value = this.dataset.duration;
-                                                            document.getElementById('editPackagePrice').value = this.dataset.price;
-                                                            document.getElementById('editPackageSale').value = this.dataset.sale;
-                                                            document.getElementById('editPackageStatus').value = this.dataset.status;
-                                                        });
-                                                    });
+            document.querySelectorAll('.open-edit-price').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.getElementById('editPackageId').value = this.dataset.id;
+                    document.getElementById('editCourseId').value = this.dataset.course;
+                    document.getElementById('editPackageName').value = this.dataset.title;
+                    document.getElementById('editPackageDuration').value = this.dataset.duration;
+                    document.getElementById('editPackagePrice').value = this.dataset.price;
+                    document.getElementById('editPackageSale').value = this.dataset.sale;
+                    document.getElementById('editPackageStatus').value = this.dataset.status;
+                });
+            });
 
         </script>
     </body>

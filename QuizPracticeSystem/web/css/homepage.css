@@ -414,6 +414,17 @@
     min-height: 2.8em;
 }
 
+.course-card-desc {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    line-height: 1.2em;
+    max-height: 2.4em;
+    min-height: 2.4em;
+}
+
+
 .course-link {
     text-decoration: none;
     color: inherit;
@@ -499,13 +510,9 @@
 }
 
 .link-primary:hover {
-    color: var(--primary) !important;
     cursor: pointer;
-    transform: translateY(-4px) scale(1.1);
-    transition: transform 0.3s, color 0.3s;
+    color: var(--primary);
 }
-
-
 
 
 

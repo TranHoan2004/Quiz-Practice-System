@@ -2,10 +2,10 @@ package dao;
 
 import model.Tagline;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TaglineDAO extends DBContext {
@@ -15,16 +15,17 @@ public class TaglineDAO extends DBContext {
         logger = Logger.getLogger(this.getClass().getName());
     }
 
-    public Tagline getTaglieBySubjectId(String subjectId) {
-        logger.info("getTaglieBySubjectId");
-        String sql = "SELECT id, name FROM `swp391`.tagline t" +
-                " JOIN `swp391`.subject_tagline s ON t.id = s.tagline_id" +
-                " WHERE subject_id = ?";
+    public Tagline getTaglineBySubjectId(String subjectId) {
+        var sql = """
+                SELECT id, name FROM `swp391`.tagline t
+                JOIN `swp391`.subject_tagline s ON t.id = s.tagline_id
+                WHERE subject_id = ?
+                """;
 
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (var connection = getConnection();
+             var ps = connection.prepareStatement(sql)) {
             ps.setString(1, subjectId);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (var rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return Tagline.builder()
                             .id(UUID.fromString(rs.getString("id")))
@@ -36,5 +37,29 @@ public class TaglineDAO extends DBContext {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    public List<Tagline> getTaglinesBySubjectId(String subjectId) {
+        var sql = """
+                SELECT id, name FROM `swp391`.tagline t
+                JOIN `swp391`.subject_tagline s ON t.id = s.tagline_id
+                WHERE subject_id = ?
+                """;
+        List<Tagline> list = new ArrayList<>();
+        try (var connection = getConnection();
+             var ps = connection.prepareStatement(sql)) {
+            ps.setString(1, subjectId);
+            try (var rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(Tagline.builder()
+                            .id(UUID.fromString(rs.getString("id")))
+                            .name(rs.getString("name"))
+                            .build());
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return list;
     }
 }

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a6b9ac87-ed9e-4883-9a3e-7082930f1874" name="Changes" comment="update DAOs">
+      <change beforePath="$PROJECT_DIR$/nbproject/genfiles.properties" beforeDir="false" afterPath="$PROJECT_DIR$/nbproject/genfiles.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nbproject/project.properties" beforeDir="false" afterPath="$PROJECT_DIR$/nbproject/project.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nbproject/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/nbproject/project.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/controller/SubjectsListController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/controller/SubjectsListController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/dao/AccountDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/dao/AccountDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/dao/BlogDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/dao/BlogDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/js/subjects-list/OnboardingTopics.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/js/subjects-list/OnboardingTopics.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/jsp/public-features/subjects_list.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/web/jsp/public-features/subjects_list.jsp" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Record" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="GitLabMergeRequestFiltersHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPENED&quot;,
+    &quot;assignee&quot;: {
+      &quot;type&quot;: &quot;org.jetbrains.plugins.gitlab.mergerequest.ui.filters.GitLabMergeRequestsFiltersValue.MergeRequestsMemberFilterValue.MergeRequestsAssigneeFilterValue&quot;,
+      &quot;username&quot;: &quot;hoantxhe180030&quot;,
+      &quot;fullname&quot;: &quot;Tran Xuan Hoan (K18 HL)&quot;
+    }
+  }
+}</component>
+  <component name="GitLabMergeRequestsSettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;first&quot;: &quot;https://gitlab.com/huongnihe181985/quizz-practice-system-group-1.git&quot;,
+    &quot;second&quot;: &quot;4c87a895-0914-4a8c-8f9d-a7ee35118cd8&quot;
+  }
+}</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 6
+}</component>
+  <component name="ProjectId" id="2zIoOcVCGQPXEWC9DB9er5qG7ol" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/FPTU/Du_an_ca_nhan/Assignment 10 - SWP391/quizz-practice-system-group-1/QuizPracticeSystem&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.11031332&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
+    ]
+  }
+}</component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="QuizPracticeSystem" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="QuizPracticeSystem" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fbdcb00ec9e3-intellij.indexing.shared.core-IU-251.26927.53" />
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-IU-251.26927.53" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a6b9ac87-ed9e-4883-9a3e-7082930f1874" name="Changes" comment="" />
+      <created>1751427916635</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1751427916635</updated>
+      <workItem from="1751427918106" duration="323000" />
+      <workItem from="1751532045918" duration="116000" />
+      <workItem from="1751551666625" duration="30000" />
+      <workItem from="1751552199148" duration="4752000" />
+      <workItem from="1751591124251" duration="7182000" />
+      <workItem from="1751679822801" duration="183000" />
+      <workItem from="1751680038131" duration="235000" />
+      <workItem from="1751680350284" duration="2513000" />
+      <workItem from="1751684131617" duration="2659000" />
+      <workItem from="1751688054635" duration="8000" />
+      <workItem from="1751762405650" duration="8792000" />
+      <workItem from="1751790925949" duration="32000" />
+      <workItem from="1751791332483" duration="37000" />
+      <workItem from="1751850087375" duration="321000" />
+      <workItem from="1751850517675" duration="13460000" />
+      <workItem from="1751874164020" duration="54000" />
+      <workItem from="1751937743088" duration="3764000" />
+      <workItem from="1751946681048" duration="225000" />
+      <workItem from="1751973574854" duration="3213000" />
+      <workItem from="1751983297330" duration="4326000" />
+      <workItem from="1752024162873" duration="777000" />
+      <workItem from="1752025064175" duration="9323000" />
+      <workItem from="1752042066054" duration="29000" />
+      <workItem from="1752066937161" duration="2599000" />
+      <workItem from="1752111343904" duration="2992000" />
+      <workItem from="1752116543823" duration="17000" />
+      <workItem from="1752117615427" duration="159000" />
+      <workItem from="1752132563915" duration="32000" />
+      <workItem from="1752145523501" duration="1609000" />
+      <workItem from="1752153452930" duration="7000" />
+      <workItem from="1752202621519" duration="5373000" />
+      <workItem from="1752213637924" duration="30000" />
+      <workItem from="1752222142111" duration="627000" />
+      <workItem from="1752224104155" duration="16000" />
+      <workItem from="1752224791113" duration="2222000" />
+      <workItem from="1752234487243" duration="633000" />
+      <workItem from="1752307802563" duration="286000" />
+      <workItem from="1752329249978" duration="4631000" />
+      <workItem from="1752545043646" duration="6000" />
+      <workItem from="1752545563436" duration="530000" />
+      <workItem from="1752546947691" duration="3013000" />
+      <workItem from="1752552767624" duration="1737000" />
+      <workItem from="1752559224775" duration="11000" />
+      <workItem from="1752560775423" duration="74000" />
+      <workItem from="1752560855706" duration="104000" />
+    </task>
+    <task id="LOCAL-00001" summary="update">
+      <option name="closed" value="true" />
+      <created>1751685425332</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1751685425332</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat: add jackson datatype jsr .jar file&#10;update: finish subjects list screen">
+      <option name="closed" value="true" />
+      <created>1751942718686</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1751942718686</updated>
+    </task>
+    <task id="LOCAL-00003" summary="update: update subjects_list.css">
+      <option name="closed" value="true" />
+      <created>1751943074286</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1751943074286</updated>
+    </task>
+    <task id="LOCAL-00004" summary="update: update spinner and subjects list screen">
+      <option name="closed" value="true" />
+      <created>1752028972171</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1752028972171</updated>
+    </task>
+    <task id="LOCAL-00005" summary="update: subjects list screen">
+      <option name="closed" value="true" />
+      <created>1752034380509</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1752034380509</updated>
+    </task>
+    <task id="LOCAL-00006" summary="update: add spinner for first fetching">
+      <option name="closed" value="true" />
+      <created>1752034481187</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1752034481187</updated>
+    </task>
+    <task id="LOCAL-00007" summary="update: change step 1 from radio buttons to checkbox buttons, re-style 4 steps and update javadoc for controller">
+      <option name="closed" value="true" />
+      <created>1752114235512</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1752114235512</updated>
+    </task>
+    <task id="LOCAL-00008" summary="update: add header and api to get header title for slider features, practice feature and my registration feature">
+      <option name="closed" value="true" />
+      <created>1752206422547</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1752206422547</updated>
+    </task>
+    <task id="LOCAL-00009" summary="update DAOs">
+      <option name="closed" value="true" />
+      <created>1752332253442</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1752332253442</updated>
+    </task>
+    <task id="LOCAL-00010" summary="update gitignore">
+      <option name="closed" value="true" />
+      <created>1752332317475</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1752332317475</updated>
+    </task>
+    <task id="LOCAL-00011" summary="update DAOs">
+      <option name="closed" value="true" />
+      <created>1752333015352</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1752333015352</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="update" />
+    <MESSAGE value="feat: add jackson datatype jsr .jar file&#10;update: finish subjects list screen" />
+    <MESSAGE value="update: update subjects_list.css" />
+    <MESSAGE value="update: update spinner and subjects list screen" />
+    <MESSAGE value="update: subjects list screen" />
+    <MESSAGE value="update: add spinner for first fetching" />
+    <MESSAGE value="update: change step 1 from radio buttons to checkbox buttons, re-style 4 steps and update javadoc for controller" />
+    <MESSAGE value="update: add header and api to get header title for slider features, practice feature and my registration feature" />
+    <MESSAGE value="update gitignore" />
+    <MESSAGE value="update DAOs" />
+    <option name="LAST_COMMIT_MESSAGE" value="update DAOs" />
+  </component>
+</project>

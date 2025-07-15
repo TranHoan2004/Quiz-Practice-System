@@ -10,22 +10,22 @@ import java.util.UUID;
 import lombok.*;
 
 /**
-
-@author Lenovo
-*/
+ *
+ * @author Lenovo
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class RegistrationDTO {
 
-private UUID id;
-private String email;
-private LocalDate registrationTime;
-private String subject;
-private String packageName;
-private float totalCost;
-private String status;
-private LocalDate validFrom;
-private LocalDate validTo;
+    private UUID id;
+    private String email;
+    private LocalDate registrationTime;
+    private String subject;
+    private String packageName;
+    private float totalCost;
+    private String status;
+    private LocalDate validFrom;
+    private LocalDate validTo;
 }

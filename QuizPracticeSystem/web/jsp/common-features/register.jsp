@@ -17,7 +17,7 @@
     </head>
 
     <body>
-        <jsp:include page="../../component/header.jsp"/>
+        <jsp:include page="../../component/navbar.jsp"/>
 
         <!-- Register - Bootstrap Brain Component -->
         <section class="p-3 p-md-4 p-xl-5">

@@ -1,0 +1,166 @@
+/**
+ * Hiển thị danh sách môn học sau khi sắp xếp theo `updatedDate`.
+ * Xử lý tạo giao diện từng subject và hiển thị phân trang.
+ */
+export function renderSubjects() {
+    subjects.sort((a, b) => (b.updatedDate || '').localeCompare(a.updatedDate || ''));
+
+    console.log(subjects);
+
+    const list = document.getElementById('subjectList');
+    list.innerHTML = '';
+
+    const noResultsMsg = document.getElementById('noSubjectResultsMessage');
+    noResultsMsg.style.display = subjects.length === 0 ? 'block' : 'none';
+
+    subjects.forEach((subject) => {
+        const col = document.createElement('div');
+        col.className = 'col-md-6 col-lg-4 wow fadeInUp';
+        col.setAttribute('data-wow-delay', '0.1s');
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'subject-card-wrapper h-100';
+        col.appendChild(wrapper);
+
+        const taglinesHTML = subject.tagline
+                .map((tag) => `<p class="card-text mb-1 text-center tagline">#${tag}</p>`)
+                .join(' ');
+
+        const priceHTML = subject.lowestPrice && subject.salePrice ? `
+      <div class="mb-2 text-center content">
+        <span class="content">From: </span>
+        <span class="text-decoration-line-through text-muted content">${subject.lowestPrice}đ</span>
+        <span class="fw-bold text-success sale-price">${subject.salePrice}đ</span>
+      </div>` : '';
+
+        wrapper.innerHTML = `
+      <div class="card h-100 shadow-sm border border-dark subjectBox" id="items-${subject.author.id}">
+        <a href="subject-detail.html?id=${subject.id}" class="subjectLink">
+          <img src="../../${subject.thumbnailURL}" class="card-img-top" alt="${subject.name}">
+        </a>
+        <div class="card-body d-flex flex-column p-2">
+          <h5 class="card-title text-center subjectName">${subject.name}</h5>
+          ${taglinesHTML}
+          ${priceHTML}
+          <div class="d-flex justify-content-center gap-1 mt-auto">
+            <button class="btn btn-sm btn-primary" onclick="window.location.href='subject-detail.html?id=${subject.id}'">
+              <i class="fas fa-info-circle me-1"></i> Details
+            </button>
+            <button class="btn btn-sm btn-success" onclick="openRegisterModal('${subject.id}')">
+              <i class="fas fa-user-plus me-1"></i> Register
+            </button>
+          </div>
+        </div>
+      </div>`;
+
+        list.appendChild(col);
+    });
+
+    filteredSubjects = [...subjects];
+    renderPaginationElements(numberOfPages);
+}
+
+/**
+ * Tạo và hiển thị các nút phân trang dựa trên tổng số trang.
+ * @param {number} totalPages - Tổng số trang cần hiển thị.
+ */
+function renderPaginationElements(totalPages) {
+    const pagination = document.getElementById('subjectPagination');
+    pagination.innerHTML = '';
+
+    const createPageItem = (label, page, disabled = false, active = false) => {
+        const li = document.createElement('li');
+        li.className = 'page-item' + (disabled ? ' disabled' : '') + (active ? ' active' : '');
+        const a = document.createElement('a');
+        a.className = 'page-link';
+        a.href = '#';
+        a.innerHTML = label;
+        a.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (!disabled && currentPage !== page) {
+                currentPage = page;
+                await openOtherPages();
+            }
+        });
+        li.appendChild(a);
+        return li;
+    };
+
+    pagination.appendChild(createPageItem('&laquo;', currentPage - 1, currentPage === 1));
+
+    for (let i = 1; i <= totalPages; i++) {
+        pagination.appendChild(createPageItem(i, i, false, i === currentPage));
+    }
+
+    pagination.appendChild(createPageItem('&raquo;', currentPage + 1, currentPage === totalPages));
+    updateSubjectEntryInfo();
+}
+
+/**
+ * Cập nhật thông tin về số lượng entry đang được hiển thị.
+ */
+function updateSubjectEntryInfo() {
+    const startEntry = (currentPage - 1) * numberItemsPerPage + 1;
+    const endEntry = Math.min(currentPage * numberItemsPerPage, numberOfItems);
+
+    document.getElementById('subjectStartEntry').innerText = numberOfItems === 0 ? 0 : startEntry;
+    document.getElementById('subjectEndEntry').innerText = endEntry;
+    document.getElementById('subjectTotalEntries').innerText = numberOfItems;
+}
+
+/**
+ * Hiển thị danh sách các môn học nổi bật ở sidebar.
+ */
+export function renderFeaturedSubjects() {
+    const ul = document.getElementById('featuredSubjects');
+    ul.innerHTML = featuredSubjects.map(s => `
+    <li class="list-group-item border-0 p-1">
+      <a href="subject-detail.html?id=${s.id}" class="pageIndex">
+        <img src="../../${s.thumbnailURL}" alt="${s.name}"> ${s.name}
+      </a>
+    </li>`).join('');
+}
+
+/**
+ * Gán dữ liệu môn học từ server vào biến `subjects` và các biến toàn cục liên quan.
+ * @param {Array<Object>} data - Dữ liệu trả về từ API chứa danh sách môn học.
+ * @throws {Error} Nếu không có dữ liệu môn học.
+ */
+export function assignSubjects(data) {
+    console.log('subjects in assignSubjects: ', data[0].subjects);
+    const d = data[0].subjects;
+    if (!d)
+        throw new Error("There is no subjects like your description");
+
+    numberOfPages = data[0].numberOfPages;
+    numberOfItems = data[0].numberOfItems;
+    subjects = d.map(sub => ({
+            id: sub.id,
+            lowestPrice: sub.lowestPrice,
+            name: sub.name,
+            salePrice: sub.salePrice,
+            tagline: sub.tagline,
+            thumbnailURL: sub.thumbnailURL,
+            updatedDate: sub.updatedDate,
+            author: sub.contactInfo
+        }));
+    featuredSubjects = data[0].featured_subjects;
+}
+
+/**
+ * Gửi yêu cầu đến server để lấy dữ liệu trang khác dựa trên phân trang.
+ * @async
+ */
+export async function openOtherPages() {
+    try {
+        const path = `${window.contextPath}/user/subject_list?page=${currentPage}&size=${numberItemsPerPage}`;
+        const response = await fetch(path, {method: 'GET', headers: {'X-Source': 'pagination'}});
+        const data = await response.json();
+        assignSubjects(data);
+        renderSubjects();
+        renderFeaturedSubjects();
+    } catch (e) {
+        console.error(e);
+        showNotification(e.message, 'not success');
+    }
+}

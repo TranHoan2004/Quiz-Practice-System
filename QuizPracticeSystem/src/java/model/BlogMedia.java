@@ -15,7 +15,7 @@ public class BlogMedia {
     private UUID id;
     private UUID blogId;
     private String mediaType;    // Loại media (image, video, etc.)
-    private String mediaUrl;     // URL của file media
+    private String file_path;     // URL của file media
     private String caption;      // Chú thích cho media
     private Integer displayOrder; // Thứ tự hiển thị trong blog
 }

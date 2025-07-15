@@ -4,10 +4,7 @@
  */
 package dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -28,10 +25,10 @@ public class QuizTypeDAO extends DBContext {
 
     public List<QuizType> getAllQuizType() throws Exception {
         List<QuizType> quizTypeList = new ArrayList<>();
-        String sql = "SELECT * FROM `swp391`.quiztype";
-        try (Connection conn = getConnection();
-             PreparedStatement pre = conn.prepareStatement(sql);
-             ResultSet rs = pre.executeQuery()) {
+        var sql = "SELECT * FROM `swp391`.quiztype";
+        try (var conn = getConnection();
+             var pre = conn.prepareStatement(sql);
+             var rs = pre.executeQuery()) {
             while (rs.next()) {
                 quizTypeList.add(getQuizType(rs));
             }

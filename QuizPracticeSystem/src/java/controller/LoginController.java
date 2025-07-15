@@ -8,7 +8,6 @@ import controller.utils.LoginAttempt;
 import dao.AccountDAO;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -23,7 +22,23 @@ import java.util.logging.Logger;
 import model.Account;
 
 /**
- * @author Lenovo
+ * <h4>LoginController - Bộ điều khiển đăng nhập tài khoản</h4>
+ *
+ * <p>Servlet này chịu trách nhiệm xử lý cả hai phương thức GET và POST liên quan đến việc đăng nhập của người dùng.
+ * Nó thực hiện các bước như hiển thị form đăng nhập, kiểm tra thông tin đăng nhập, đếm số lần đăng nhập thất bại,
+ * khóa tài khoản tạm thời nếu vượt quá số lần cho phép, và định hướng người dùng đến trang phù hợp tùy theo vai trò.</p>
+ *
+ * <p>Phân quyền theo các Role ID cố định sẵn trong hệ thống:</p>
+ * <ul>
+ *     <li>Guest</li>
+ *     <li>Customer</li>
+ *     <li>Expert</li>
+ *     <li>Sale</li>
+ *     <li>Marketing</li>
+ *     <li>Admin</li>
+ * </ul>
+ *
+ * @author TuanKD
  */
 @WebServlet(name = "LoginController", urlPatterns = {"/user/login"})
 public class LoginController extends HttpServlet {
@@ -34,6 +49,17 @@ public class LoginController extends HttpServlet {
         this.ad = new AccountDAO();
     }
 
+    /**
+     * <h4>doGet - Hiển thị giao diện đăng nhập nếu chưa đăng nhập</h4>
+     *
+     * <p>Nếu người dùng đã đăng nhập, phương thức này sẽ kiểm tra vai trò (role) và chuyển hướng họ đến trang tương ứng.
+     * Nếu chưa đăng nhập, sẽ forward sang trang login JSP.</p>
+     *
+     * @param request  yêu cầu HTTP
+     * @param response phản hồi HTTP
+     * @throws ServletException nếu xảy ra lỗi servlet
+     * @throws IOException      nếu xảy ra lỗi I/O
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -69,6 +95,18 @@ public class LoginController extends HttpServlet {
         }
     }
 
+    /**
+     * <h4>doPost - Xử lý yêu cầu đăng nhập</h4>
+     *
+     * <p>Phương thức này thực hiện kiểm tra đầu vào (email, mật khẩu), xử lý đếm số lần sai,
+     * kiểm tra khóa tài khoản tạm thời, xác thực tài khoản từ cơ sở dữ liệu,
+     * và điều hướng đến trang tương ứng theo vai trò nếu đăng nhập thành công.</p>
+     *
+     * @param request  yêu cầu HTTP chứa thông tin đăng nhập (email, password)
+     * @param response phản hồi HTTP
+     * @throws ServletException nếu xảy ra lỗi servlet
+     * @throws IOException      nếu xảy ra lỗi I/O
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -146,5 +184,4 @@ public class LoginController extends HttpServlet {
         }
     }
     //Xu ly phan khoa tai khoan
-
 }

@@ -2,28 +2,44 @@ package controller;
 
 import dao.QuizDAO;
 import dao.QuizLevelDAO;
-import dao.TopicDAO;
 import dao.QuizTypeDAO;
 import dao.SubjectDAO;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import model.Quiz;
-import model.QuizLevel;
-import model.Topic;
-import model.QuizType;
-import model.Subject;
 
+import java.util.logging.*;
+
+import model.*;
+
+/**
+ * <h4>Servlet AddQuizController dùng để xử lý việc thêm mới một bài quiz</h4>
+ * - Cung cấp giao diện nhập thông tin quiz thông qua phương thức GET.<br>
+ * - Xử lý validate dữ liệu và thêm mới vào cơ sở dữ liệu bằng phương thức POST.<br>
+ *
+ * @author ThuanND
+ */
 @WebServlet(name = "AddQuizController", urlPatterns = {"/addquiz"})
 public class AddQuizController extends HttpServlet {
 
+    /**
+     * <h4>Xử lý HTTP GET: hiển thị form thêm mới quiz</h4>
+     * - Truy vấn danh sách Subject, QuizType, QuizLevel từ cơ sở dữ liệu.<br>
+     * - Truyền dữ liệu xuống `add_quiz.jsp`.
+     *
+     * @param request  HTTP request
+     * @param response HTTP response
+     * @throws ServletException nếu có lỗi trong quá trình dispatch
+     * @throws IOException      nếu xảy ra lỗi khi gửi phản hồi
+     * @author ThuanND
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -41,7 +57,6 @@ public class AddQuizController extends HttpServlet {
             request.setAttribute("quizTypeList", quizTypeList);
             request.setAttribute("levelList", levelList);
 
-            
 
             request.getRequestDispatcher("/jsp/course-features/add_quiz.jsp").forward(request, response);
         } catch (Exception e) {
@@ -50,10 +65,21 @@ public class AddQuizController extends HttpServlet {
         }
     }
 
+    /**
+     * <h4>Xử lý HTTP POST: thêm mới một bài quiz</h4>
+     * - Lấy dữ liệu từ form, kiểm tra hợp lệ (validate).<br>
+     * - Nếu có lỗi, hiển thị lại form với thông báo lỗi.<br>
+     * - Nếu hợp lệ, lưu quiz mới vào cơ sở dữ liệu và chuyển hướng sang danh sách quiz.
+     *
+     * @param request  HTTP request chứa dữ liệu form
+     * @param response HTTP response
+     * @throws ServletException nếu có lỗi trong quá trình xử lý
+     * @throws IOException      nếu xảy ra lỗi khi gửi phản hồi
+     * @author ThuanND
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
         String title = request.getParameter("title");
         String description = request.getParameter("description");
         String type = request.getParameter("type");
@@ -139,8 +165,7 @@ public class AddQuizController extends HttpServlet {
         quiz.setStatus(false);
         quiz.setNumberOfQuestions(numberOfQuestions);
         quiz.setSubjectId(subjectId);
-        
-        
+
 
         QuizDAO quizDao = new QuizDAO();
         try {

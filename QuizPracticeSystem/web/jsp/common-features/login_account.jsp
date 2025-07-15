@@ -29,7 +29,7 @@
 </style>
 <body>
 
-<jsp:include page="../../component/header.jsp"/>
+<jsp:include page="../../component/navbar.jsp"/>
 <form action="${pageContext.request.contextPath}/user/login" method="POST">
     <div class="background-overlay">
         <div class="login-container">

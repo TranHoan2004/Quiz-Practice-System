@@ -12,7 +12,7 @@ function createToast(message, type = 'info', duration = 4000) {
             display: 'flex',
             flexDirection: 'column',
             gap: '0.5rem',
-            maxWidth: '320px',
+            maxWidth: '320px'
         });
         document.body.appendChild(container);
     }
@@ -95,5 +95,5 @@ function createToast(message, type = 'info', duration = 4000) {
                 container.remove();
             }
         }, 300);
-    }
+}
 }

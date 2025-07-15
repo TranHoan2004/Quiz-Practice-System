@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class RegistrationCourse {
+
     private String courseId;
     private String subject;
     private LocalDate registrationTime;

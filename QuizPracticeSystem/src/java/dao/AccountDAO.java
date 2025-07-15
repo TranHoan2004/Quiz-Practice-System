@@ -26,15 +26,11 @@ public class AccountDAO extends DBContext {
             return false;
         }
 
-        // Validate role_id exists
-        if (account.getRoleId() == null) {
-            logger.log(Level.SEVERE, "Invalid role_id provided");
-            return false;
-        }
-
-        String sql = "INSERT INTO `swp391`.account (id, email, full_name, password,"
-                + " dob, gender, created_date, status, phone, image_url, role_id)"
-                + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = """
+                    INSERT INTO `swp391`.account (id, email, full_name, password,
+                    dob, gender, created_date, status, phone, image_url, role_id)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """;
 
         try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, account.getId().toString());
@@ -58,8 +54,7 @@ public class AccountDAO extends DBContext {
 
     public boolean isEmailExist(String email) {
         String sql = "SELECT * FROM `swp391`.account WHERE email = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
@@ -86,13 +81,13 @@ public class AccountDAO extends DBContext {
 
     // Cập nhật thông tin tài khoản người dùng trong cơ sở dữ liệu.
     public void updateAccount(Account account) {
-        String sql = "UPDATE `swp391`.`account` " +
-                "SET `full_name` = ?, " +
-                "    `dob` = ?, " +
-                "    `gender` = ?, " +
-                "    `phone` = ?, " +
-                "    `image_url` = ? " +
-                "WHERE `id` = ?";
+        String sql = "UPDATE `swp391`.`account` "
+                + "SET `full_name` = ?, "
+                + "    `dob` = ?, "
+                + "    `gender` = ?, "
+                + "    `phone` = ?, "
+                + "    `image_url` = ? "
+                + "WHERE `id` = ?";
 
         logger.log(Level.INFO, "Giá trị image_url trước khi cập nhật: {0}", account.getImageUrl());
 
@@ -117,7 +112,7 @@ public class AccountDAO extends DBContext {
     }
 
     public Account getAccountById(String id) {
-        logger.info("getById " + id);
+//        logger.info("getById " + id);
         Account account = Account.builder().build();
 
         String sql = "SELECT * FROM `swp391`.account WHERE id = ?";
@@ -129,8 +124,7 @@ public class AccountDAO extends DBContext {
         logger.info("Finding account by email and password: " + email);
         Account acc = Account.builder().build();
         String sql = " SELECT * FROM `swp391`.account WHERE email = ? AND password = ? ";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
             ps.setString(2, password);
             try (ResultSet rs = ps.executeQuery()) {
@@ -151,8 +145,7 @@ public class AccountDAO extends DBContext {
 
     public String getRoleIdByRoleName(String role) {
         String sql = "SELECT id FROM `swp391`.setting WHERE value = ?";
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, role);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -171,14 +164,29 @@ public class AccountDAO extends DBContext {
                 SET a.password = ?
                 WHERE a.email = ?
                 """;
-        try (Connection connection = getConnection();
-             PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, password);
             ps.setString(2, email);
             ps.executeUpdate();
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
+    }
+
+    public int getCountNewAccountByDate(String startDate, String endDate) {
+        String sql = "SELECT COUNT(*) FROM `swp391`.account WHERE created_date BETWEEN ? AND ?";
+        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, startDate);
+            ps.setString(2, endDate);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return 0;
     }
 
     private Account getAccount(ResultSet rs) throws SQLException {

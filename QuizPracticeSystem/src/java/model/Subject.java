@@ -1,5 +1,6 @@
 package model;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import lombok.*;
@@ -15,4 +16,6 @@ public class Subject {
     private String name;
     private String thumbnailURL;
     private boolean featureFlag;
+    private String authorId;
+    private LocalDate updatedDate;
 }

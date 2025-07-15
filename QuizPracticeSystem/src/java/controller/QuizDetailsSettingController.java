@@ -49,14 +49,14 @@ public class QuizDetailsSettingController extends HttpServlet {
                 session.setAttribute("QuizQuestionSourceConfigList", quizQuestionSourceConfigList);
             }
 
-            // Tải các loại source item
-//            List<SourceItemDTO> sourceItemDomainList = domainOrGroupDao.getListSourceItemSetting(domainOrGroupDao.getListDomainOrGroupBySubjectId(quiz.getSubjectId(), "Domain"), "domain");
-//            List<SourceItemDTO> sourceItemGroupList = domainOrGroupDao.getListSourceItemSetting(domainOrGroupDao.getListDomainOrGroupBySubjectId(quiz.getSubjectId(), "Group"), "group");
+             
+            List<SourceItemDTO> sourceItemDomainList = domainOrGroupDao.getListSourceItemSetting(domainOrGroupDao.getListDomainOrGroupBySubjectId(quiz.getSubjectId(), "Domain"), "domain");
+            List<SourceItemDTO> sourceItemGroupList = domainOrGroupDao.getListSourceItemSetting(domainOrGroupDao.getListDomainOrGroupBySubjectId(quiz.getSubjectId(), "Group"), "group");
             List<SourceItemDTO> sourceItemTopicList = topicDao.getListSourceItemTopic(topicDao.getTopicsBySubjectId(quiz.getSubjectId()));
 
             List<SourceItemDTO> sourceItemList = new ArrayList<>();
-//            sourceItemList.addAll(sourceItemDomainList);
-//            sourceItemList.addAll(sourceItemGroupList);
+            sourceItemList.addAll(sourceItemDomainList);
+            sourceItemList.addAll(sourceItemGroupList);
             sourceItemList.addAll(sourceItemTopicList);
 
             session.setAttribute("quiz", quiz);

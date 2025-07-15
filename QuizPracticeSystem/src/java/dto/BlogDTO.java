@@ -17,7 +17,6 @@ public class BlogDTO {
     private String title;
     private String briefInfo;
     private String content;
-    private String thumbnailUrl;
     private String categoryId;
     private String category;
     private String accountId;

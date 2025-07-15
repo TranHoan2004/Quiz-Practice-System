@@ -165,3 +165,19 @@
 
 })(jQuery);
 
+function assignTitle(content) {
+    const {main_title, items} = content;
+
+    const div = document.getElementById('liItems');
+    div.innerHTML = '<li class="breadcrumb-item"><a class="text-white" href="#">Home</a></li>'
+    if (Array.isArray(items)) {
+        div.innerHTML += items.map((item, index) => {
+            const isLast = index === items.length - 1;
+            return isLast ? `<li class="breadcrumb-item text-white active" aria-current="page">${item}</li>` : `<li class="breadcrumb-item"><a class="text-white" href="#">${item}</a></li>`;
+        }).join('');
+    } else {
+        div.innerHTML += `<li class="breadcrumb-item text-white active" aria-current="page">${items}</li>`;
+    }
+
+    document.getElementById('title').innerText = main_title;
+}

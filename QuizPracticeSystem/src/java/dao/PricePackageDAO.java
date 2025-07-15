@@ -2,8 +2,6 @@ package dao;
 
 import model.PricePackage;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +22,10 @@ public class PricePackageDAO extends DBContext {
 
     public List<PricePackage> getAll() throws Exception {
         List<PricePackage> list = new ArrayList<>();
-        String sql = """
+        var sql = """
                 SELECT * FROM `swp391`.pricepackage
                 """;
-        try (Connection connection = getConnection(); PreparedStatement pre = connection.prepareStatement(sql); ResultSet rs = pre.executeQuery()) {
+        try (var connection = getConnection(); var pre = connection.prepareStatement(sql); var rs = pre.executeQuery()) {
             while (rs.next()) {
                 list.add(getEntity(rs));
             }
@@ -39,15 +37,14 @@ public class PricePackageDAO extends DBContext {
     }
 
     public PricePackage getByCourse(String id) throws Exception {
-        log.info("getByCourse");
-        PricePackage pp = PricePackage.builder().build();
-        String sql = """
+        var pp = PricePackage.builder().build();
+        var sql = """
                 SELECT * FROM `swp391`.pricepackage p
                 WHERE p.course_id=?
                 """;
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (var rs = ps.executeQuery()) {
                 while (rs.next()) {
                     pp = getEntity(rs);
                 }
@@ -60,11 +57,11 @@ public class PricePackageDAO extends DBContext {
     }
 
     public void deleteById(String id) throws Exception {
-        String sql = """
+        var sql = """
                 DELETE FROM `swp391`.pricepackage p
                 WHERE p.id=?
                 """;
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, id);
             ps.executeUpdate();
         } catch (Exception e) {
@@ -74,11 +71,11 @@ public class PricePackageDAO extends DBContext {
     }
 
     public void create(PricePackage pp) throws Exception {
-        String sql = """
+        var sql = """
                 INSERT INTO `swp391`.pricepackage (id, course_id, title, price, sale_price, access_duration, status, description)
                 VALUES (?,?,?,?,?,?,?,?)
                 """;
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, pp.getId().toString());
             ps.setString(2, pp.getCourseId());
             ps.setString(3, pp.getTitle());
@@ -96,13 +93,13 @@ public class PricePackageDAO extends DBContext {
 
     public List<PricePackage> getByCourseId(String courseId) throws Exception {
         List<PricePackage> list = new ArrayList<>();
-        String sql = """
-            SELECT * FROM `swp391`.pricepackage
-            WHERE course_id = ?
-            """;
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        var sql = """
+                SELECT * FROM `swp391`.pricepackage
+                WHERE course_id = ?
+                """;
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, courseId);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (var rs = ps.executeQuery()) {
                 while (rs.next()) {
                     list.add(getEntity(rs));
                 }
@@ -115,12 +112,12 @@ public class PricePackageDAO extends DBContext {
     }
 
     public void update(PricePackage pp) throws Exception {
-        String sql = """
-        UPDATE pricepackage
-        SET title = ?, price = ?, sale_price = ?, access_duration = ?, status = ?
-        WHERE id = ?
-    """;
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        var sql = """
+                    UPDATE `swp391`.pricepackage
+                    SET title = ?, price = ?, sale_price = ?, access_duration = ?, status = ?
+                    WHERE id = ?
+                """;
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             ps.setString(1, pp.getTitle());
             ps.setInt(2, pp.getPrice());
             ps.setInt(3, pp.getSalePrice());

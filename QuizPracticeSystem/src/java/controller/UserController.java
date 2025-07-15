@@ -10,7 +10,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import model.Account;
 import utils.AuthUtils;
 import utils.MailUtil;
@@ -39,40 +38,81 @@ public class UserController extends HttpServlet {
         this.hrb = new HandleRequestBody();
     }
 
+    /**
+     * <h4>Xử lý yêu cầu GET từ phía client.</h4>
+     * <p>
+     * Phương thức này xác thực mã token được gửi qua URL, so sánh với token hệ
+     * thống đã lưu, và gửi kết quả về qua WebSocket.</p>
+     *
+     * @param req Đối tượng {@link HttpServletRequest} chứa thông tin yêu cầu.
+     * @param resp Đối tượng {@link HttpServletResponse} dùng để trả về kết quả.
+     * @throws ServletException Nếu xảy ra lỗi Servlet.
+     * @throws IOException Nếu xảy ra lỗi I/O.
+     * @author HoanTX
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String accessToken = req.getParameter("token");
-        boolean status = accessToken.equals(token);
+        var accessToken = req.getParameter("token");
+        var status = accessToken.equals(token);
         MagicLinkSocket.notifyClient(email, status);
         req.getRequestDispatcher("/jsp/common-features/verify_token_successfully.html").forward(req, resp);
     }
 
+    /**
+     * <h4>Xử lý yêu cầu POST từ phía client với nhiều loại hành vi khác nhau
+     * dựa vào header "Content".</h4>
+     * <p>
+     * Các hành vi bao gồm: xác thực OTP Google, gửi email, tạo mã xác thực 6
+     * số, tạo mã QR, gửi Magic Link, và xác minh mã.</p>
+     *
+     * @param request Đối tượng {@link HttpServletRequest} chứa dữ liệu gửi từ
+     * client.
+     * @param response Đối tượng {@link HttpServletResponse} dùng để phản hồi.
+     * @author HoanTX
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) {
-        String contentHeader = request.getHeader("Content");
+        var contentHeader = request.getHeader("Content");
         try {
             if (contentHeader != null) {
                 logger.log(Level.INFO, "Header: {0}", contentHeader);
                 switch (contentHeader) {
-                    case "google_auth" -> authenticateOtp(request, response);
-                    case "email" -> getEmail(request, response);
-                    case "sent_otp" -> sendSixDigitsCode(response);
-                    case "qr" -> handleGoogleAuthenticator(request, response);
-                    case "magic_link" -> handleMagicLink(response);
-                    default -> validateCode(request, response);
+                    case "google_auth" ->
+                        authenticateOtp(request, response);
+                    case "email" ->
+                        getEmail(request, response);
+                    case "sent_otp" ->
+                        sendSixDigitsCode(response);
+                    case "qr" ->
+                        handleGoogleAuthenticator(request, response);
+                    case "magic_link" ->
+                        handleMagicLink(response);
+                    default ->
+                        validateCode(request, response);
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
     }
 
+    /**
+     * <h4>Xử lý yêu cầu PUT dùng để cập nhật mật khẩu của người dùng.</h4>
+     * <p>
+     * Lấy mật khẩu từ body request, cập nhật vào database dựa theo email đã
+     * lưu.</p>
+     *
+     * @param req Đối tượng {@link HttpServletRequest} chứa dữ liệu yêu cầu.
+     * @param resp Đối tượng {@link HttpServletResponse} dùng để trả về trạng
+     * thái.
+     * @author HoanTX
+     */
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
         logger.info("Received PUT request");
         try {
-            Map<String, String> params = hrb.getDataFromRequest(req);
-            String password = params.get("password");
+            Map<String, Object> params = hrb.getDataFromRequest(req);
+            var password = (String) params.get("password");
             aDAO.updatePasswordByEmail(password, email);
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().write("OK");
@@ -82,6 +122,14 @@ public class UserController extends HttpServlet {
     }
 
     // <editor-fold> desc="Handle 6-digits method"
+    /**
+     * <h4>Tạo mã xác thực 6 chữ số và gửi đến email người dùng hiện tại.</h4>
+     *
+     * @param resp Đối tượng {@link HttpServletResponse} dùng để trả trạng thái
+     * thành công.
+     * @throws IOException Nếu có lỗi khi gửi phản hồi.
+     * @author HoanTX
+     */
     private void sendSixDigitsCode(HttpServletResponse resp) throws IOException {
         resp.setContentType("text/plain");
         createCode();
@@ -90,15 +138,31 @@ public class UserController extends HttpServlet {
         resp.getWriter().println("OK");
     }
 
+    /**
+     * <p>
+     * Tạo ngẫu nhiên mã xác thực gồm 6 chữ số và lưu vào biến toàn cục.</p>
+     *
+     * @author HoanTX
+     */
     private void createCode() {
-        Random random = new Random();
-        int randomInt = 100000 + random.nextInt(900000);
+        var random = new Random();
+        var randomInt = 100000 + random.nextInt(900000);
         code = String.valueOf(randomInt);
         logger.info(code);
     }
 
+    /**
+     * <p>
+     * Gửi email đến người dùng với nội dung được chỉ định, bao gồm mã xác thực
+     * hoặc đường dẫn magic link.</p>
+     *
+     * @param email Email người nhận.
+     * @param name Tên người nhận (hiển thị trong nội dung email).
+     * @param text Nội dung mô tả sẽ hiển thị trước mã xác thực hoặc liên kết.
+     * @author HoanTX
+     */
     private void sendEmail(String email, String name, String text) {
-        String content = """
+        var content = """
                 <html>
                 <body style='font-family:sans-serif;'>
                          <div style='max-width:600px;margin:0 auto;padding:20px;border:1px solid #eee;border-radius:6px;background-color:#fff;'>
@@ -126,10 +190,20 @@ public class UserController extends HttpServlet {
         MailUtil.sendMail(email, "[Mã xác thực] Xác thực tài khoản QPS", content);
     }
 
+    /**
+     * <p>
+     * Nhận mã từ client và xác minh với mã hệ thống đã lưu.</p>
+     *
+     * @param req Đối tượng {@link HttpServletRequest} chứa mã xác thực.
+     * @param resp Đối tượng {@link HttpServletResponse} trả về trạng thái xác
+     * thực.
+     * @throws IOException Nếu có lỗi khi gửi phản hồi.
+     * @author HoanTX
+     */
     private void validateCode(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Map<String, String> params = hrb.getDataFromRequest(req);
-        String receivedCode = params.get("code");
-        logger.info("Received code: " + receivedCode);
+        Map<String, Object> params = hrb.getDataFromRequest(req);
+        var receivedCode = params.get("code");
+        logger.log(Level.INFO, "Received code: {0}", receivedCode);
         if (receivedCode != null) {
             if (receivedCode.equals(code)) {
                 logger.info("Code is valid");
@@ -143,9 +217,20 @@ public class UserController extends HttpServlet {
     // </editor-fold>
 
     // <editor-fold> desc="Handle Google Authenticator method"
+    /**
+     * <p>
+     * Xử lý yêu cầu tạo mã QR cho Google Authenticator dựa trên email người
+     * dùng.</p>
+     *
+     * @param req Đối tượng {@link HttpServletRequest}.
+     * @param resp Đối tượng {@link HttpServletResponse} trả về ảnh QR dạng
+     * base64.
+     * @throws IOException Nếu có lỗi I/O.
+     * @author HoanTX
+     */
     private void handleGoogleAuthenticator(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         try {
-            String qr = createQR(email, req);
+            var qr = createQR(email, req);
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.getWriter().println(qr);
         } catch (WriterException e) {
@@ -154,29 +239,49 @@ public class UserController extends HttpServlet {
         }
     }
 
+    /**
+     * <p>
+     * Tạo mã QR Google Authenticator từ email người dùng và lưu secret vào
+     * session.</p>
+     *
+     * @param email Email người dùng.
+     * @param req Đối tượng {@link HttpServletRequest} để lấy session.
+     * @return Chuỗi base64 ảnh QR.
+     * @throws IOException Nếu lỗi xảy ra trong quá trình sinh mã.
+     * @throws WriterException Nếu có lỗi khi tạo mã QR.
+     * @author HoanTX
+     */
     private String createQR(String email, HttpServletRequest req) throws IOException, WriterException {
-        HttpSession session = req.getSession();
-        String secret = AuthUtils.generateSecretKey();
-        String qrCode = AuthUtils.generateQRCodeBase64(email, secret);
+        var session = req.getSession();
+        var secret = session.getAttribute("secret");
+        if (secret == null) {
+            secret = AuthUtils.generateSecretKey();
+            session.setAttribute("secret", secret);
+        }
+        var qrCode = AuthUtils.generateQRCodeBase64(email, (String) secret);
         session.setAttribute("secret", secret);
         return qrCode;
     }
 
+    /**
+     * <p>
+     * Xác thực mã OTP Google Authenticator gửi từ phía client.</p>
+     *
+     * @param req Đối tượng {@link HttpServletRequest} chứa mã OTP.
+     * @param resp Đối tượng {@link HttpServletResponse} trả kết quả xác thực.
+     * @throws IOException Nếu có lỗi khi gửi phản hồi.
+     * @author HoanTX
+     */
     private void authenticateOtp(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        HttpSession session = req.getSession();
-        Map<String, String> params = hrb.getDataFromRequest(req);
-        String otpStr = params.get("otp");
-        logger.info("Received OTP: " + otpStr);
-        String firstPart = otpStr.substring(0, 3);
-        String secondPart = otpStr.substring(3);
+        var session = req.getSession();
+        Map<String, Object> params = hrb.getDataFromRequest(req);
+        var otpStr = (String) params.get("otp");
+        var otp = Integer.parseInt(otpStr.trim());
 
-        String newOtp = String.join(firstPart, " ", secondPart);
-        int otp = Integer.parseInt(newOtp);
+        var secret = session.getAttribute("secret").toString();
 
-        String secret = session.getAttribute("secret").toString();
-
-        GoogleAuthenticator gAuth = new GoogleAuthenticator();
-        boolean isCodeValid = gAuth.authorize(secret, otp);
+        var gAuth = new GoogleAuthenticator();
+        var isCodeValid = gAuth.authorize(secret, otp);
 
         if (isCodeValid) {
             resp.setStatus(HttpServletResponse.SC_OK);
@@ -189,23 +294,48 @@ public class UserController extends HttpServlet {
     // </editor-fold>
 
     // Handle magic link method
+    /**
+     * <p>
+     * Tạo Magic Link với token ngẫu nhiên có thời hạn 5 phút và gửi qua
+     * email.</p>
+     *
+     * @param resp Đối tượng {@link HttpServletResponse} phản hồi thành công cho
+     * client.
+     * @throws IOException Nếu có lỗi khi gửi email hoặc phản hồi.
+     * @author HoanTX
+     */
     private void handleMagicLink(HttpServletResponse resp) throws IOException {
-        TokenUtils.setToken(UUID.randomUUID().toString(), 5 * 60 * 1000); // 5 minutes expiration
+        TokenUtils.setToken(UUID.randomUUID().toString(), 5 * 60 * 1000); // 5-minute expiration
         token = TokenUtils.getToken();
         logger.info("Received Magic Link: " + token);
-        sendEmail(email, acc.getFullName(), "Đây là đường dẫn xác thực. Hãy nhấn vào <a href='" + token + "'>đường dẫn</a>  để xác minh tài khoản của bạn");
+//        var link = "http://localhost:8080/qps/user?token=" + token;
+//        sendEmail(email, acc.getFullName(), "Đây là đường dẫn xác thực. Hãy nhấn vào <a href='" + link + "'>đường dẫn</a>  để xác minh tài khoản của bạn");
         resp.setStatus(HttpServletResponse.SC_OK);
         resp.getWriter().println("Magic link sent to your email.");
     }
 
+    /**
+     * <h4>Lấy địa chỉ email từ request body</h4>
+     * <p>
+     * Kiểm tra email có tồn tại trong hệ thống không.</p>
+     * <p>
+     * Nếu tồn tại, lưu email và tài khoản vào biến toàn cục để sử dụng cho các
+     * bước xác thực tiếp theo.</p>
+     *
+     * @param req Đối tượng {@link HttpServletRequest} chứa dữ liệu email.
+     * @param resp Đối tượng {@link HttpServletResponse} phản hồi nếu email
+     * không tồn tại.
+     * @throws IOException Nếu có lỗi khi đọc hoặc ghi dữ liệu.
+     * @author HoanTX
+     */
     private void getEmail(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Map<String, String> params = hrb.getDataFromRequest(req);
-        email = params.get("email");
+        Map<String, Object> params = hrb.getDataFromRequest(req);
+        email = (String) params.get("email");
         if (!aDAO.isEmailExist(email)) {
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             resp.getWriter().println("This email does not exist in the system.");
         }
         acc = aDAO.getAccountByEmail(email);
-        logger.info("Email: " + email);
+        logger.log(Level.INFO, "Email: {0}", email);
     }
 }

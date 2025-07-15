@@ -1,105 +1,155 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
-
 package controller;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import dao.*;
 import dto.BlogDTO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 import model.Account;
 import model.Blog;
+import model.BlogMedia;
 
-/**
- *
- * @author Huong
- */
-@WebServlet(name="BlogListController", urlPatterns={"/blog-list"})
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+@WebServlet(name = "BlogListController", urlPatterns = {"/blog-list"})
 public class BlogListController extends HttpServlet {
 
-    private final BlogDAO blogDAO;
-    private final AccountDAO accountDAO;
-    private final Logger logger;
+    private final BlogDAO blogDAO = new BlogDAO();
+    private final AccountDAO accountDAO = new AccountDAO();
+    private final BlogMediaDAO blogMediaDAO = new BlogMediaDAO();
+    private final Logger logger = Logger.getLogger(BlogListController.class.getName());
 
-    public BlogListController() {
-        this.blogDAO = new BlogDAO();
-        this.accountDAO = new AccountDAO();
-        this.logger = Logger.getLogger(this.getClass().getName());
-    }
-
+    /**
+     * <h4>Handle GET request for blog list page</h4>
+     * Handles search and filtering based on keyword and category,
+     * applies pagination and forwards to JSP view.
+     *
+     * @param request  the HttpServletRequest object
+     * @param response the HttpServletResponse object
+     * @throws ServletException if forward fails
+     * @throws IOException      if I/O error occurs
+     * @author HuongNI
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         response.setContentType("text/html;charset=UTF-8");
 
-        String message = "";
         String keyword = request.getParameter("keyword");
         String category = request.getParameter("category");
-        String page = request.getParameter("page");
+        int currentPage = parsePage(request.getParameter("page"));
+        int pageSize = 5;
 
-        List<BlogDTO> categories = getAllCategories();
-        List<BlogDTO> latestBlogs = getLatestBlogs();
+        List<BlogDTO> latestBlogs = loadLatestBlogs(5);
+        List<BlogDTO> categories = loadCategories("Blog Category");
 
         try {
-            int currentPage = page == null ? 1 : Integer.parseInt(page);
-            int pageSize = 5;
-
-            if (keyword == null && category == null) {
-                renderBlogPagination(request, null, null, currentPage, pageSize );
-            } else {
-                renderBlogPagination(request, keyword, category, currentPage, pageSize);
-            }
+            renderBlogPagination(request, keyword, category, currentPage, pageSize);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            message = e.getMessage();
+            logger.log(Level.SEVERE, "Error in blog pagination: " + e.getMessage(), e);
+            request.setAttribute("message", "Unable to load blog list.");
         }
 
         request.setAttribute("latestBlogs", latestBlogs);
         request.setAttribute("categories", categories);
-        handleRequest(request, response, message);
-    }
 
-    private void handleRequest(HttpServletRequest request, HttpServletResponse response, String message) throws ServletException, IOException {
-        request.setAttribute("message", message);
         request.getRequestDispatcher("/jsp/common-features/blog-list.jsp").forward(request, response);
     }
 
-    private List<BlogDTO> getAllCategories() {
+
+    /**
+     * <h4>Parse page string to number</h4>
+     *
+     * @param pageParam  pageNumber String
+     **/
+    private int parsePage(String pageParam) {
         try {
-            return blogDAO.getCategories();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            return new ArrayList<>();
+            return (pageParam != null) ? Integer.parseInt(pageParam) : 1;
+        } catch (NumberFormatException e) {
+            return 1;
         }
     }
 
-    private List<BlogDTO> getLatestBlogs() {
-        return getBlogDTO(blogDAO.getLatestBlogs(5));
+    /**
+     * <h4>Get all categories with the given group name</h4>
+     *
+     * @param groupName category group name
+     * @return list of BlogDTO representing categories
+     * @author HuongNI
+     */
+    private List<BlogDTO> loadCategories(String groupName) {
+        try {
+            return blogDAO.getCategories(groupName);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to load categories: " + e.getMessage(), e);
+            return Collections.emptyList();
+        }
     }
 
-    private List<BlogDTO> getBlogDTO(List<Blog> blogs) {
+    /**
+     * <h4>Retrieve latest blogs</h4>
+     *
+     * @return list of BlogDTO with recent blog posts
+     * @author HuongNI
+     */
+    private List<BlogDTO> loadLatestBlogs(int limit) {
+        List<Blog> blogs = blogDAO.getLatestBlogs(limit);
+        return convertToDTOs(blogs);
+    }
+
+    /**
+     * <h4>Render blog pagination with optional filters</h4>
+     *
+     * @param request    the HttpServletRequest
+     * @param keyword    search keyword (nullable)
+     * @param categoryEncoded encoded category ID (nullable)
+     * @param page       current page number
+     * @param pageSize   number of items per page
+     * @author HuongNI
+     */
+    private void renderBlogPagination(HttpServletRequest request, String keyword, String categoryEncoded, int page, int pageSize) {
+        String categoryId = (categoryEncoded != null) ? utils.Encoder.decode(categoryEncoded).trim() : null;
+        if (categoryId != null && categoryId.isEmpty()) {
+            categoryId = null;
+        }
+
+        List<Blog> blogs = (keyword == null && categoryId == null)
+                ? blogDAO.getBlogs(null, null, page, pageSize, 1)
+                : blogDAO.getBlogs(keyword, categoryId, page, pageSize, 1);
+
+        List<BlogDTO> blogDTOs = convertToDTOs(blogs);
+
+        int totalBlogs = blogDAO.getTotalBlogs(keyword, categoryId, null);
+        int totalPages = (int) Math.ceil((double) totalBlogs / pageSize);
+
+        request.setAttribute("blogs", blogDTOs);
+        request.setAttribute("currentIndex", page);
+        request.setAttribute("totalPages", totalPages);
+        request.setAttribute("totalElements", totalBlogs);
+    }
+
+    /**
+     * <h4>Convert Blog entities to BlogDTO list</h4>
+     *
+     * @param blogs list of Blog entities
+     * @return list of BlogDTOs
+     * @author HuongNI
+     */
+    private List<BlogDTO> convertToDTOs(List<Blog> blogs) {
         List<BlogDTO> list = new ArrayList<>();
-        try {
-            for (Blog blog : blogs) {
+        for (Blog blog : blogs) {
+            try {
                 Account acc = accountDAO.getAccountById(blog.getAccountId());
                 if (acc == null) continue;
 
                 String categoryName = blogDAO.getCategoryNameById(blog.getCategory());
+                List<BlogMedia> mediaList = blogMediaDAO.getBlogMediaByBlogId(blog.getId());
 
-                BlogDTO blogDTO = BlogDTO.builder()
+                BlogDTO dto = BlogDTO.builder()
                         .id(utils.Encoder.encode(blog.getId().toString()))
                         .accountId(acc.getId().toString())
                         .avatarUrl(acc.getImageUrl())
@@ -108,50 +158,19 @@ public class BlogListController extends HttpServlet {
                         .title(blog.getTitle())
                         .content(blog.getContent())
                         .category(categoryName)
+                        .categoryId(utils.Encoder.encode(blog.getCategory().toString()))
                         .createdDate(blog.getCreatedDate())
                         .views(blog.getViews())
-                        .thumbnailUrl(blog.getThumbnailUrl())
+                        .status(blog.isStatus())
                         .flagFeature(blog.isFlagFeature())
+                        .blogMediaList(mediaList)
                         .build();
 
-                list.add(blogDTO);
+                list.add(dto);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Failed to convert Blog to DTO: " + e.getMessage(), e);
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return list;
     }
-
-    // Pagination
-    private void renderBlogPagination(HttpServletRequest request, String keyword, String categoryId, int page, int pageSize) {
-        // Decode and normalize categoryId
-        if (categoryId != null) {
-            categoryId = utils.Encoder.decode(categoryId).trim();
-            if (categoryId.isEmpty()) {
-                categoryId = null;
-            }
-        }
-
-        // Fetch blogs based on filters
-        List<Blog> blogs;
-        if (keyword == null && categoryId == null) {
-            blogs = blogDAO.getBlogs(page, pageSize, 1);
-        } else {
-            blogs = blogDAO.getBlogs(keyword, categoryId, page, pageSize, 1);
-        }
-
-        // Convert blogs to DTOs
-        List<BlogDTO> blogDTOs = getBlogDTO(blogs);
-
-        // Pagination info
-        int totalBlogs = blogDAO.getTotalBlogs(keyword, categoryId);
-        int totalPages = (int) Math.ceil((double) totalBlogs / pageSize);
-
-        // Set attributes for the view
-        request.setAttribute("blogs", blogDTOs);
-        request.setAttribute("currentIndex", page);
-        request.setAttribute("totalPages", totalPages);
-        request.setAttribute("totalElements", totalBlogs);
-    }
-
 }

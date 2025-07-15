@@ -20,5 +20,5 @@ public class LessonDTO {
     private String id;
     private String title; 
     private String type;
-    private boolean active;     // Trạng thái: true = Active, false = Inactive
+    private boolean active;
 }

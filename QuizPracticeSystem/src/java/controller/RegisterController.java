@@ -34,12 +34,6 @@ public class RegisterController extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-        request.getRequestDispatcher("/jsp/common-features/register.jsp").forward(request, response);
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
             String fullName = request.getParameter("fullName");
@@ -47,7 +41,7 @@ public class RegisterController extends HttpServlet {
             String phoneNumber = request.getParameter("phoneNumber");
             int gender = Integer.parseInt(request.getParameter("gender"));
 
-            String message = null;
+            String message;
 
             if (accountDAO.isEmailExist(email)) {
                 message = "Email is already exist!";
@@ -106,8 +100,15 @@ public class RegisterController extends HttpServlet {
                 .status(false)
                 .phoneNumber(phoneNumber)
                 .createdDate(LocalDate.now())
-                .roleId(accountDAO.getRoleIdByRoleName("Admin"))
+                .roleId(accountDAO.getRoleIdByRoleName("USER"))
                 .build();
+        
+        // Validate role_id exists
+        if (account.getRoleId() == null) {
+            logger.log(Level.SEVERE, "Invalid role_id provided");
+            return false;
+        }
+        
         return this.accountDAO.createAccount(account);
     }
 

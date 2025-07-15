@@ -4,10 +4,10 @@ import dao.AccountDAO;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serial;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +26,7 @@ import model.Account;
         maxFileSize = 1024 * 1024 * 10,      // 10MB
         maxRequestSize = 1024 * 1024 * 50)   // 50MB
 public class UserProfileController extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
     private static final String UPLOAD_DIR = "images"; // Thư mục lưu hình ảnh
     private static final Logger logger = Logger.getLogger(UserProfileController.class.getName());

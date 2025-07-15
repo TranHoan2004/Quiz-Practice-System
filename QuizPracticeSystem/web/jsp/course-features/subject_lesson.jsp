@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,8 +26,8 @@
     </head>
 
     <body>
-        <jsp:include page="../../component/component.subject/header.jsp"/>
-        <jsp:include page="../../component/component.subject/header.html"/>
+        <jsp:include page="component.subject/header.jsp"/>
+        <jsp:include page="component.subject/header.html"/>
 
         <!-- Lessons Start -->
         <div class="container-xxl py-5">
@@ -96,9 +97,11 @@
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <div></div>
                             <div>
-                                <a href="#" class="btn btn-sm btn-primary">
+                                <a href="${pageContext.request.contextPath}/user/subject_lesson/lesson_detail?courseId=${param.id}"
+                                   class="btn btn-sm btn-primary">
                                     <i class="bi bi-plus-lg"></i> Add New Lesson
                                 </a>
+
                                 <div style="position: relative; display: inline-block;">
                                     <button id="columnToggleBtn" class="btn btn-sm btn-outline-secondary ms-2" onclick="toggleColumnSelector(event)">
                                         <i class="bi bi-layout-three-columns"></i> Column
@@ -151,16 +154,14 @@
                                                     </c:choose>
                                                 </td>
                                                 <td>
-                                                    <!-- Nút Edit -->
-                                                    <form method="get" action="${pageContext.request.contextPath}/user/lesson/detail" class="d-inline">
-                                                        <input type="hidden" name="id" value="${l.id}" />
-                                                        <input type="hidden" name="courseId" value="${param.id}" />
-                                                        <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent" title="Edit Lesson">
-                                                            <i class="bi bi-pencil-square text-primary" style="font-size: 1.5rem;"></i>
+                                                    <form method="get" action="${pageContext.request.contextPath}/user/subject_lesson/lesson_detail" class="d-inline">
+                                                        <input type="hidden" name="lessonId" value="${l.id}" />
+                                                        <button type="submit"
+                                                                class="btn btn-link btn-sm text-info p-0"
+                                                                title="Edit">
+                                                            <i class="bi bi-pencil-square fs-5"></i>
                                                         </button>
                                                     </form>
-
-                                                    <!-- Nút Toggle Trạng thái -->
                                                     <form method="post" action="${pageContext.request.contextPath}/user/subject_lesson/status-toggle" class="d-inline">
                                                         <input type="hidden" name="lessonId" value="${l.id}" />
                                                         <input type="hidden" name="courseId" value="${not empty courseId ? courseId : param.id}" />
@@ -276,6 +277,16 @@
                                             });
 
                                             function toggleColumn(index) {
+                                                const checkboxes = document.querySelectorAll("#columnSelector input[type='checkbox']");
+                                                const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+
+                                                // Nếu chỉ còn 1 checkbox đang được chọn
+                                                if (checkboxes[index].checked && checkedBoxes.length === 1) {
+                                                    // Không cho bỏ chọn nữa
+                                                    return;
+                                                }
+
+                                                // Thực hiện toggle cột
                                                 const table = document.querySelector("table");
                                                 const rows = table.querySelectorAll("tr");
 
@@ -285,7 +296,28 @@
                                                                 row.cells[index].style.display === "none" ? "" : "none";
                                                     }
                                                 });
+
+                                                // Sau khi toggle, cập nhật lại readonly cho checkbox còn lại
+                                                updateColumnSelectorState();
                                             }
+
+                                            function updateColumnSelectorState() {
+                                                const checkboxes = document.querySelectorAll("#columnSelector input[type='checkbox']");
+                                                const checkedBoxes = Array.from(checkboxes).filter(cb => cb.checked);
+
+                                                checkboxes.forEach(cb => {
+                                                    cb.disabled = false; // reset trạng thái
+                                                });
+
+                                                // Nếu chỉ còn 1 checkbox được chọn thì disable nó lại
+                                                if (checkedBoxes.length === 1) {
+                                                    checkedBoxes[0].disabled = true;
+                                                }
+                                            }
+
+// Khởi tạo trạng thái ban đầu
+                                            document.addEventListener("DOMContentLoaded", updateColumnSelectorState);
+
         </script>
     </body>
 

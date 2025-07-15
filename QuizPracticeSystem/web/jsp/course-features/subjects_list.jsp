@@ -29,8 +29,8 @@
     </head>
 
     <body>
-        <jsp:include page="../../component/component.subject/header.jsp"/>
-        <jsp:include page="../../component/component.subject/header.html"/>
+        <jsp:include page="component.subject/header.jsp"/>
+        <jsp:include page="component.subject/header.html"/>
 
         <!-- Courses Start -->
         <div class="container-xxl py-5">
@@ -203,9 +203,16 @@
             </div>
         </div>
 
+        <button id="chat-button" onclick="toggleChat()">
+            <i class="fa fa-comment"></i>
+        </button>
+
+
         <jsp:include page="../../component/footer.html"/>
         <jsp:include page="../../component/back_to_top.html"/>
         <jsp:include page="../../component/notification.html"/>
+
+
 
         <script src="${pageContext.request.contextPath}/js/lib/jquery-3.4.1.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/lib/bootstrap.bundle.min.js"></script>
@@ -216,25 +223,92 @@
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
         <script src="${pageContext.request.contextPath}/js/Notification.js"></script>
         <script>
-            const baseHref = `${pageContext.request.contextPath}/user/subject_list`;
+                                            const baseHref = "${pageContext.request.contextPath}/user/subject_list"";
+                                                    const apiUrl = "${pageContext.request.contextPath}/ask";
+                                            document.getElementById('categoryFilter').addEventListener('change', function () {
+                                            const value = this.value;
+                                            const url = new URL(baseHref, window.location.origin);
+                                            if (value !== 'all') {
+                                            url.searchParams.set('category', value);
+                                            }
+                                            window.location.href = url.toString();
+                                            });
+                                            document.getElementById('statusFilter').addEventListener('change', function () {
+                                            const value = this.value;
+                                            const url = new URL(baseHref, window.location.origin);
+                                            if (value !== 'all') {
+                                            url.searchParams.set('status', value);
+                                            }
+                                            window.location.href = url.toString();
+                                            });
+                                            const chatPopup = document.getElementById("chat-popup");
+                                            const chatBox = document.getElementById("chat-box");
+                                            const chatForm = document.getElementById("chat-form");
+                                            const messageInput = document.getElementById("message-input");
+                                            const apiUrl = "/ask";
+                                            function appendMessage(text, sender) {
+                                            const msgDiv = document.createElement("div");
+                                            msgDiv.className = "bubble " + sender;
+                                            msgDiv.innerText = text;
+                                            chatBox.appendChild(msgDiv);
+                                            scrollToBottom();
+                                            }
 
-            document.getElementById('categoryFilter').addEventListener('change', function () {
-                const value = this.value;
-                const url = new URL(baseHref, window.location.origin);
-                if (value !== 'all') {
-                    url.searchParams.set('category', value);
-                }
-                window.location.href = url.toString();
-            });
+                                            function scrollToBottom() {
+                                            chatBox.scrollTop = chatBox.scrollHeight;
+                                            }
 
-            document.getElementById('statusFilter').addEventListener('change', function () {
-                const value = this.value;
-                const url = new URL(baseHref, window.location.origin);
-                if (value !== 'all') {
-                    url.searchParams.set('status', value);
-                }
-                window.location.href = url.toString();
-            });
+                                            function toggleChat() {
+                                            const isOpen = chatPopup.style.display === "flex";
+                                            chatPopup.style.display = isOpen ? "none" : "flex";
+                                            if (!isOpen && chatBox.innerHTML.trim() === "") {
+                                            fetch(apiUrl)
+                                                    .then(res => res.json())
+                                                    .then(data => appendMessage(data.response, "bot"))
+                                                    .catch(() => appendMessage("Xin chào! Tôi là Miss. Hãy bắt đầu trò chuyện!", "bot"));
+                                            }
+                                            }
+
+                                            chatForm.addEventListener("submit", function (e) {
+                                            e.preventDefault();
+                                            const message = messageInput.value.trim();
+                                            if (!message)
+                                                    return;
+                                            appendMessage(message, "user");
+                                            messageInput.value = "";
+                                            const botBubble = document.createElement("div");
+                                            botBubble.className = "bubble bot";
+                                            botBubble.innerText = "Miss đang trả lời...";
+                                            chatBox.appendChild(botBubble);
+                                            scrollToBottom();
+                                            fetch(apiUrl, {
+                                            method: "POST",
+                                                    headers: {"Content-Type": "application/json"},
+                                                    body: JSON.stringify({prompt: message})
+                                            })
+                                                    .then(response => {
+                                                    const reader = response.body.getReader();
+                                                    const decoder = new TextDecoder("utf-8");
+                                                    let buffer = "";
+                                                    return readStream(reader, decoder, buffer, botBubble);
+                                                    })
+                                                    .catch(() => botBubble.innerText = "Xin lỗi, Miss gặp lỗi khi phản hồi.");
+                                            });
+                                            function readStream(reader, decoder, buffer, botBubble) {
+                                            return reader.read().then(({ done, value }) => {
+                                            if (done) {
+                                            return;
+                                            }
+                                            buffer += decoder.decode(value, {stream: true});
+                                            botBubble.innerText = buffer;
+                                            scrollToBottom();
+                                            return readStream(reader, decoder, buffer, botBubble);
+                                            }
+                                            );
+                                            });
+                                            }
+
+
         </script>
 
     </body>
