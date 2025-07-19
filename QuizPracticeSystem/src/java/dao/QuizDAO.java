@@ -4,6 +4,7 @@ import dto.QuizDTO;
 import model.Quiz;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,18 +13,21 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class QuizDAO extends DBContext {
+
     private final Logger logger;
+    private final PersonalQuizDAO personalQuizDAO;
+    private final QuizLevelDAO quizLevelDAO;
 
     public QuizDAO() {
         logger = Logger.getLogger(this.getClass().getName());
+        personalQuizDAO = new PersonalQuizDAO();
+        quizLevelDAO = new QuizLevelDAO();
     }
 
     public List<Quiz> getAllQuiz() throws Exception {
         List<Quiz> quizList = new ArrayList<>();
         var sql = "SELECT * FROM `swp391`.quiz";
-        try (var conn = getConnection();
-             var pre = conn.prepareStatement(sql);
-             var rs = pre.executeQuery()) {
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql); var rs = pre.executeQuery()) {
             while (rs.next()) {
                 quizList.add(getQuiz(rs));
             }
@@ -37,8 +41,7 @@ public class QuizDAO extends DBContext {
     public Quiz getById(String id) throws Exception {
         Quiz quiz = Quiz.builder().build();
         var sql = "SELECT * FROM `swp391`.quiz z WHERE z.id=?";
-        try (var conn = getConnection();
-             var pre = conn.prepareStatement(sql)) {
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
             pre.setString(1, id);
             try (var rs = pre.executeQuery()) {
                 if (rs.next()) {
@@ -52,23 +55,25 @@ public class QuizDAO extends DBContext {
         return quiz;
     }
 
-    public int getTotalQuizDto(String subjectId, String type, String title) throws Exception {
-        int total = 0;
+    public QuizDTO getQuizDTOById(String id) throws Exception {
+        var sql = """
+        SELECT
+            q.id, q.duration, q.status, q.pass_rate, q.updated_date,
+            q.number_of_question, q.description, q.title, q.subject_id,
+            s.name AS subject_name,
+            qt.name as type, q.level
+        FROM quiz q
+        JOIN subject s ON q.subject_id = s.id
+        JOIN quiztype qt ON q.type = qt.id
+        WHERE q.id = ?
+        """;
 
-        var sql = new StringBuilder(
-                "SELECT q.id FROM quiz q WHERE 1=1 "
-        );
-
-        List<Object> params = createObject(subjectId, type, title, sql);
-
-        try (var conn = getConnection(); var pre = conn.prepareStatement(sql.toString())) {
-            for (int i = 0; i < params.size(); i++) {
-                pre.setObject(i + 1, params.get(i));
-            }
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
+            pre.setString(1, id);
 
             try (var rs = pre.executeQuery()) {
-                while (rs.next()) {
-                    total++;
+                if (rs.next()) {
+                    return convertToQuizDTO(rs, personalQuizDAO, quizLevelDAO);
                 }
             }
         } catch (Exception e) {
@@ -76,60 +81,66 @@ public class QuizDAO extends DBContext {
             throw e;
         }
 
-        return total;
+        return null;
+    }
+
+
+    public int getTotalQuizDto(String subjectId, String type, String title, Boolean status) {
+        var sql = new StringBuilder("SELECT COUNT(*) FROM quiz q WHERE 1=1 ");
+        List<Object> params = createObject(subjectId, type, title, status, sql);
+
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                pre.setObject(i + 1, params.get(i));
+            }
+            try (var rs = pre.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return 0;
     }
 
     // Lấy danh sách các quiz theo từng trang (phân trang)
-    public List<QuizDTO> pagingQuiz(int index, String subjectId, String type, String title) throws Exception {
+    public List<QuizDTO> pagingQuiz(String subjectId, String type, String title, Boolean status, int page, int size) throws Exception {
         List<QuizDTO> quizDtoList = new ArrayList<>();
 
         var sql = new StringBuilder(
-                """
-                        SELECT
-                        q.id, q.duration, q.status, q.pass_rate, q.updated_date,
-                        q.number_of_question, q.description, q.title, q.subject_id,
-                        q.type, q.level
-                        FROM quiz q
-                        WHERE 1=1"""
+                """ 
+                            SELECT
+                            q.id, q.duration, q.status, q.pass_rate, q.updated_date,
+                            q.number_of_question, q.description, q.title, q.subject_id,
+                            s.name as subject_name,
+                            q.type, q.level
+                            FROM quiz q
+                            JOIN subject s ON q.subject_id = s.id
+                            WHERE 1=1
+                        """
         );
 
-        List<Object> params = createObject(subjectId, type, title, sql);
+        List<Object> params = createObject(subjectId, type, title, status, sql);
 
-        sql.append("ORDER BY q.id LIMIT 5 OFFSET ? ");
-        params.add((index - 1) * 5);
+        sql.append(" ORDER BY q.id LIMIT ? OFFSET ?");
+        params.add(size);
+        params.add((page - 1) * size);
 
         try (var conn = getConnection(); var pre = conn.prepareStatement(sql.toString())) {
-
             for (int i = 0; i < params.size(); i++) {
                 pre.setObject(i + 1, params.get(i));
             }
 
-            var personalQuizDAO = new PersonalQuizDAO();
-            var quizLevelDAO = new QuizLevelDAO();
-
             try (ResultSet rs = pre.executeQuery()) {
                 while (rs.next()) {
-                    var dto = new QuizDTO();
-                    dto.setId(UUID.fromString(rs.getString("id")));
-                    dto.setDuration(rs.getInt("duration"));
-                    dto.setCheck(personalQuizDAO.checkPersonalQuiz(rs.getString("id")));
-                    dto.setPassRate(rs.getFloat("pass_rate"));
-                    dto.setUpdatedDate(rs.getObject("updated_date", LocalDate.class));
-                    dto.setNumberOfQuestions(rs.getInt("number_of_question"));
-                    dto.setDescription(rs.getString("description"));
-                    dto.setTitle(rs.getString("title"));
-                    dto.setSubjectId(rs.getString("subject_id")); // subject_id now comes directly from quiz
-                    dto.setType(rs.getString("type"));
-                    dto.setLevel(quizLevelDAO.getNameByLevelId(rs.getString("level")));
-
-                    quizDtoList.add(dto);
+                    quizDtoList.add(convertToQuizDTO(rs, personalQuizDAO, quizLevelDAO));
                 }
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             throw e;
         }
-
         return quizDtoList;
     }
 
@@ -147,11 +158,11 @@ public class QuizDAO extends DBContext {
 
     public void insertNewQuiz(Quiz quiz) throws Exception {
         var sql = """
-                INSERT INTO `swp391`.quiz (id, duration, status, pass_rate, updated_date, number_of_question, description, title, subject_id, type, level) \
+                INSERT INTO `swp391`.quiz (id, duration, status, pass_rate, updated_date, number_of_question,
+                description, title, subject_id, type, level) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""";
 
-        try (var conn = getConnection();
-             var ps = conn.prepareStatement(sql)) {
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             ps.setString(1, quiz.getId().toString());
             ps.setInt(2, quiz.getDuration());
             ps.setBoolean(3, quiz.isStatus());
@@ -229,22 +240,43 @@ public class QuizDAO extends DBContext {
                 .build();
     }
 
-    private List<Object> createObject(String subjectId, String type, String title, StringBuilder sql) {
+    private List<Object> createObject(String subjectId, String type, String title, Boolean status, StringBuilder sql) {
         List<Object> params = new ArrayList<>();
-
-        if (subjectId != null && !subjectId.isEmpty()) {
-            sql.append("AND q.subject_id = ? ");
+        if (status != null) {
+            sql.append(" AND q.status = ?");
+            params.add(status);
+        }
+        if (subjectId != null && !subjectId.isBlank()) {
+            sql.append(" AND q.subject_id = ?");
             params.add(subjectId);
         }
-        if (type != null && !type.isEmpty()) {
-            sql.append("AND q.type = ? ");
+        if (type != null && !type.isBlank()) {
+            sql.append(" AND q.type = ?");
             params.add(type);
         }
-        if (title != null && !title.isEmpty()) {
-            sql.append("AND q.title LIKE ? ");
+        if (title != null && !title.isBlank()) {
+            sql.append(" AND q.title LIKE ?");
             params.add("%" + title + "%");
         }
         return params;
     }
 
+    public static QuizDTO convertToQuizDTO(ResultSet rs, PersonalQuizDAO personalQuizDAO, QuizLevelDAO quizLevelDAO)
+            throws Exception {
+        QuizDTO dto = new QuizDTO();
+        dto.setId(UUID.fromString(rs.getString("id")));
+        dto.setDuration(rs.getInt("duration"));
+        dto.setCheck(personalQuizDAO.checkPersonalQuiz(rs.getString("id")));
+        dto.setPassRate(rs.getFloat("pass_rate"));
+        dto.setUpdatedDate(rs.getObject("updated_date", LocalDate.class));
+        dto.setNumberOfQuestions(rs.getInt("number_of_question"));
+        dto.setDescription(rs.getString("description"));
+        dto.setTitle(rs.getString("title"));
+        dto.setSubjectId(rs.getString("subject_id"));
+        dto.setSubjectName(rs.getString("subject_name"));
+        dto.setStatus(rs.getBoolean("status"));
+        dto.setType(rs.getString("type"));
+        dto.setLevel(quizLevelDAO.getNameByLevelId(rs.getString("level")));
+        return dto;
+    }
 }

@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  *
  * @author HuongNI
  */
-@WebServlet(name = "PostDetailsController", urlPatterns = {"/post-details"})
+@WebServlet(name = "PostDetailsController", urlPatterns = {"/marketer/post-details"})
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 2,
         maxFileSize = 1024 * 1024 * 30,

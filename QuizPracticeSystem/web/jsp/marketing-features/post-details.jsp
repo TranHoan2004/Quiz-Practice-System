@@ -54,7 +54,7 @@
                 <div class="d-flex flex-wrap align-items-center gap-3 flex-grow-1 justify-content-end">
 
                     <!-- Search -->
-                    <form action="${pageContext.request.contextPath}/post-details" id="searchForm"
+                    <form action="${pageContext.request.contextPath}/marketer/post-details" id="searchForm"
                           class="d-flex align-items-center gap-2">
                         <div class="search-box position-relative flex-grow-1">
                             <i class="fas fa-search search-icon"></i>
@@ -81,7 +81,7 @@
 
                     <!-- Filter + Column Display -->
                     <div class="d-flex gap-2">
-                        <form action="${pageContext.request.contextPath}/post-details" method="get">
+                        <form action="${pageContext.request.contextPath}/marketer/post-details" method="get">
                             <div class="dropdown">
                                 <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
                                         type="button" data-bs-toggle="dropdown">Filter</button>
@@ -294,7 +294,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form action="${pageContext.request.contextPath}/post-details"
+                        <form action="${pageContext.request.contextPath}/marketer/post-details"
                               method="post" enctype="multipart/form-data">
                             <input type="hidden" name="action" value="add-post" />
                             <div class="row g-3">
@@ -431,7 +431,7 @@
         <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered">
                 <div class="modal-content shadow-lg rounded-4 border-0">
-                    <form action="${pageContext.request.contextPath}/post-details" method="post" id="editPostForm" enctype="multipart/form-data">
+                    <form action="${pageContext.request.contextPath}/marketer/post-details" method="post" id="editPostForm" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="update-post" />
                         <input type="hidden" name="id" id="editPostId" value=""/>
                         <div class="modal-header bg-primary text-white rounded-top-4">
@@ -533,7 +533,7 @@
                                         document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
                                             const blogId = this.dataset.id;
 
-                                            fetch(`${pageContext.request.contextPath}/post-details`, {
+                                            fetch(`${pageContext.request.contextPath}/marketer/post-details`, {
                                                 method: 'DELETE',
                                                 headers: {
                                                     'Content-Type': 'application/json'
@@ -543,7 +543,7 @@
                                                     .then(response => response.text())
                                                     .then(() => {
                                                         localStorage.setItem("delete_success", "true");
-                                                        location.href = `${pageContext.request.contextPath}/post-details`;
+                                                        location.href = `${pageContext.request.contextPath}/marketer/post-details`;
                                                     })
                                                     .catch(error => {
                                                         console.error("❌ Fetch error:", error);

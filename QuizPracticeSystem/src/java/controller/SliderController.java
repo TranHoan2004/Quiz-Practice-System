@@ -74,7 +74,7 @@ public class SliderController extends HttpServlet {
             var id = req.getParameter("id");
             if (id != null) {
                 var uuid = UUID.fromString(Encoder.decode(id));
-                logger.info("slider id: " + uuid);
+                logger.log(Level.INFO, "slider id: {0}", uuid);
                 var slider = sDao.getSliderById(uuid);
                 if (slider == null) {
                     req.setAttribute("error", "Slider not found");
@@ -96,10 +96,10 @@ public class SliderController extends HttpServlet {
                         case "filter" -> responses = getResponseData(filter(req));
                     }
                 }
-                logger.info("Responses: " + responses);
+                logger.log(Level.INFO, "Responses: {0}", responses);
 
-                String json = gson.toJson(responses);
-                logger.info("json: " + json);
+                var json = gson.toJson(responses);
+                logger.log(Level.INFO, "json: {0}", json);
 
                 out.println(json);
                 resp.setStatus(HttpServletResponse.SC_OK);
@@ -142,8 +142,8 @@ public class SliderController extends HttpServlet {
      * @author HoanTX
      */
     private List<Slider> filter(HttpServletRequest req) {
-        String status = req.getParameter("status");
-        logger.info("Filtering by status: " + status);
+        var status = req.getParameter("status");
+        logger.log(Level.INFO, "Filtering by status: {0}", status);
         return sDao.filterByStatus(status);
     }
 
@@ -156,8 +156,8 @@ public class SliderController extends HttpServlet {
      * @author HoanTX
      */
     private List<Slider> searchByKeyword(HttpServletRequest req) {
-        String keyword = req.getParameter("keyword");
-        logger.info("Searching for keyword: " + keyword);
+        var keyword = req.getParameter("keyword");
+        logger.log(Level.INFO, "Searching for keyword: {0}", keyword);
         return sDao.search(keyword);
     }
 
@@ -184,7 +184,7 @@ public class SliderController extends HttpServlet {
      * @author HoanTX
      */
     private SliderResponse convertToResponse(Slider slider) {
-        Account a = aDao.getAccountById(slider.getAccountId());
+        var a = aDao.getAccountById(slider.getAccountId());
         return SliderResponse.builder()
                 .id(Encoder.encode(slider.getId().toString()))
                 .title(slider.getTitle())

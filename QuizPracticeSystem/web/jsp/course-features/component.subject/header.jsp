@@ -12,9 +12,9 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarCollapse">
 			<div class="navbar-nav ms-auto p-4 p-lg-0">
-				<a href="/qps/home" class="nav-item nav-link active">DashBoard</a>
+				<a href="/qps/stats" class="nav-item nav-link active">DashBoard</a>
                                 <a href="/qps/user/subject_list" class="nav-item nav-link">Subject List</a>
-				<a href="courses.html" class="nav-item nav-link">New Subject</a>
+				<a href="/qps/user/new_subject" class="nav-item nav-link">New Subject</a>
 			</div>
 			<!-- User Authentication Section -->
 			<div class="d-flex align-items-center px-4 px-lg-5">

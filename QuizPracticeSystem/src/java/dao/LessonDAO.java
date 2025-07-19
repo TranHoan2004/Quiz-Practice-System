@@ -35,22 +35,10 @@ public class LessonDAO extends DBContext {
         return lesson;
     }
 
-    public int countBySubjectId(String subjectId) throws Exception {
-        String sql = """
-                SELECT COUNT(*)
-                FROM `swp391`.lesson
-                WHERE course_id IN (
-                    SELECT id
-                    FROM `swp391`.course
-                    WHERE topic_id IN (
-                        SELECT id
-                        FROM `swp391`.topic
-                        WHERE subject_id = ?
-                    )
-                )
-                """;
+    public int countByCourseId(String courseId) throws Exception {
+        String sql = "SELECT COUNT(*) FROM lesson WHERE course_id = ?";
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
-            ps.setString(1, subjectId);
+            ps.setString(1, courseId);
             try (var rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);

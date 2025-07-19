@@ -246,4 +246,113 @@ public class SettingDAO extends DBContext {
         return null;
     }
 
+    public List<Setting> getSettingsByType(String typeName) throws Exception {
+        List<Setting> settings = new ArrayList<>();
+
+        String sql = """
+        SELECT s.*
+        FROM setting s
+        JOIN settingtype st ON s.setting_type_id = st.id
+        WHERE st.name = ?
+    """;
+
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, typeName);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Setting setting = Setting.builder()
+                            .id(UUID.fromString(rs.getString("id")))
+                            .value(rs.getString("value"))
+                            .status(rs.getBoolean("status"))
+                            .description(rs.getString("description"))
+                            .updatedDate(rs.getDate("updated_date") != null
+                                    ? rs.getDate("updated_date").toLocalDate()
+                                    : null)
+                            .settingTypeId(rs.getString("setting_type_id"))
+                            .build();
+
+                    settings.add(setting);
+                }
+            }
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            throw e;
+        }
+
+        return settings;
+    }
+
+    public String getSettingTypeIdByName(String name) throws Exception {
+        String sql = "SELECT id FROM `swp391`.settingtype WHERE name = ?";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("id");
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            throw e;
+        }
+        return null;
+    }
+
+    public void insertSettingSubjectLink(String settingId, String subjectId) throws Exception {
+        String sql = "INSERT INTO `swp391`.setting_subject (setting_id, subject_id) VALUES (?, ?)";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, settingId);
+            ps.setString(2, subjectId);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public void insert(Setting setting) throws Exception {
+        String sql = """
+        INSERT INTO `swp391`.setting (id, value, status, description, updated_date, setting_type_id)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """;
+
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, setting.getId().toString());
+            ps.setString(2, setting.getValue());
+            ps.setBoolean(3, setting.isStatus());
+            ps.setString(4, setting.getDescription());
+            ps.setDate(5, java.sql.Date.valueOf(setting.getUpdatedDate()));
+            ps.setString(6, setting.getSettingTypeId());
+
+            ps.executeUpdate();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "❌ insert() failed: " + e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    public String getCategoryIdBySubjectId(String subjectId) throws Exception {
+        var sql = """
+        SELECT s.id
+        FROM setting_subject ss
+        JOIN setting s ON ss.setting_id = s.id
+        JOIN settingtype st ON s.setting_type_id = st.id
+        WHERE ss.subject_id = ? AND st.name = 'Blog Category'
+        LIMIT 1
+    """;
+
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, subjectId);
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("id");
+                }
+            }
+        }
+        return null;
+    }
+
 }

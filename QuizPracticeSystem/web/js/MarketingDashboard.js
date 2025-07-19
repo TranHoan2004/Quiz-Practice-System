@@ -8,70 +8,75 @@ const apiUrl = el.dataset.apiUrl;
 
 // --- Prompt Mapping ---
 const promptMap = {
-    marketer: `👩‍💼 Vai trò: Marketer – mục tiêu là tối ưu hóa doanh thu và chiến lược quảng bá.
-
-📊 Dữ liệu hiện tại:
+    marketer: ` Vai trò: Marketer – mục tiêu là tối ưu hóa doanh thu và chiến lược quảng bá.
+Dữ liệu hiện tại:
 - Tổng doanh thu: ${Number(el.dataset.totalRevenue).toLocaleString()}₫
 - Biến động doanh thu: Revenue change compared to last period is ${el.dataset.changeRevenue}%
 - Tổng đơn hàng thành công: ${ordersCountTrendSuccess.reduce((a, b) => a + b, 0)} đơn
 - Top 3 môn học có doanh thu cao: ${Object.entries(revenueMap).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([subject, revenue]) => `${subject} (${Number(revenue).toLocaleString()}₫)`).join(', ')}
 
-🎯 Nhiệm vụ:
+ Nhiệm vụ:
 1. Xác định nhóm sản phẩm (môn học) đang mang lại nhiều doanh thu nhất và lý do.
 2. Có nên chuyển trọng tâm quảng bá sang các môn học top đầu không?
 3. Những môn doanh thu thấp có tiềm năng không?
-4. Gợi ý điều chỉnh chiến lược tiếp thị phù hợp với từng nhóm.`,
+4. Gợi ý điều chỉnh chiến lược tiếp thị phù hợp với từng nhóm.
+5. Trả lời ngắn gọn từ 7 đến 12 dòng, không trả lời quá dài.`,
+    
 
-    revenue: `📈 Vai trò: Nhà phân tích dữ liệu – theo dõi xu hướng đơn hàng.
+    revenue: ` Vai trò: Nhà phân tích dữ liệu – theo dõi xu hướng đơn hàng.
 
-📋 Tổng quan:
+ Tổng quan:
 - Tổng số đơn hàng ghi nhận: ${ordersCountTrendAll.reduce((a, b) => a + b, 0)}
 - Ngày cao điểm nhất: ${Math.max(...ordersCountTrendAll)} đơn
 - Số ngày không có đơn hàng: ${ordersCountTrendAll.filter(x => x === 0).length} ngày
 
-🎯 Phân tích:
+Phân tích:
 1. Xu hướng đơn hàng đang tăng hay giảm?
 2. Thời điểm nào đơn hàng nhiều, khi nào giảm?
 3. Nguyên nhân dẫn đến biến động?
-4. Giải pháp duy trì đà tăng trưởng?`,
+4. Giải pháp duy trì đà tăng trưởng?
+5. Trả lời ngắn gọn từ 7 đến 12 dòng, không trả lời quá dài.`,
 
-    course: `👥 Vai trò: Phân tích hiệu quả người dùng mới.
+    course: `Vai trò: Phân tích hiệu quả người dùng mới.
 
-📊 Dữ liệu:
+Dữ liệu:
 - Người dùng mới: ${el.dataset.newAccounts} (${el.dataset.changeNewAccounts}%)
 - Số đơn hàng mới: ${el.dataset.newBought} (${el.dataset.changeNewBought}%)
 - Đăng ký khoá học thành công: ${el.dataset.coursesSuccess}
 - Khoá học doanh thu cao nhất: ${Object.entries(revenueMap).sort((a, b) => b[1] - a[1])[0][0]}
 
-🎯 Hãy phân tích:
+ Hãy phân tích:
 1. Người dùng mới có tỷ lệ chuyển đổi cao không?
 2. Có mang lại giá trị thực tế (doanh thu) hay chỉ là đăng ký thử?
-3. Gợi ý chiến lược nuôi dưỡng nhóm người dùng mới.`,
+3. Gợi ý chiến lược nuôi dưỡng nhóm người dùng mới.
+4. Trả lời ngắn gọn từ 7 đến 12 dòng, không trả lời quá dài.`,
 
-    timegap: `🕒 Vai trò: Phân tích hành vi người mua theo thời gian.
+    timegap: ` Vai trò: Phân tích hành vi người mua theo thời gian.
 
-📈 Nhận xét biểu đồ:
+Nhận xét biểu đồ:
 - Đơn hàng xuất hiện không đều
 - Một số ngày có spike nhỏ (2–3 đơn), sau đó chững
 - Nhiều ngày trống đơn hàng
 
-🎯 Cần phân tích:
+Cần phân tích:
 1. Có mô hình thời điểm mua hàng không?
 2. Có đang bỏ lỡ giờ vàng/ngày vàng?
 3. Gợi ý cách lấp khoảng trống – thông báo, ưu đãi định kỳ?
-4. Làm sao để đều nhịp đơn hàng hơn?`,
+4. Làm sao để đều nhịp đơn hàng hơn?
+5. Trả lời ngắn gọn từ 7 đến 12 dòng, không trả lời quá dài.`,
 
-    gaps: `🚫 Vai trò: Quản trị thương mại điện tử – đảm bảo dòng đơn ổn định.
+    gaps: ` Vai trò: Quản trị thương mại điện tử – đảm bảo dòng đơn ổn định.
 
-📈 Tình trạng hiện tại:
+Tình trạng hiện tại:
 - Có nhiều đoạn dài không có đơn hàng
 - Spike đơn hàng giữa tháng rồi giảm mạnh
 - Không có dấu hiệu phục hồi trong những ngày gần nhất
 
-🎯 Yêu cầu phân tích:
+ Yêu cầu phân tích:
 1. Nguyên nhân gây ra khoảng trống đơn hàng?
 2. Các chiến lược để kích hoạt lại hành vi mua sắm?
-3. Gợi ý kịch bản marketing bù lại thời gian mất đơn?`
+3. Gợi ý kịch bản marketing bù lại thời gian mất đơn?
+4. Trả lời ngắn gọn từ 7 đến 12 dòng, không trả lời quá dài.`
 };
 
 // --- Chart Configurations ---

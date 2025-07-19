@@ -514,6 +514,11 @@
     color: var(--primary);
 }
 
+.bread-crumb:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 
 
 

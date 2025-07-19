@@ -1,4 +1,5 @@
 <%-- Document : subjects_list Created on : May 19, 2025, 4:38:34 PM Author : TranHoan --%>
+<%@ page import="model.Account" %>
 <%@ page contentType="text/html" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -282,6 +283,9 @@
 <!-- Subject Registration Modal (Brand Color Style) -->
 <div class="modal fade" id="subjectRegisterModal" tabindex="-1" aria-labelledby="subjectRegisterModalLabel"
      aria-hidden="true">
+    <%
+        Account user = (Account) session.getAttribute("currentUser");
+    %>
     <div class="modal-dialog modal-dialog-centered">
         <form class="modal-content border-0 shadow-lg" id="subjectRegisterForm">
             <div class="modal-header border-0">
@@ -300,7 +304,6 @@
                     <select class="form-select rounded-pill px-3 py-2" name="package"
                             id="registerPackageSelect" required>
                         <option value="">-- Chọn gói --</option>
-                        <!-- Options will be populated by JS -->
                     </select>
                 </div>
                 <div id="userInfoFields">
@@ -308,29 +311,63 @@
                         <label class="form-label" for="fullname">
                             <i class="fa fa-user me-1"></i> Full Name</label>
                         <input type="text" class="form-control rounded-pill px-3 py-2" name="fullname"
-                               placeholder="Nhập họ tên của bạn" required id="fullname">
+                               placeholder="<%=user != null ? user.getFullName() : "Nhập họ tên của bạn"%>" required
+                            <%=user != null ? "disabled" : ""%>
+                               id="fullname">
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="email">
                             <i class="fa fa-envelope me-1"></i> Email</label>
                         <input type="email" class="form-control rounded-pill px-3 py-2" name="email"
-                               placeholder="example@email.com" required id="email">
+                               placeholder="<%=user != null ? user.getEmail() : "example@email.com"%>" required
+                            <%=user != null ? "disabled" : ""%>
+                               id="email">
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="phone">
                             <i class="fa fa-phone me-1"></i> Phone number</label>
                         <input type="tel" class="form-control rounded-pill px-3 py-2" name="phone"
-                               placeholder="09xxxxxxxx" required id="phone">
+                               placeholder="<%=user != null ? user.getPhoneNumber() : "09xxxxxxxx"%>" required
+                            <%=user != null ? "disabled" : ""%>
+                               id="phone">
                     </div>
                     <div class="mb-3">
                         <label class="form-label" for="gender">
                             <i class="fa fa-venus-mars me-1"></i> Gender</label>
                         <select class="form-select rounded-pill px-3 py-2" name="gender" required
-                                id="gender">
+                                id="gender"
+                                <%
+                                    if (user != null) {
+                                %>
+                                disabled>
+                            <option value="" selected>
+                                <%
+                                    String gender;
+                                    switch (user.getGender()) {
+                                        case 0:
+                                            gender = "Male";
+                                            break;
+                                        case 1:
+                                            gender = "Female";
+                                            break;
+                                        default:
+                                            gender = "Others";
+                                            break;
+                                    }
+                                %>
+                                <%=gender%>
+                            </option>
+                            <%
+                            } else {
+                            %>
+                            >
                             <option value="">-- Select your gender --</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Others</option>
+                            <option value="0">Male</option>
+                            <option value="1">Female</option>
+                            <option value="2">Others</option>
+                            <%
+                                }
+                            %>
                         </select>
                     </div>
                 </div>

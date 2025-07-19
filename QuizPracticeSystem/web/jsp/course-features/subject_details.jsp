@@ -208,8 +208,8 @@
                                                             </a>
                                                         </td>
                                                         <td>${p.accessDuration} Month(s)</td>
-                                                        <td>$${p.price}</td>
-                                                        <td>$${p.salePrice}</td>
+                                                        <td>${p.price}</td>
+                                                        <td>${p.salePrice}</td>
                                                         <td>
                                                             <span class="badge ${p.status ? 'bg-success' : 'bg-secondary'}">
                                                                 ${p.status ? 'Active' : 'Inactive'}
@@ -222,7 +222,6 @@
                                                                     data-title="${p.title}"
                                                                     data-duration="${p.accessDuration}"
                                                                     data-price="${p.price}"
-                                                                    data-sale="${p.salePrice}"
                                                                     data-status="${p.status}"
                                                                     data-course="${p.courseId}"
                                                                     data-bs-toggle="modal"
@@ -315,7 +314,7 @@
                             <input type="number" class="form-control" name="packagePrice" id="editPackagePrice" required>
                         </div>
                         <div class="mb-3">
-                            <label>Sale Price</label>
+                            <label>Sale Price (%)</label>
                             <input type="number" class="form-control" name="packageSalePrice" id="editPackageSale" required>
                         </div>
                         <div class="mb-3">
@@ -406,7 +405,7 @@
                             <input type="number" class="form-control" name="packagePrice" min="0" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Sale Price</label>
+                            <label class="form-label">Sale Price (%)</label>
                             <input type="number" class="form-control" name="packageSalePrice" min="0" required>
                         </div>
                         <div class="mb-3">
@@ -441,11 +440,11 @@
 
         <c:if test="${not empty message}">
             <script>
-                                                            document.addEventListener("DOMContentLoaded", function () {
-                                                                var modalId = "${showModal == 'edit' ? 'editPricePackageModal' : 'addPricePackageModal'}";
-                                                                var modal = new bootstrap.Modal(document.getElementById(modalId));
-                                                                modal.show();
-                                                            });
+                                                    document.addEventListener("DOMContentLoaded", function () {
+                                                        var modalId = "${showModal == 'edit' ? 'editPricePackageModal' : 'addPricePackageModal'}";
+                                                        var modal = new bootstrap.Modal(document.getElementById(modalId));
+                                                        modal.show();
+                                                    });
             </script>
         </c:if>
         <script>

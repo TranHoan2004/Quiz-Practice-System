@@ -49,16 +49,6 @@ public class TopicDAO extends DBContext {
         return st;
     }
 
-    public List<Topic> getTopicBySubjectId(String id) throws Exception {
-        logger.log(Level.INFO, "getTopicBySubjectId {0}", id);
-        List<Topic> st = new ArrayList<>();
-        var sql = """
-                SELECT * FROM topic t
-                WHERE t.subject_id = ?
-                """;
-        return query(st, sql);
-    }
-
     public List<Topic> getAllTopic() throws Exception {
         logger.info("getAllTopic");
         List<Topic> list = new ArrayList<>();

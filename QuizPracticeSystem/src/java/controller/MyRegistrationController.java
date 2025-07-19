@@ -27,22 +27,16 @@ import java.util.logging.Logger;
 @WebServlet(name = "MyRegistrationController", urlPatterns = {"/user/registration"})
 public class MyRegistrationController extends HttpServlet {
 
-    private final PricePackageDAO ppDAO;
-    private final PersonalCourseDAO pcDAO;
+    private final PersonalSubjectDAO psDAO;
     private final ContactDAO ccDAO;
     private final SubjectDAO sDAO;
-    private final CourseDAO cDAO;
-    private final TopicDAO tDAO;
     private final Logger logger;
 
     public MyRegistrationController() {
         this.logger = Logger.getLogger(this.getClass().getName());
-        this.pcDAO = new PersonalCourseDAO();
-        this.ppDAO = new PricePackageDAO();
+        this.psDAO = new PersonalSubjectDAO();
         this.ccDAO = new ContactDAO();
         this.sDAO = new SubjectDAO();
-        this.cDAO = new CourseDAO();
-        this.tDAO = new TopicDAO();
     }
 
     /**
@@ -83,7 +77,7 @@ public class MyRegistrationController extends HttpServlet {
             String contact = request.getParameter("org");
             String message = "";
             try {
-                List<RegistrationCourse> registrationCourses = getRegistrationCourses(request);
+                List<RegistrationCourse> registrationCourses = getRegisteredSubjects(request);
                 if (keyword == null && filter == null) {
                     renderCoursePagination(request, registrationCourses);
                 } else {
@@ -104,8 +98,8 @@ public class MyRegistrationController extends HttpServlet {
      * <h4>Gửi dữ liệu JSON phản hồi cho client</h4>
      * Dùng Gson để chuyển đổi dữ liệu thành JSON và gửi về client với mã trạng thái HTTP.
      *
-     * @param res    Đối tượng phản hồi HTTP
-     * @param obj    Các đối tượng cần serialize và gửi dưới dạng JSON
+     * @param res Đối tượng phản hồi HTTP
+     * @param obj Các đối tượng cần serialize và gửi dưới dạng JSON
      * @throws IOException Nếu xảy ra lỗi khi ghi dữ liệu ra response stream
      */
     private void sendData(HttpServletResponse res, Object... obj) throws IOException {
@@ -133,48 +127,38 @@ public class MyRegistrationController extends HttpServlet {
     }
 
     /**
-     * <h4>Lấy danh sách PersonalCourse của người dùng hiện tại</h4>
-     * - Lấy `currentUser` từ session để truy xuất danh sách đăng ký khóa học.
+     * <h4>Truy xuất danh sách môn học đã đăng ký của người dùng</h4>
+     * Phương thức lấy thông tin môn học mà người dùng đã đăng ký từ session,
+     * sau đó truy vấn các môn học cá nhân tương ứng và xây dựng danh sách các
+     * đối tượng {@code RegistrationCourse} để phục vụ cho giao diện lịch sử đăng ký.
+     * Nếu không có tài khoản trong phiên làm việc, sẽ sử dụng ID mặc định để xử lý.
      *
-     * @param request HTTP request
-     * @return danh sách PersonalCourse
-     * @throws Exception nếu lỗi DB
+     * @param request Đối tượng HTTP chứa thông tin phiên người dùng
+     * @return Danh sách các đối tượng {@code RegistrationCourse} đã đăng ký
      * @author HoanTX
      */
-    private List<PersonalCourse> getPersonalCoursesByRecentUser(HttpServletRequest request) throws Exception {
-        Account account = (Account) request.getSession().getAttribute("currentUser");
-        String id = account != null ? account.getId().toString() : "b283bfb8-397a-11f0-84a1-088fc33f56c7";
-        return pcDAO.getAllByAccount(id);
-    }
-
-    /**
-     * <h4>Đóng gói dữ liệu hiển thị thành danh sách RegistrationCourse</h4>
-     * - Lấy PersonalCourse, PricePackage, Course, Topic, Subject để dựng dữ
-     * liệu đầu ra.
-     *
-     * @param request HTTP request
-     * @return danh sách RegistrationCourse
-     * @throws Exception nếu lỗi DB
-     * @author HoanTX
-     */
-    private List<RegistrationCourse> getRegistrationCourses(HttpServletRequest request) throws Exception {
+    private List<RegistrationCourse> getRegisteredSubjects(HttpServletRequest request) {
+        var account = (Account) request.getSession().getAttribute("currentUser");
+        var id = account != null ? account.getId().toString() : "b283bfb8-397a-11f0-84a1-088fc33f56c7";
+        List<PersonalSubject> subjects = psDAO.getPersonalSubjectsByAccount(id);
         List<RegistrationCourse> registrationCourses = new ArrayList<>();
-        for (PersonalCourse course : getPersonalCoursesByRecentUser(request)) {
-            PricePackage pp = ppDAO.getByCourse(course.getCourseId());
-            Course c = cDAO.getById(course.getCourseId());
-            Topic t = tDAO.getTopicById(c.getTopicId());
-            Subject s = sDAO.getById(t.getSubjectId());
-            registrationCourses.add(RegistrationCourse.builder()
-                    .courseId(Encoder.encode(course.getCourseId()))
-                    .subject(s.getName())
-                    .registrationTime(course.getEnrollDate())
-                    .packageName(pp.getTitle())
-                    .totalCost(pp.getPrice())
-                    .status(course.getStatus() == null ? null : course.getStatus().name().toLowerCase())
-                    .validFrom(course.getEnrollDate())
-                    .validTo(course.getEnrollDate().plusDays(pp.getAccessDuration()))
-                    .build());
-        }
+        subjects.forEach(subject -> {
+            try {
+                Subject s = sDAO.getById(subject.getSubjectId());
+                registrationCourses.add(RegistrationCourse.builder()
+                        .courseId(Encoder.encode(s.getId().toString()))
+                        .subject(s.getName())
+                        .registrationTime(subject.getRegistrationTime())
+                        .packageName(subject.getPackageName())
+                        .totalCost(subject.getPrice())
+                        .status(subject.getStatus())
+                        .validFrom(subject.getValidFrom())
+                        .validTo(subject.getValidTo())
+                        .build());
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, e.getMessage());
+            }
+        });
         return registrationCourses;
     }
 
@@ -227,8 +211,8 @@ public class MyRegistrationController extends HttpServlet {
         if (keyword != null) {
             keyword = Encoder.decode(keyword);
             logger.info("Filter for " + keyword);
-            Course c = cDAO.getById(keyword);
-            Contact contact = ccDAO.getById(c.getContact());
+            Subject s = sDAO.getById(keyword);
+            Contact contact = ccDAO.getById(s.getAuthorId());
             request.setAttribute("contact", contact);
             renderCoursePagination(request, course);
         }

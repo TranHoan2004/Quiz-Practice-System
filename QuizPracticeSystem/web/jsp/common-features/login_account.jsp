@@ -30,7 +30,7 @@
 <body>
 
 <jsp:include page="../../component/navbar.jsp"/>
-<form action="${pageContext.request.contextPath}/user/login" method="POST">
+<form action="${pageContext.request.contextPath}/auth/login" method="POST">
     <div class="background-overlay">
         <div class="login-container">
             <div class="login-box">

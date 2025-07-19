@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * <h4>Tiện ích xử lý dữ liệu JSON từ thân yêu cầu HTTP</h4>
@@ -48,6 +49,7 @@ public class HandleRequestBody {
      * @throws IOException nếu có lỗi khi đọc input stream hoặc parse JSON.
      */
     public Map<String, Object> getDataFromRequest(HttpServletRequest req) throws IOException {
+        Logger logger = Logger.getLogger(HandleRequestBody.class.getName());
         var br = new BufferedReader(new InputStreamReader(req.getInputStream()));
         var sb = new StringBuilder();
         String line;

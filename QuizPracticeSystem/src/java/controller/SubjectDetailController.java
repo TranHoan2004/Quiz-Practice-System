@@ -172,8 +172,10 @@ public class SubjectDetailController extends HttpServlet {
                 String subjectId = Encoder.decode(encodedId);
 
                 switch (deleteType) {
-                    case "dimension" -> settingDAO.deleteSubjectDimension(deleteId, subjectId);
-                    case "pricePackage" -> pricePackageDAO.deleteById(deleteId);
+                    case "dimension" ->
+                        settingDAO.deleteSubjectDimension(deleteId, subjectId);
+                    case "pricePackage" ->
+                        pricePackageDAO.deleteById(deleteId);
                 }
 
                 response.sendRedirect(request.getContextPath() + "/user/subject_detail?id=" + encodedId);
@@ -220,6 +222,13 @@ public class SubjectDetailController extends HttpServlet {
         List<PricePackage> packages = course != null
                 ? pricePackageDAO.getByCourseId(course.getId().toString())
                 : new ArrayList<>();
+
+        for (PricePackage pkg : packages) {
+            int salePrice = pkg.getSalePrice(); // đây là % đã lưu
+            int price = pkg.getPrice();
+            int finalPrice = price - (price * salePrice / 100);
+            pkg.setSalePrice(finalPrice); // hoặc set vào field phụ nếu có
+        }
 
         String courseId = course != null ? course.getId().toString() : null;
 

@@ -62,11 +62,12 @@ public class ContactDAO extends DBContext {
                 .link(mapper.readValue(
                         rs.getString("link"),
                         new TypeReference<>() {
-                        }
+                }
                 ))
                 .email(rs.getString("email"))
                 .phone(rs.getString("phone"))
                 .address(rs.getString("address"))
                 .build();
     }
+    
 }

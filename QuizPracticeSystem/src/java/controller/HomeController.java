@@ -49,7 +49,7 @@ public class HomeController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int blogLimit = 5;
+        int blogLimit = 6;
         int featureSubjectLimit = 5;
         int courseLimit = 10;
 
@@ -221,6 +221,7 @@ public class HomeController extends HttpServlet {
             for (Subject subject : subjects) {
                 Tagline tagline = taglineDAO.getTaglineBySubjectId(subject.getId().toString());
                 list.add(SubjectDTO.builder()
+                        .id(utils.Encoder.encode(subject.getId().toString()))
                         .subjectName(subject.getName())
                         .thumbnailUrl(subject.getThumbnailURL())
                         .tagline(tagline.getName())

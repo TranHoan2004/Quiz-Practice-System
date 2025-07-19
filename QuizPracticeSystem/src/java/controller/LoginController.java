@@ -20,6 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import model.Account;
+import utils.PermissionUtil;
 
 /**
  * <h4>LoginController - Bộ điều khiển đăng nhập tài khoản</h4>
@@ -40,7 +41,7 @@ import model.Account;
  *
  * @author TuanKD
  */
-@WebServlet(name = "LoginController", urlPatterns = {"/user/login"})
+@WebServlet(name = "LoginController", urlPatterns = {"/auth/login"})
 public class LoginController extends HttpServlet {
 
     private final AccountDAO ad;
@@ -160,22 +161,33 @@ public class LoginController extends HttpServlet {
             //  Đăng nhập thành công → reset trạng thái login
             LoginAttempt.loginSucceeded(email);
             session.setAttribute("currentUser", currentUser);
-
-            switch (currentUser.getRoleId()) {
-                case "c5ae3575-3a5b-11f0-b817-74d713b03787" ->
-                        response.sendRedirect(request.getContextPath() + "/user/registration");
-                case "3b952226-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-guest");
-                case "3b953cbd-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-Customer");
-                case "3b953e41-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-Expert");
-                case "3b953efb-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-sale");
-                case "3b953f8d-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-marketing");
-                case "63f7dae0-384c-11f0-9e24-e4a8dfb1bdb7" ->
-                        response.sendRedirect(request.getContextPath() + "/user/registration");
-                case "b1b69765-397a-11f0-84a1-088fc33f56c7" ->
-                        response.sendRedirect(request.getContextPath() + "/user/registration");
-                case "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a21" -> response.sendRedirect("/qps/home");
-                default -> response.sendRedirect("error.jsp");
+            session.setAttribute("userRole", this.ad.getRoleNameById(currentUser.getRoleId()));
+            
+            if (PermissionUtil.hasRole(request, "Marketer")
+                    || PermissionUtil.hasRole(request, "Admin")
+                    || PermissionUtil.hasRole(request, "Sale")) {
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/home");
             }
+            
+            
+
+//            switch (currentUser.getRoleId()) {
+//                case "c5ae3575-3a5b-11f0-b817-74d713b03787" ->
+//                        response.sendRedirect(request.getContextPath() + "/user/registration");
+//                case "3b952226-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-guest");
+//                case "3b953cbd-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-Customer");
+//                case "3b953e41-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-Expert");
+//                case "3b953efb-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-sale");
+//                case "3b953f8d-3886-11f0-98a8-e4a8dfb1bdb7" -> response.sendRedirect("trang-marketing");
+//                case "63f7dae0-384c-11f0-9e24-e4a8dfb1bdb7" ->
+//                        response.sendRedirect(request.getContextPath() + "/user/registration");
+//                case "b1b69765-397a-11f0-84a1-088fc33f56c7" ->
+//                        response.sendRedirect(request.getContextPath() + "/user/registration");
+//                case "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a21" -> response.sendRedirect("/qps/home");
+//                default -> response.sendRedirect("error.jsp");
+//            }
 
         } catch (Exception ex) {
             Logger.getLogger(LoginController.class.getName()).log(Level.SEVERE, null, ex);

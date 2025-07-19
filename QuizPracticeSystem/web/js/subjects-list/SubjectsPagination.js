@@ -23,12 +23,12 @@ export function renderSubjects() {
         col.appendChild(wrapper);
 
         const taglinesHTML = subject.tagline
-                .map((tag) => `<p class="card-text mb-1 text-center tagline">#${tag}</p>`)
-                .join(' ');
+            .map((tag) => `<p class="card-text mb-1 text-center tagline">#${tag}</p>`)
+            .join(' ');
 
         const priceHTML = subject.lowestPrice && subject.salePrice ? `
       <div class="mb-2 text-center content">
-        <span class="content">From: </span>
+        <span class="content">Cheapest Course: From </span>
         <span class="text-decoration-line-through text-muted content">${subject.lowestPrice}đ</span>
         <span class="fw-bold text-success sale-price">${subject.salePrice}đ</span>
       </div>` : '';
@@ -135,15 +135,16 @@ export function assignSubjects(data) {
     numberOfPages = data[0].numberOfPages;
     numberOfItems = data[0].numberOfItems;
     subjects = d.map(sub => ({
-            id: sub.id,
-            lowestPrice: sub.lowestPrice,
-            name: sub.name,
-            salePrice: sub.salePrice,
-            tagline: sub.tagline,
-            thumbnailURL: sub.thumbnailURL,
-            updatedDate: sub.updatedDate,
-            author: sub.contactInfo
-        }));
+        id: sub.id,
+        lowestPrice: sub.lowestPrice,
+        name: sub.name,
+        salePrice: sub.salePrice,
+        tagline: sub.tagline,
+        thumbnailURL: sub.thumbnailURL,
+        updatedDate: sub.updatedDate,
+        author: sub.contactInfo,
+        pricePackage: sub.pricePackage
+    }));
     featuredSubjects = data[0].featured_subjects;
 }
 
@@ -164,3 +165,61 @@ export async function openOtherPages() {
         showNotification(e.message, 'not success');
     }
 }
+
+let selectedSubjectId = null;
+
+window.openRegisterModal = (subjectId) => {
+    selectedSubjectId = subjectId;
+    const subjectRegisterModal = new bootstrap.Modal(document.getElementById('subjectRegisterModal'));
+    const userInfoNotice = document.getElementById('userInfoNotice');
+    userInfoNotice.classList.add('d-none');
+
+    document.getElementById('subjectRegisterForm').reset();
+    subjectRegisterModal.show();
+
+    const selection = document.getElementById('registerPackageSelect')
+    const subject = subjects.find(subject => subject.id === subjectId);
+    if (Object.keys(subject.pricePackage).length > 0) {
+        console.log(subject.pricePackage.Bronze === 'undefined' || subject.pricePackage.Bronze === 0 ? '' : `<option>Bronze - ${subject.pricePackage.Bronze}đ</option>`)
+        selection.innerHTML += `
+         ${subject.pricePackage.Bronze === 'undefined' || subject.pricePackage.Bronze === 0 ? '' : `<option value="${subject.pricePackage.Bronze}" data-type="Bronze">Bronze - ${subject.pricePackage.Bronze}đ</option>`}
+         ${subject.pricePackage.Silver === 'undefined' || subject.pricePackage.Silver === 0 ? '' : `<option value="${subject.pricePackage.Silver}" data-type="Silver">Silver - ${subject.pricePackage.Silver}đ</option>`}
+         ${subject.pricePackage.Gold === 'undefined' || subject.pricePackage.Gold === 0 ? '' : `<option value="${subject.pricePackage.Gold}" data-type="Gold">Gold - ${subject.pricePackage.Gold}đ</option>`}
+    `;
+    }
+}
+
+document.getElementById('subjectRegisterForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const pricePackage = document.getElementById('registerPackageSelect').value;
+    const fullName = document.getElementById('fullname').value;
+    const email = document.getElementById('email').value;
+    const phoneNumber = document.getElementById('phone').value;
+    const gender = document.getElementById('gender').value;
+    const selectedOption = document.querySelector('#registerPackageSelect option:checked');
+    const pricePackageName = selectedOption?.dataset.type;
+    console.log(pricePackageName)
+
+    try {
+        const response = await fetch(`${window.contextPath}/user/subject_list`, {
+            method: 'POST',
+            headers: {
+                'X-Source': 'register',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                pricePackage,
+                fullName,
+                email,
+                phoneNumber,
+                gender,
+                id: selectedSubjectId,
+                pricePackageName
+            })
+        })
+        const data = await response.json();
+        console.log(data);
+    } catch (e) {
+        showNotification('There is an error happening', 'not success')
+    }
+});

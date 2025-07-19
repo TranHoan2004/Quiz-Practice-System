@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,11 +24,8 @@ public class AccountDAO extends DBContext {
 
     public boolean createAccount(Account account) {
         logger.info("createAccount");
-        if (isEmailExist(account.getEmail())) {
-            return false;
-        }
 
-        String sql = """
+        var sql = """
                     INSERT INTO `swp391`.account (id, email, full_name, password,
                     dob, gender, created_date, status, phone, image_url, role_id)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -112,7 +111,7 @@ public class AccountDAO extends DBContext {
     }
 
     public Account getAccountById(String id) {
-//        logger.info("getById " + id);
+        logger.info("getById " + id);
         Account account = Account.builder().build();
 
         String sql = "SELECT * FROM `swp391`.account WHERE id = ?";
@@ -158,6 +157,21 @@ public class AccountDAO extends DBContext {
         return null;
     }
 
+    public String getRoleNameById(String id) {
+        String sql = "SELECT value FROM `swp391`.setting WHERE id = ?";
+        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("value");
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return null;
+    }
+
     public void updatePasswordByEmail(String password, String email) {
         String sql = """
                 UPDATE `swp391`.account a
@@ -188,6 +202,8 @@ public class AccountDAO extends DBContext {
         }
         return 0;
     }
+    
+
 
     private Account getAccount(ResultSet rs) throws SQLException {
         if (rs.next()) {
@@ -206,6 +222,44 @@ public class AccountDAO extends DBContext {
                     .build();
         }
         return null;
+    }
+
+    public List<Account> getAllExperts() throws ClassNotFoundException {
+        List<Account> experts = new ArrayList<>();
+
+        String sql = """
+        SELECT * FROM `swp391`.account
+        WHERE role_id = (
+            SELECT id FROM `swp391`.setting
+            WHERE value = 'Expert'
+            LIMIT 1
+        )
+        """;
+
+        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Account expert = Account.builder()
+                            .id(UUID.fromString(rs.getString("id")))
+                            .email(rs.getString("email"))
+                            .fullName(rs.getString("full_name"))
+                            .password(rs.getString("password"))
+                            .dob(rs.getObject("dob", LocalDate.class))
+                            .gender(rs.getInt("gender"))
+                            .createdDate(rs.getObject("created_date", LocalDate.class))
+                            .status(rs.getBoolean("status"))
+                            .phoneNumber(rs.getString("phone"))
+                            .imageUrl(rs.getString("image_url"))
+                            .roleId(rs.getString("role_id"))
+                            .build();
+                    experts.add(expert);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Lỗi khi lấy danh sách Expert: " + e.getMessage(), e);
+        }
+
+        return experts;
     }
 
     private Account query(String id, Account account, String sql) {

@@ -28,6 +28,8 @@ public class QuizDTO {
     private String description;
     private String title;
     private String subjectId;
+    private boolean status;
+    private String subjectName;
     private String type; 
     private String level; 
 }

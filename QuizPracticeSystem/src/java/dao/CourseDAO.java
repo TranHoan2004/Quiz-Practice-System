@@ -99,6 +99,34 @@ public class CourseDAO extends DBContext {
         }
     }
 
+    public void insert(Course course) {
+        String sql = """
+        INSERT INTO `swp391`.course (
+            id, title, duration, status, description, created_date, updated_date,
+            thumbnail_url, number_of_lessons, topic_id, contact, expert_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """;
+
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
+            ps.setString(1, course.getId().toString());
+            ps.setString(2, course.getTitle());
+            ps.setFloat(3, course.getDuration());
+            ps.setBoolean(4, course.isStatus());
+            ps.setString(5, course.getDescription());
+            ps.setObject(6, course.getCreatedDate());
+            ps.setObject(7, course.getUpdatedDate());
+            ps.setString(8, course.getThumbnailUrl());
+            ps.setInt(9, course.getNumberOfLessons());
+            ps.setString(10, course.getTopicId());
+            ps.setString(11, course.getContact());
+            ps.setString(12, course.getExpertId());
+
+            ps.executeUpdate();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error inserting course: " + e.getMessage(), e);
+        }
+    }
+
     private Course getEntityFromResultSet(Course s, ResultSet rs) throws SQLException {
         while (rs.next()) {
             s = buildCourse(rs);
@@ -272,6 +300,28 @@ public class CourseDAO extends DBContext {
             ps.setString(2, courseId);
             ps.executeUpdate();
         }
+    }
+
+    public List<Course> getAllBySubject(String id) {
+        var query = """
+                SELECT *
+                FROM Course c
+                LEFT JOIN `swp391`.topic t ON t.id = c.topic_id
+                LEFT JOIN `swp391`.subject s ON s.id = t.subject_id
+                WHERE s.id = ?
+                """;
+        List<Course> list = new ArrayList<>();
+        try (var conn = getConnection(); var pre = conn.prepareStatement(query)) {
+            pre.setString(1, id);
+            try (var rs = pre.executeQuery()) {
+                while (rs.next()) {
+                    list.add(buildCourse(rs));
+                }
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return list;
     }
 
     private Course buildCourse(ResultSet rs) throws SQLException {

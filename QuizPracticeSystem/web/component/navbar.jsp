@@ -15,25 +15,17 @@
                 <a href="${pageContext.request.contextPath}/home" class="nav-item nav-link active">Home</a>
                 <a href="courses.html" class="nav-item nav-link">Courses</a>
                 <a href="${pageContext.request.contextPath}/blog-list" class="nav-item nav-link">Blog</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
-                    <div class="dropdown-menu fade-down m-0">
-                        <a href="about.html" class="dropdown-item">About Us</a>
-                        <a href="team.html" class="dropdown-item">Our Team</a>
-                        <a href="testimonial.html" class="dropdown-item">Testimonials</a>
-                        <a href="${pageContext.request.contextPath}/marketing/dashboard" class="dropdown-item">Dashboard</a>
-                    </div>
-                </div>
+                <a href="${pageContext.request.contextPath}/simulation-exams" class="nav-item nav-link">Simulation Exams</a>
             </div>
             <!-- User Authentication Section -->
             <div class="d-flex align-items-center px-4 px-lg-5">
                 <!-- If not login -->
                 <c:if test="${empty sessionScope.currentUser}">
                     <div class="not-logged-in d-flex align-items-center">
-                        <a href="${pageContext.request.contextPath}/user/login"
+                        <a href="${pageContext.request.contextPath}/auth/login"
                            class="btn btn-outline-primary me-2 d-flex align-items-center justify-content-center"
                            style="height: 40px;">Login</a>
-                        <a href="${pageContext.request.contextPath}/jsp/common-features/register.jsp"
+                        <a href="${pageContext.request.contextPath}/auth/register"
                            class="btn btn-primary d-flex align-items-center justify-content-center"
                            style="height: 40px;">Register</a>
                     </div>
@@ -64,11 +56,17 @@
                                 <li><a class="dropdown-item" href="profile.jsp"><i class="fas fa-user me-2"></i>Profile</a>
                                 </li>
                                 <li><a class="dropdown-item" href="my-courses.jsp"><i
-                                        class="fas fa-graduation-cap me-2"></i>My Courses</a></li>
+                                            class="fas fa-graduation-cap me-2"></i>My Courses</a></li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
-                                <li><a class="dropdown-item" href="logout.jsp"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                                <c:if test="${sessionScope.userRole == 'Admin'
+                                 || sessionScope.userRole == 'Marketer'
+                                  || sessionScope.userRole == 'Sale'}">
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/admin/dashboard"><i
+                                            class="fas fa-graduation-cap me-2"></i>Dashboard</a></li>
+                                </c:if>
+                                <li><a class="dropdown-item" href="${pageContext.request.contextPath}/auth/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
                                 </li>
                             </ul>
                         </div>

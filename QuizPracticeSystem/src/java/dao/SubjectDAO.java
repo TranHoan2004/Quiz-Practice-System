@@ -22,9 +22,7 @@ public class SubjectDAO extends DBContext {
     public List<Subject> getAllSubjects() throws Exception {
         List<Subject> list = new ArrayList<>();
         String sql = "SELECT * FROM `swp391`.subject";
-        try (var connection = getConnection();
-             var pre = connection.prepareStatement(sql);
-             var rs = pre.executeQuery()) {
+        try (var connection = getConnection(); var pre = connection.prepareStatement(sql); var rs = pre.executeQuery()) {
             while (rs.next()) {
                 list.add(getEntity(rs));
             }
@@ -38,8 +36,7 @@ public class SubjectDAO extends DBContext {
     public Subject getById(String id) throws Exception {
         var s = Subject.builder().build();
         var sql = "SELECT * FROM `swp391`.subject s WHERE s.id = ?";
-        try (var connection = getConnection();
-             var pre = connection.prepareStatement(sql)) {
+        try (var connection = getConnection(); var pre = connection.prepareStatement(sql)) {
             pre.setString(1, id);
             try (var rs = pre.executeQuery()) {
                 while (rs.next()) {
@@ -58,8 +55,7 @@ public class SubjectDAO extends DBContext {
                 INSERT INTO `swp391`.subject (id, name)
                 VALUES (?, ?)
                 """;
-        try (var connection = getConnection();
-             var pre = connection.prepareStatement(sql)) {
+        try (var connection = getConnection(); var pre = connection.prepareStatement(sql)) {
             pre.setString(1, s.getId().toString());
             pre.setString(2, s.getName());
             pre.executeQuery();
@@ -71,8 +67,7 @@ public class SubjectDAO extends DBContext {
 
     public void deleteById(String id) {
         var sql = "DELETE FROM `swp391`.subject s WHERE s.id = ?";
-        try (var connection = getConnection();
-             var pre = connection.prepareStatement(sql)) {
+        try (var connection = getConnection(); var pre = connection.prepareStatement(sql)) {
             pre.setString(1, id);
             pre.executeQuery();
         } catch (Exception e) {
@@ -85,8 +80,7 @@ public class SubjectDAO extends DBContext {
 
         var sql = "SELECT * FROM `swp391`.subject WHERE feature_flag = ? ORDER BY RAND() LIMIT ?";
 
-        try (var connection = getConnection();
-             var ps = connection.prepareStatement(sql)) {
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setInt(1, 1); // feature_flag = 1
             ps.setInt(2, top); // select top
 
@@ -110,8 +104,7 @@ public class SubjectDAO extends DBContext {
                 WHERE ss.subject_id = ? AND stt.name = 'Blog Category'
                 """;
 
-        try (var conn = getConnection();
-             var ps = conn.prepareStatement(sql)) {
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             ps.setString(1, subjectId);
             try (var rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -134,9 +127,7 @@ public class SubjectDAO extends DBContext {
                 """;
         // WHERE stt.name = 'Blog Category'
 
-        try (var conn = getConnection();
-             var ps = conn.prepareStatement(sql);
-             var rs = ps.executeQuery()) {
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql); var rs = ps.executeQuery()) {
             while (rs.next()) {
                 result.add(rs.getString("value"));
             }
@@ -154,8 +145,7 @@ public class SubjectDAO extends DBContext {
                     WHERE st.value = ?
                 """;
 
-        try (var conn = getConnection();
-             var ps = conn.prepareStatement(sql)) {
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             ps.setString(1, category);
             try (var rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -168,8 +158,7 @@ public class SubjectDAO extends DBContext {
 
     public int getCountSubjectsByDate(String startDate, String endDate) {
         var sql = "SELECT COUNT(*) FROM `swp391`.subject WHERE created_date BETWEEN ? AND ?";
-        try (var conn = getConnection();
-             var ps = conn.prepareStatement(sql)) {
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             ps.setString(1, startDate);
             ps.setString(2, endDate);
             try (var rs = ps.executeQuery()) {
@@ -185,8 +174,7 @@ public class SubjectDAO extends DBContext {
 
     public int getCountAllSubjects() {
         var sql = "SELECT COUNT(*) FROM `swp391`.subject";
-        try (var conn = getConnection(); var ps = conn.prepareStatement(sql);
-             var rs = ps.executeQuery()) {
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql); var rs = ps.executeQuery()) {
             if (rs.next()) {
                 return rs.getInt(1);
             }
@@ -203,8 +191,7 @@ public class SubjectDAO extends DBContext {
                 WHERE s.name LIKE ?
                 """;
         List<Subject> list = new ArrayList<>();
-        try (var conn = getConnection();
-             var pre = conn.prepareStatement(query)) {
+        try (var conn = getConnection(); var pre = conn.prepareStatement(query)) {
             pre.setString(1, "%" + name + "%");
             try (var rs = pre.executeQuery()) {
                 while (rs.next()) {
@@ -280,6 +267,68 @@ public class SubjectDAO extends DBContext {
         return result;
     }
 
+    public int getNumberOfCoursesPerSubject(String id) {
+        var query = """
+                SELECT COUNT(*)
+                FROM `swp391`.course c
+                LEFT JOIN `swp391`.topic t ON c.topic_id = t.id
+                LEFT JOIN `swp391`.subject s ON t.subject_id = s.id
+                WHERE s.id = ?
+                """;
+        int total = 0;
+        try (var conn = getConnection(); var pre = conn.prepareStatement(query)) {
+            pre.setString(1, id);
+            try (var rs = pre.executeQuery()) {
+                if (rs.next()) {
+                    total = rs.getInt(1);
+                }
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return total;
+    }
+
+    public boolean existsById(String id) {
+        var sql = "SELECT COUNT(*) FROM `swp391`.subject WHERE id = ?";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, id);
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return false;
+    }
+
+    public int getTopNCoursePriceOfSubject(String subjectId, int limit) {
+        var sql = """
+                SELECT SUM(pp.price)
+                FROM `swp391`.course c
+                JOIN `swp391`.topic t ON c.topic_id = t.id
+                JOIN `swp391`.subject s ON t.subject_id = s.id
+                RIGHT JOIN `swp391`.pricepackage pp ON pp.course_id = c.id
+                WHERE s.id = ? AND pp.price > 0
+                ORDER BY pp.price
+                LIMIT ?;
+                """;
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, subjectId);
+            ps.setInt(2, limit);
+            try (var rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return 0;
+    }
+
     private Subject getEntity(ResultSet rs) throws SQLException {
         return Subject.builder()
                 .id(UUID.fromString(rs.getString("id")))
@@ -290,4 +339,25 @@ public class SubjectDAO extends DBContext {
                 .updatedDate(rs.getObject("updated_date", LocalDate.class))
                 .build();
     }
+
+    public void insert(Subject subject) throws Exception {
+        String sql = """
+                    INSERT INTO subject (id, name, thumbnail_url, feature_flag, author, updated_date)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """;
+
+        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, subject.getId().toString());
+            ps.setString(2, subject.getName());
+            ps.setString(3, subject.getThumbnailURL());
+            ps.setBoolean(4, subject.isFeatureFlag());
+            ps.setString(5, subject.getAuthorId());
+            ps.setDate(6, java.sql.Date.valueOf(subject.getUpdatedDate()));
+            ps.executeUpdate();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+            throw e;
+        }
+    }
+
 }

@@ -45,9 +45,9 @@ public class QuizzesListController extends HttpServlet {
             List<QuizType> quizTypeList = typeQuizDao.getAllQuizType();
             List<Subject> subjectList = subjectDao.getAllSubjects();
 
-            List<QuizDTO> quizDtoList = quizDao.pagingQuiz(page, subjectId, type, title);
+            List<QuizDTO> quizDtoList = quizDao.pagingQuiz(subjectId, type, title, null, page, 5);
 
-            int totalQuizzes = quizDao.getTotalQuizDto(subjectId, type, title);
+            int totalQuizzes = quizDao.getTotalQuizDto(subjectId, type, title, null);
             int pageSize = 5;
             int endPage = totalQuizzes / pageSize;
             if (totalQuizzes % pageSize != 0) {

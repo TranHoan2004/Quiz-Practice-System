@@ -48,25 +48,47 @@
                 <i class="bi bi-bar-chart-fill"></i> Marketing
             </a>
             <ul class="nav flex-column gap-2">
-                <li class="nav-item"><a class="nav-link active d-flex align-items-center gap-2" href="#"><i
-                            class="bi bi-house"></i> Dashboard</a>
+                <li class="nav-item"><a class="nav-link active d-flex align-items-center gap-2" href="#"><i class="bi bi-clipboard-data-fill"></i> Dashboard</a>
                 </li>
                 <li class="nav-item"><a class="nav-link d-flex align-items-center gap-2"
                                         href="${pageContext.request.contextPath}/home"><i
-                            class="bi bi-graph-up"></i>Home</a>
+                    <i
+                            class="bi bi-house"></i> Home</a>
                 </li>
-                <li class="nav-item"><a class="nav-link d-flex align-items-center gap-2"
-                                        href="${pageContext.request.contextPath}/post-details"><i
-                            class="bi bi-graph-up"></i>Post Details</a>
-                </li>
-                <li class="nav-item"><a class="nav-link d-flex align-items-center gap-2"
-                                        href="${pageContext.request.contextPath}/jsp/marketing-features/sliders-list.jsp">
-                        <i class="bi bi-sliders2"></i>Slider</a>
-                </li>
+                
+                <c:if test="${sessionScope.userRole == 'Admin' || sessionScope.userRole == 'Marketer'}">
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2"
+                           href="${pageContext.request.contextPath}/marketer/post-details">
+                            <i class="bi bi-postcard-heart"></i>Post Details
+                        </a>
+                    </li>
+                </c:if>
+                
+                <c:if test="${sessionScope.userRole == 'Admin' || sessionScope.userRole == 'Marketer'}">
+                    <li class="nav-item"><a class="nav-link d-flex align-items-center gap-2"
+                                            href="${pageContext.request.contextPath}/jsp/marketing-features/sliders_list.jsp">
+                        <i class="bi bi-file-earmark-slides-fill"></i> Slider</a>
+                    </li>
+                </c:if>
 
+                <c:if test="${sessionScope.userRole == 'Admin'}">
+                    <li class="nav-item"><a class="nav-link d-flex align-items-center gap-2"
+                                            href="${pageContext.request.contextPath}/user/subject-list">
+                        <i class="bi bi-stack-overflow"></i> Subject List</a>
+                    </li>
+                </c:if>
+
+                <c:if test="${sessionScope.userRole == 'Admin' || sessionScope.userRole == 'Sale'}">
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2"
+                           href="${pageContext.request.contextPath}/registration-list">
+                            <i class="bi bi-graph-up"></i>Registration List
+                        </a>
+                    </li>
+                </c:if>
             </ul>
         </nav>
-
 
         <div class="main-content">
             <!-- Header with toggle and user info -->
@@ -107,7 +129,7 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="logout.jsp"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
+                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/auth/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
                                     </li>
                                 </ul>
                             </div>
@@ -118,7 +140,7 @@
             <!-- Date Filter -->
             <div>
                 <form id="dateForm"
-                      action="${pageContext.request.contextPath}/marketing/dashboard"
+                      action="${pageContext.request.contextPath}/marketer/dashboard"
                       class="d-flex gap-2 mb-3 justify-content-end align-items-center"
                       method="GET"
                       >
@@ -309,7 +331,7 @@
                     <button class="btn btn-sm btn-outline-primary d-block mb-1" onclick="handleSuggestionClick('marketer')">
                         Môn học nào đang đóng góp doanh thu tốt nhất, và nên dùng chiến lược nào để tăng doanh thu, bán được nhiều khoá học hơn?
                     </button>
-                    <button class="btn btn-sm btn-outline-primary d-block mb-1" onclick="handleSuggestionClick('revenue')">
+                    <button class="btn btn-sm btn-outline-primary d-block mb-1" onclick="handleSuggestionClick('re  venue')">
                         Xu hướng đơn hàng qua thời gian đang biến động như thế nào và cần làm gì để duy trì tăng trưởng?
                     </button>
                     <button class="btn btn-sm btn-outline-primary d-block mb-1" onclick="handleSuggestionClick('course')">

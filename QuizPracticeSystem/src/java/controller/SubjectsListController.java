@@ -15,21 +15,23 @@ import controller.utils.HandleRequestBody;
 import controller.web_socket.SubjectsListSocket;
 import dao.*;
 import dto.*;
+import enumerate.SubjectStatus;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebListener;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import model.*;
 import utils.Encoder;
+import utils.MailUtil;
 
 import java.io.*;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.*;
 
 @WebServlet(name = "SubjectsListController", urlPatterns = {"/user/subject_list"})
-public class SubjectsListController extends HttpServlet implements Runnable {
+public class SubjectsListController extends HttpServlet {
 
     // <editor-fold> desc="Khai báo các DAO để thao tác dữ liệu"
     private final SubjectDAO sDAO;
@@ -41,7 +43,7 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     private final TaglineDAO tlDAO;
     private final Logger logger;
     private final HandleOllamaAssistant assistant;
-    private HttpServletResponse resp;
+    private final PersonalSubjectDAO pDAO;
     private static final String GENERATE_COLOR_AND_ICON = """
                 ##You are a helpful UI/UX assistant.
             
@@ -134,42 +136,42 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     private final static String promptTemplate = """
             You are an intelligent classification assistant.
             Below is a list of subjects and three groups of personalization criteria.
-
+            
             Your task is to:
-
+            
             1. Read the provided list of subjects.
             2. Based on combinations of the three personalization criteria, classify subjects into learning trails.
-
+            
             Each trail represents a learning path for a specific combination of personalization:
-
+            
             FIRST_PART_OF_CUSTOMIZATION: Learning goals (users can select multiple)
-
+            
             SECOND_PART_OF_CUSTOMIZATION: Learner profile (only one selection allowed)
-
+            
             THIRD_PART_OF_CUSTOMIZATION: Education level (only one selection allowed)
-
+            
             ### Personalization Criteria:
             * FIRST_PART_OF_CUSTOMIZATION (Learning goals — multi-select):
             - "Working": Focus on skills that support current or future job roles.
             - "Improve my knowledge": Reinforce and deepen understanding in existing areas of expertise.
             - "Explore new knowledge": Explore knowledge that is completely new to the learner.
-
+            
             * SECOND_PART_OF_CUSTOMIZATION (Learner profile — single-select):
             - "Pupil": Primary or secondary school students.
             - "Student": University or college students.
             - "Working professional": Individuals currently employed and building their career.
-
+            
             * THIRD_PART_OF_CUSTOMIZATION (Education level — single-select):
             - "Secondary education or below": High school or lower.
             - "Undergraduate level": Currently pursuing or completed undergraduate degree.
             - "Postgraduate level": Graduate school, master's, or doctoral level.
-
+            
             ### Expected output:
             - Generate a list of learning trails, where each trail corresponds to one combination of the three personalization criteria.
             - Each trail should contain the list of subjects that are relevant to that combination.
             - A subject may appear in multiple trails if applicable.
             - Your classification must be based on the semantic meaning of both the subject and the associated criteria descriptions.
-
+            
             ### Preferred output format (JSON-like):
             [
               {
@@ -199,6 +201,7 @@ public class SubjectsListController extends HttpServlet implements Runnable {
         this.tDAO = new TopicDAO();
         this.tlDAO = new TaglineDAO();
         this.hrb = new HandleRequestBody();
+        this.pDAO = new PersonalSubjectDAO();
         this.assistant = new HandleOllamaAssistant();
         this.logger = Logger.getLogger(this.getClass().getName());
     }
@@ -216,11 +219,11 @@ public class SubjectsListController extends HttpServlet implements Runnable {
      * </ul>
      * Mọi kết quả sẽ được đóng gói trong `model` và trả về dưới dạng JSON.
      *
-     * @param request Yêu cầu HTTP từ client, có thể chứa header, session,
-     * cookie hoặc tham số
+     * @param request  Yêu cầu HTTP từ client, có thể chứa header, session,
+     *                 cookie hoặc tham số
      * @param response Phản hồi HTTP để gửi kết quả JSON
      * @throws ServletException Nếu có lỗi liên quan đến servlet
-     * @throws IOException Nếu có lỗi I/O xảy ra khi gửi dữ liệu phản hồi
+     * @throws IOException      Nếu có lỗi I/O xảy ra khi gửi dữ liệu phản hồi
      * @author HoanTX
      * @author TuanKD
      */
@@ -228,8 +231,6 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         var header = request.getHeader("X-Source");
         Map<String, Object> model = new HashMap<>();
-//        Thread thread = new Thread();
-//        thread.start();
         try {
             if (header != null) {
                 switch (header) {
@@ -253,7 +254,6 @@ public class SubjectsListController extends HttpServlet implements Runnable {
                                 }
                             }
                         }
-                        logger.log(Level.INFO, "subjects: {0}", subjects);
                         if (status && subjects != null) {
                             model.put("signal", true);
                             request.setAttribute("page", 1);
@@ -262,15 +262,14 @@ public class SubjectsListController extends HttpServlet implements Runnable {
                             handleFeaturedSubjects(model);
                         } else {
                             model.put("signal", false);
-                            model.put("topics", getAllTopicResp());
-                            model.put("main_title", "Subjects List");
                             model.put("items", "Subjects List");
                             model.put("topicsUI", generateColorAndIconForTopic(response, getAllTopicResp()));
                         }
+                        model.put("topics", getAllTopicResp());
+                        model.put("main_title", "Subjects List");
                         sendData(response, HttpServletResponse.SC_OK, model);
                     }
-                    default ->
-                        handleSearchEvent(request, response);
+                    default -> handleSearchEvent(request, response);
                 }
             } else {
                 subjectsListForAdminController(request, response);
@@ -281,23 +280,19 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
 
     /**
-     * <h4>Xử lý các yêu cầu POST cho cá nhân hóa và phân loại môn học</h4>
-     * Phương thức này tiếp nhận dữ liệu người dùng gửi lên và thực hiện một
-     * trong các hành động:
+     * <h4>Xử lý yêu cầu POST cho cá nhân hóa và phân loại môn học</h4>
+     * Tiếp nhận dữ liệu từ client và thực hiện các hành động khác nhau tùy theo giá trị của header <b>X-Source</b>:
      * <ul>
-     * <li>Nếu không có header <b>X-Source</b>: Gửi prompt để AI xác định danh
-     * mục môn học phù hợp</li>
-     * <li>Nếu header là <b>"customized_topic"</b>: Gửi toàn bộ lựa chọn người
-     * dùng đến AI để đề xuất danh sách môn học phù hợp</li>
+     *   <li>Nếu không có header: gửi prompt cho AI để xác định danh mục môn học phù hợp.</li>
+     *   <li>Nếu header là <b>"customized_topic"</b>: gửi toàn bộ lựa chọn của người dùng cho AI để đề xuất danh sách môn học phù hợp.</li>
+     *   <li>Nếu header là <b>"register"</b>: xử lý đăng ký môn học.</li>
      * </ul>
-     * Mọi kết quả được trả về dưới dạng JSON, hoặc thông báo lỗi với mã trạng
-     * thái 400 nếu có vấn đề.
+     * Kết quả trả về dưới dạng JSON, hoặc mã lỗi HTTP 400 nếu xảy ra vấn đề.
      *
-     * @param req Yêu cầu HTTP chứa dữ liệu từ client (body và header)
-     * @param resp Phản hồi HTTP để trả kết quả JSON
-     * @throws ServletException Nếu có lỗi liên quan đến servlet
-     * @throws IOException Nếu có lỗi khi đọc dữ liệu yêu cầu hoặc ghi dữ liệu
-     * phản hồi
+     * @param req  Đối tượng yêu cầu HTTP chứa dữ liệu từ phía client (body và header)
+     * @param resp Đối tượng phản hồi HTTP để trả kết quả JSON cho client
+     * @throws ServletException Nếu có lỗi liên quan đến servlet xử lý
+     * @throws IOException      Nếu xảy ra lỗi khi đọc yêu cầu hoặc ghi phản hồi
      * @author HoanTX
      */
     @Override
@@ -309,8 +304,14 @@ public class SubjectsListController extends HttpServlet implements Runnable {
 
             if (header == null) {
                 getSubjectsByPrompt(req, resp, map);
-            } else if (header.equals("customized_topic")) {
-                customizingUsersSelection(req, resp, map);
+            } else {
+                switch (header) {
+                    case "register" -> handleRegisterSubject(req, map);
+                    case "customized_topic" -> {
+                        customizingUsersSelection(req, resp, map);
+                        resp.setStatus(HttpServletResponse.SC_OK);
+                    }
+                }
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Exception: " + e.getMessage(), e);
@@ -321,20 +322,20 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
 
     // <editor-fold> desc="Subjects list for admin"
+
     /**
      * <h4>Controller xử lý danh sách môn học cho Admin</h4>
      * Hiển thị danh sách môn học (CourseDTO) cho quản trị viên với chức năng
      * tìm kiếm, lọc theo danh mục, trạng thái và tổ chức, đồng thời hỗ trợ phân
      * trang.
      *
-     * @param request Yêu cầu HTTP từ phía client
+     * @param request  Yêu cầu HTTP từ phía client
      * @param response Phản hồi HTTP gửi về client
      * @throws ServletException Nếu xảy ra lỗi khi forward request
-     * @throws IOException Nếu có lỗi I/O xảy ra trong quá trình xử lý
+     * @throws IOException      Nếu có lỗi I/O xảy ra trong quá trình xử lý
      * @author TuanKD
      */
     private void subjectsListForAdminController(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Lấy các tham số tìm kiếm từ URL
         String keyword = request.getParameter("keyword");
         String category = request.getParameter("category");
         String status = request.getParameter("status");
@@ -342,20 +343,20 @@ public class SubjectsListController extends HttpServlet implements Runnable {
         String message = "";
 
         try {
-            // Lấy tất cả CourseDTO (danh sách môn học đầy đủ thông tin)
+            // Lấy dữ liệu tỪ database
             List<CourseDTO> allCourses = getAllCourseDTOs();
 
-            // Nếu có điều kiện lọc → thực hiện lọc
+            // Lọc theo keyword, category, status nếu có
             if (keyword != null || category != null || status != null) {
                 allCourses = filterCourses(allCourses, keyword, category, status);
             }
 
-            // Nếu có tham số mã hóa tổ chức → giải mã và lấy thông tin
+            // Lọc theo contact (nếu có)
             if (orgEncoded != null) {
                 handleContactFilter(request, orgEncoded);
             }
 
-            // Lấy danh sách subject (chưa dùng rõ ràng trong JSP)
+            // Lưu danh sách môn học và category lên request
             request.setAttribute("subjects", sDAO.getAllSubjects());
 
             // Chia trang và truyền danh sách đã phân trang sang JSP
@@ -363,10 +364,9 @@ public class SubjectsListController extends HttpServlet implements Runnable {
             request.setAttribute("categories", sDAO.getAllCategories());
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
-            message = e.getMessage(); // Gán lỗi để hiển thị nếu có
+            message = e.getMessage();
         }
 
-        // Truyền message nếu có lỗi và forward sang JSP hiển thị
         request.setAttribute("message", message);
         request.getRequestDispatcher("/jsp/course-features/subjects_list.jsp").forward(request, response);
     }
@@ -378,7 +378,7 @@ public class SubjectsListController extends HttpServlet implements Runnable {
      *
      * @return Danh sách CourseDTO chứa đầy đủ thông tin để hiển thị
      * @throws Exception Nếu xảy ra lỗi trong quá trình truy vấn hoặc ánh xạ dữ
-     * liệu từ database
+     *                   liệu từ database
      * @author TuanKD
      */
     private List<CourseDTO> getAllCourseDTOs() throws Exception {
@@ -386,23 +386,23 @@ public class SubjectsListController extends HttpServlet implements Runnable {
         List<Course> courses = cDAO.getAllCourses();
 
         for (Course c : courses) {
-            // Lấy Topic → từ Topic lấy Subject
             Topic t = tDAO.getTopicById(c.getTopicId());
             Subject s = sDAO.getById(t.getSubjectId());
-
-            // Đếm số lượng bài học thuộc Subject
-            int lessonCount = lDAO.countBySubjectId(s.getId().toString());
-
-            // Lấy thông tin chuyên gia (owner)
+            int lessonCount = lDAO.countByCourseId(c.getId().toString());
             Account owner = aDAO.getAccountById(c.getExpertId());
 
+            // Lấy category thông qua subject -> setting_subject -> setting
             String category = sDAO.getCategoryBySubjectId(s.getId().toString());
-            // Xây dựng đối tượng CourseDTO
-            CourseDTO dto = CourseDTO.builder().id(Encoder.encode(c.getId().toString())) // dùng hashCode làm ID tạm
-                    .title(s.getName()) // tên môn học
-                    .category(category) // tạm dùng tên subject làm category
-                    .numberOfLessons(lessonCount).owner(owner.getFullName()).published(c.isStatus()) // trạng thái đã xuất bản hay chưa
-                    .subjectId(Encoder.encode(s.getId().toString())).build();
+
+            CourseDTO dto = CourseDTO.builder()
+                    .id(Encoder.encode(c.getId().toString()))
+                    .title(c.getTitle())
+                    .category(category)
+                    .numberOfLessons(lessonCount)
+                    .owner(owner != null ? owner.getFullName() : "Unknown")
+                    .published(c.isStatus())
+                    .subjectId(Encoder.encode(s.getId().toString()))
+                    .build();
 
             result.add(dto);
         }
@@ -415,11 +415,11 @@ public class SubjectsListController extends HttpServlet implements Runnable {
      * Lọc danh sách theo từ khóa tìm kiếm, danh mục (category) và trạng thái
      * (status).
      *
-     * @param courses Danh sách gốc các CourseDTO
-     * @param keyword Từ khóa tìm kiếm (theo tên môn học, tên chủ sở hữu hoặc
-     * danh mục)
+     * @param courses  Danh sách gốc các CourseDTO
+     * @param keyword  Từ khóa tìm kiếm (theo tên môn học, tên chủ sở hữu hoặc
+     *                 danh mục)
      * @param category Danh mục lọc (nếu có)
-     * @param status Trạng thái xuất bản: all | published | unpublished
+     * @param status   Trạng thái xuất bản: all | published | unpublished
      * @return Danh sách CourseDTO đã được lọc theo các tiêu chí đầu vào
      * @author TuanKD
      */
@@ -458,7 +458,7 @@ public class SubjectsListController extends HttpServlet implements Runnable {
      * <h4>Xử lý bộ lọc theo tổ chức (Contact)</h4>
      * Giải mã mã tổ chức được truyền vào và thêm thông tin tổ chức vào request.
      *
-     * @param request Đối tượng HttpServletRequest
+     * @param request    Đối tượng HttpServletRequest
      * @param orgEncoded Mã tổ chức đã được mã hóa từ client
      * @throws Exception Nếu tổ chức không tồn tại hoặc giải mã thất bại
      * @author TuanKD
@@ -475,7 +475,7 @@ public class SubjectsListController extends HttpServlet implements Runnable {
      * phần tử.
      *
      * @param request Yêu cầu HTTP chứa thông tin về trang hiện tại
-     * @param list Danh sách CourseDTO cần phân trang
+     * @param list    Danh sách CourseDTO cần phân trang
      * @author TuanKD
      */
     private void renderPagination(HttpServletRequest request, List<CourseDTO> list) {
@@ -501,14 +501,15 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     // </editor-fold>
 
     // <editor-fold> desc="Solve the public subjects list screen">
+
     /**
      * <h4>Xử lý giao diện danh sách môn học công khai</h4>
      * Phương thức này chuẩn bị dữ liệu danh sách môn học dựa trên prompt (danh
      * mục) được cung cấp.
      *
-     * @param request Yêu cầu HTTP chứa thông tin phiên và tham số
+     * @param request  Yêu cầu HTTP chứa thông tin phiên và tham số
      * @param response Phản hồi HTTP sẽ gửi cho client
-     * @param prompt Tên danh mục môn học hoặc từ khóa tìm kiếm tương ứng
+     * @param prompt   Tên danh mục môn học hoặc từ khóa tìm kiếm tương ứng
      * @throws Exception Nếu xảy ra lỗi truy xuất hoặc xử lý dữ liệu
      * @author HoanTX
      */
@@ -524,22 +525,19 @@ public class SubjectsListController extends HttpServlet implements Runnable {
      * Truy xuất danh sách môn học theo danh mục và lưu vào session. Sau đó thực
      * hiện phân trang và thêm vào model.
      *
-     * @param req Yêu cầu HTTP
-     * @param model Map dùng để lưu dữ liệu phản hồi
+     * @param req      Yêu cầu HTTP
+     * @param model    Map dùng để lưu dữ liệu phản hồi
      * @param category Tên danh mục ("all", "none", hoặc tên danh mục cụ thể)
      * @throws Exception Nếu xảy ra lỗi truy vấn cơ sở dữ liệu hoặc xử lý dữ
-     * liệu khác
+     *                   liệu khác
      */
     private void handlePublicSubjectsList(HttpServletRequest req, Map<String, Object> model, String category) throws Exception {
         logger.log(Level.INFO, "Handling public subjects list request with category: {0}", category);
         var session = req.getSession();
         List<Subject> subjects = switch (category) {
-            case "all" ->
-                sDAO.getAllSubjects();
-            case "none" ->
-                null;
-            default ->
-                sDAO.getAllSubjectsByCategory(category);
+            case "all" -> sDAO.getAllSubjects();
+            case "none" -> null;
+            default -> sDAO.getAllSubjectsByCategory(category);
         };
         session.setAttribute("subjects", subjects);
         session.setAttribute("subjectsBackup", subjects);
@@ -547,12 +545,14 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
 
     /**
-     * <h4>Phân trang danh sách môn học lưu trong session</h4>
-     * Cắt danh sách môn học thành các trang nhỏ hơn và thêm vào model cùng với
-     * thông tin phân trang.
+     * <h4>Phân trang danh sách môn học cho màn hình danh sách môn học công khai</h4>
+     * Phương thức này phân trang danh sách môn học được lưu trong phiên làm việc và đưa kết quả phân trang vào bản đồ mô hình.
+     * Số lượng mục trên mỗi trang và trang hiện tại được xác định bởi các tham số yêu cầu "size" và "page".
+     * Danh sách đã được phân trang sẽ được chuyển thành danh sách các SubjectsListDTO để trả về phản hồi.
      *
-     * @param req Yêu cầu HTTP chứa tham số trang và kích thước
-     * @param model Map chứa danh sách đã phân trang và số liệu liên quan
+     * @param req   Yêu cầu HTTP chứa các tham số phân trang và thông tin phiên
+     * @param model Bản đồ mô hình để lưu dữ liệu phân trang cho phản hồi
+     * @author HoanTX
      */
     private void pagination(HttpServletRequest req, Map<String, Object> model) {
         List<SubjectsListDTO> list;
@@ -580,18 +580,30 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
 
     /**
-     * <h4>Chuyển đổi danh sách Subject thành DTO có thêm thông tin</h4>
-     * Mỗi đối tượng Subject sẽ được ánh xạ thành SubjectsListDTO có thêm giá
-     * bán và thông tin liên hệ.
+     * <h4>Chuyển đổi danh sách các đối tượng môn học thành các SubjectsListDTO</h4>
+     * Ánh xạ từng đối tượng môn học thành một SubjectsListDTO, bao gồm giá tiền, khẩu hiệu, thông tin liên hệ và các gói giá.
      *
-     * @param subjects Danh sách các đối tượng Subject
-     * @return Danh sách DTO SubjectsListDTO đã được làm giàu dữ liệu
+     * @param subjects Danh sách các đối tượng môn học cần chuyển đổi
+     * @return Danh sách các đối tượng SubjectsListDTO để trả về phản hồi
+     * @author HoanTX
      */
     private List<SubjectsListDTO> getSubjectsListDTOs(List<Subject> subjects) {
         return subjects.stream().map(s -> {
             Map<String, String> map = sDAO.getLowestPriceAndSalePriceBySubjectId(s.getId().toString());
+            var lowestPrice = Integer.parseInt(map.get("lowest_price") != null ? map.get("lowest_price") : "1");
+            var salePrice = Integer.parseInt(map.get("sale_price") != null ? map.get("sale_price") : "1");
             try {
-                return SubjectsListDTO.builder().id(Encoder.encode(s.getId().toString())).name(s.getName()).tagline(getTaglineNames(s.getId().toString())).thumbnailURL(s.getThumbnailURL()).lowestPrice(map.get("lowest_price")).salePrice(map.get("sale_price")).updatedDate(s.getUpdatedDate() == null ? null : s.getUpdatedDate().toString()).contactInfo(getContactInfo(s.getAuthorId())).build();
+                return SubjectsListDTO.builder()
+                        .id(Encoder.encode(s.getId().toString()))
+                        .name(s.getName())
+                        .tagline(getTaglineNames(s.getId().toString()))
+                        .thumbnailURL(s.getThumbnailURL())
+                        .lowestPrice(String.valueOf(lowestPrice))
+                        .salePrice(String.valueOf(lowestPrice * salePrice / 100))
+                        .updatedDate(s.getUpdatedDate() == null ? null : s.getUpdatedDate().toString())
+                        .contactInfo(getContactInfo(s.getAuthorId()))
+                        .pricePackage(calculatePricePackage(s.getId().toString()))
+                        .build();
             } catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);
                 return null;
@@ -600,13 +612,43 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
 
     /**
-     * <h4>Lấy thông tin liên hệ tác giả qua ID</h4>
-     * Truy vấn thông tin liên hệ dựa trên ID tác giả và chuyển đổi sang
-     * ContactInfo DTO.
+     * <h4>Tính toán các gói giá cho một môn học</h4>
+     * Xác định các gói giá Đồng, Bạc và Vàng dựa trên số lượng khóa học trong môn học.
+     *
+     * @param subjectId ID của môn học
+     * @return Bản đồ với tên gói làm khóa và giá tiền làm giá trị
+     * @author HoanTX
+     */
+    private Map<String, Integer> calculatePricePackage(String subjectId) {
+        Map<String, Integer> map = new HashMap<>();
+        var total = sDAO.getNumberOfCoursesPerSubject(subjectId);
+        if (total > 0) {
+            var cheapestPackage = 0;
+            var mediumPackage = 0;
+            var maxPackage = 0;
+            if (total > 3 && total <= 5) {
+                cheapestPackage = sDAO.getTopNCoursePriceOfSubject(subjectId, 3);
+                mediumPackage = sDAO.getTopNCoursePriceOfSubject(subjectId, 5);
+            } else if (total > 5) {
+                maxPackage = sDAO.getTopNCoursePriceOfSubject(subjectId, Math.min(7, total));
+            } else {
+                cheapestPackage = sDAO.getTopNCoursePriceOfSubject(subjectId, total);
+            }
+            map.put("Bronze", cheapestPackage);
+            map.put("Silver", mediumPackage);
+            map.put("Gold", maxPackage);
+        }
+        return map;
+    }
+
+    /**
+     * <h4>Lấy thông tin liên hệ của tác giả môn học</h4>
+     * Truy xuất thông tin liên hệ dựa trên ID của tác giả và xây dựng một đối tượng ContactInfo.
      *
      * @param id ID của tác giả
-     * @return Đối tượng ContactInfo chứa thông tin liên hệ
-     * @throws Exception Nếu có lỗi khi truy xuất dữ liệu liên hệ
+     * @return Đối tượng ContactInfo chứa thông tin liên hệ của tác giả
+     * @throws Exception nếu không tìm thấy thông tin liên hệ
+     * @author HoanTX
      */
     private ContactInfo getContactInfo(String id) throws Exception {
         Contact contact = ctDAO.getById(id);
@@ -625,9 +667,9 @@ public class SubjectsListController extends HttpServlet implements Runnable {
      * Dùng Gson để chuyển đổi dữ liệu thành JSON và gửi về client với mã trạng
      * thái HTTP.
      *
-     * @param res Đối tượng phản hồi HTTP
+     * @param res    Đối tượng phản hồi HTTP
      * @param status Mã trạng thái HTTP
-     * @param obj Các đối tượng cần serialize và gửi dưới dạng JSON
+     * @param obj    Các đối tượng cần serialize và gửi dưới dạng JSON
      * @throws IOException Nếu xảy ra lỗi khi ghi dữ liệu ra response stream
      */
     private void sendData(HttpServletResponse res, int status, Object... obj) throws IOException {
@@ -640,11 +682,12 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
 
     /**
-     * <h4>Lấy danh sách tagline theo môn học</h4>
-     * Truy xuất danh sách các tagline (nhãn) của môn học thông qua ID.
+     * <h4>Lấy tên khẩu hiệu cho một môn học</h4>
+     * Truy xuất danh sách các tên khẩu hiệu gắn với ID môn học đã cho.
      *
      * @param id ID của môn học
-     * @return Danh sách tên các tagline (dưới dạng chuỗi)
+     * @return Danh sách các tên khẩu hiệu
+     * @author HoanTX
      */
     private List<String> getTaglineNames(String id) {
         return tlDAO.getTaglinesBySubjectId(id).stream()
@@ -652,12 +695,12 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
 
     /**
-     * <h4>Lấy danh sách môn học nổi bật và thêm vào model</h4>
-     * Truy xuất các môn học được đánh dấu nổi bật và chuyển thành DTO đơn giản
-     * để hiển thị.
+     * <h4>Xử lý các chủ đề nổi bật</h4>
+     * Truy xuất 3 chủ đề nổi bật nhất và đưa chúng vào bản đồ mô hình.
      *
-     * @param model Map dữ liệu để lưu danh sách featured_subjects
-     * @throws SQLException Nếu xảy ra lỗi truy vấn cơ sở dữ liệu
+     * @param model Bản đồ mô hình để lưu trữ các chủ đề nổi bật
+     * @throws SQLException Nếu xảy ra lỗi truy cập cơ sở dữ liệu
+     * @author HoanTX
      */
     private void handleFeaturedSubjects(Map<String, Object> model) throws SQLException {
         var subjects = sDAO.getTopSubjectsFlag(3);
@@ -674,10 +717,10 @@ public class SubjectsListController extends HttpServlet implements Runnable {
      * Lọc danh sách môn học trong session dựa trên chuỗi truy vấn người dùng
      * nhập.
      *
-     * @param req Yêu cầu HTTP chứa tham số tìm kiếm
+     * @param req  Yêu cầu HTTP chứa tham số tìm kiếm
      * @param resp Phản hồi HTTP để gửi kết quả
      * @throws Exception Nếu xảy ra lỗi trong quá trình xử lý tìm kiếm hoặc truy
-     * cập session
+     *                   cập session
      */
     @SuppressWarnings("unchecked")
     private void handleSearchEvent(HttpServletRequest req, HttpServletResponse resp) throws Exception {
@@ -696,11 +739,12 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
 
     /**
-     * <h4>Lấy toàn bộ danh sách chủ đề và chuyển thành DTO</h4>
-     * Truy xuất toàn bộ chủ đề và ánh xạ thành các đối tượng TopicResp.
+     * <h4>Lấy danh sách tất cả TopicResp</h4>
+     * Phương thức này truy xuất toàn bộ chủ đề từ cơ sở dữ liệu và chuyển đổi sang danh sách TopicResp.
      *
-     * @return Danh sách DTO chủ đề (TopicResp)
-     * @throws Exception Nếu xảy ra lỗi truy vấn dữ liệu
+     * @return Danh sách các đối tượng TopicResp
+     * @throws Exception Nếu xảy ra lỗi khi truy xuất dữ liệu
+     * @author HoanTX
      */
     private List<TopicResp> getAllTopicResp() throws Exception {
         List<Topic> topics = tDAO.getAllTopic();
@@ -710,14 +754,14 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
 
     /**
-     * <h4>Sinh màu sắc và icon cho các chủ đề bằng trợ lý AI</h4>
-     * Chia danh sách chủ đề thành nhiều phần và gửi prompt tới AI để sinh thông
-     * tin hình ảnh.
+     * <h4>Gán màu sắc và icon cho danh sách chủ đề</h4>
+     * Phương thức này chia nhỏ danh sách chủ đề thành từng nhóm, gửi prompt tới AI để nhận về icon và màu sắc phù hợp cho từng chủ đề.
      *
-     * @param resp Đối tượng phản hồi HTTP để truyền xuống hàm gọi AI
-     * @param list Danh sách chủ đề cần sinh màu/icon
-     * @return Danh sách chủ đề đã có thêm màu sắc và biểu tượng
-     * @throws JsonProcessingException Nếu xảy ra lỗi khi phân tích JSON
+     * @param resp Đối tượng HttpServletResponse để truyền vào hàm gọi AI
+     * @param list Danh sách các TopicResp cần gán icon và màu sắc
+     * @return Danh sách TopicResp đã được cập nhật icon và màu sắc
+     * @throws JsonProcessingException Nếu xảy ra lỗi khi xử lý JSON
+     * @author HoanTX
      */
     private List<TopicResp> generateColorAndIconForTopic(HttpServletResponse resp, List<TopicResp> list) throws JsonProcessingException {
         var mapper = new ObjectMapper();
@@ -747,11 +791,11 @@ public class SubjectsListController extends HttpServlet implements Runnable {
      * Gửi prompt tới AI assistant và xử lý chuỗi kết quả để loại bỏ các đoạn dư
      * thừa như ```json.
      *
-     * @param resp Đối tượng phản hồi HTTP
+     * @param resp   Đối tượng phản hồi HTTP
      * @param prompt Nội dung prompt gửi đến AI
      * @return Chuỗi JSON đã làm sạch
      * @throws IOException, URISyntaxException Nếu có lỗi gửi hoặc định dạng URI
-     * không hợp lệ
+     *                      không hợp lệ
      */
     private String getAnswerFromPrompt(HttpServletResponse resp, String prompt) throws IOException, URISyntaxException {
         var body = assistant.preparePrompt(prompt);
@@ -763,16 +807,15 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
 
     /**
-     * <h4>Trích lọc danh mục từ prompt để hiển thị danh sách môn học phù
-     * hợp</h4>
-     * Sử dụng AI để phân loại prompt người dùng thành danh mục và gọi hàm hiển
-     * thị tương ứng.
+     * <h4>Lấy danh sách môn học theo prompt AI</h4>
+     * Phương thức này gửi prompt chứa danh sách các danh mục môn học và truy vấn người dùng đến AI để xác định danh mục phù hợp.
+     * Nếu AI trả về một danh mục hợp lệ, sẽ hiển thị danh sách môn học tương ứng. Nếu không, gửi thông báo lỗi thân thiện cho client.
      *
-     * @param req Yêu cầu HTTP
-     * @param resp Phản hồi HTTP
-     * @param map Map chứa prompt từ người dùng
-     * @throws Exception Nếu xảy ra lỗi trong quá trình phân loại hoặc xử lý
-     * prompt
+     * @param req  Yêu cầu HTTP từ client
+     * @param resp Phản hồi HTTP gửi về client
+     * @param map  Dữ liệu đầu vào từ client (chứa prompt)
+     * @throws Exception Nếu có lỗi trong quá trình xử lý hoặc truy vấn AI
+     * @author HoanTX
      */
     private void getSubjectsByPrompt(HttpServletRequest req, HttpServletResponse resp, Map<String, Object> map) throws Exception {
         var catesList = sDAO.getAllCategories();
@@ -792,15 +835,15 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
 
     /**
-     * <h4>Cá nhân hóa danh sách môn học dựa trên lựa chọn của người dùng</h4>
-     * Xây dựng prompt dựa trên hồ sơ người dùng và nhờ trợ lý AI gợi ý danh
-     * sách môn học phù hợp.
+     * <h4>Cá nhân hóa lựa chọn môn học theo hồ sơ người dùng</h4>
+     * Phương thức này gửi thông tin cá nhân hóa của người dùng và danh sách môn học đến AI để nhận về danh sách môn học phù hợp nhất.
+     * Kết quả sẽ được lưu vào session và thiết lập cookie đánh dấu trạng thái cá nhân hóa.
      *
-     * @param req Yêu cầu HTTP chứa dữ liệu người dùng
-     * @param resp Phản hồi HTTP
-     * @param map Map chứa các lựa chọn như mục tiêu học tập, vai trò, trình độ
-     * học vấn và chủ đề
-     * @throws Exception Nếu có lỗi khi gọi AI hoặc xử lý dữ liệu JSON
+     * @param req  Yêu cầu HTTP từ client
+     * @param resp Phản hồi HTTP gửi về client
+     * @param map  Dữ liệu đầu vào từ client (chứa thông tin cá nhân hóa)
+     * @throws Exception Nếu có lỗi trong quá trình xử lý hoặc truy vấn AI
+     * @author HoanTX
      */
     private void customizingUsersSelection(HttpServletRequest req, HttpServletResponse resp, Map<String, Object> map) throws Exception {
         var obj = new ObjectMapper().convertValue(map, CustomizedLearningTargetReq.class);
@@ -854,24 +897,191 @@ public class SubjectsListController extends HttpServlet implements Runnable {
     }
     // </editor-fold>
 
-    @Override
-    public void run() {
-//        try {
-//            var mapper = new ObjectMapper();
-//            List<Subject> s = sDAO.getAllSubjects();
-//            List<Subject> result = new ArrayList<>();
-//            var step = (int) Math.ceil((double) s.size() / 5);
-//            for (int i = 0; i < step; i++) {
-//                List<Subject> subList = s.subList(i * 5, Math.min((i + 1) * 5, s.size()));
-//                var prompt = promptTemplate.formatted(subList);
-//                result.addAll(mapper.readValue(getAnswerFromPrompt(resp, prompt), new TypeReference<>() {
-//                }));
-//            }
-//            result.forEach(r -> {
-//                System.out.println(r.toString());
-//            });
-//        } catch (Exception e) {
-//            logger.log(Level.SEVERE, e.getMessage(), e);
-//        }
+    // <editor-fold> desc="Solve the subject register screen"
+    private final String DEFAULT_PASSWORD = "MyPassword123.";
+
+    /**
+     * <h4>Đăng ký môn học</h4>
+     * Xử lý quy trình đăng ký môn học bao gồm xác thực tài khoản người dùng, tạo tài khoản mới nếu cần,
+     * lưu thông tin đăng ký vào cơ sở dữ liệu và gửi email hướng dẫn thanh toán.
+     *
+     * @param req Yêu cầu HTTP chứa thông tin phiên làm việc và dữ liệu người dùng
+     * @param map Bản đồ chứa dữ liệu đầu vào như ID môn học, gói giá, thông tin cá nhân
+     * @throws Exception nếu không tìm thấy môn học hoặc gặp lỗi trong quá trình xử lý
+     * @author HoanTX
+     */
+    private void handleRegisterSubject(HttpServletRequest req, Map<String, Object> map) throws Exception {
+        var session = req.getSession();
+        var account = (Account) session.getAttribute("currentUser");
+        var id = Encoder.decode(map.get("id").toString());
+        String accountId;
+        var pricePackage = map.get("pricePackage");
+        var packageName = map.get("pricePackageName");
+
+        if (account == null) {
+            var email = map.get("email");
+            var fullName = map.get("fullName");
+            var phoneNumber = map.get("phoneNumber");
+            var gender = Integer.parseInt(map.get("gender").toString());
+            logger.info("price package: " + packageName);
+            createNewAccount(email.toString(), fullName.toString(), phoneNumber.toString(), gender);
+            account = aDAO.getAccountByEmail(email.toString());
+            accountId = account.getId().toString();
+        } else {
+            if (sDAO.existsById(id)) throw new Exception("Subject not found");
+            accountId = account.getId().toString();
+        }
+        pDAO.insert(PersonalSubject.builder()
+                .accountId(accountId)
+                .subjectId(id)
+                .status(SubjectStatus.SENT.name().toLowerCase())
+                .price(Float.parseFloat(pricePackage.toString()))
+                .packageName(packageName.toString())
+                .registrationTime(LocalDate.now())
+                .validFrom(LocalDate.now())
+                .validTo(LocalDate.now().plusDays(31 * 12)) // 1 year
+                .build());
+        sendEmail(aDAO.getAccountByEmail(account.getEmail()), sDAO.getById(id), pricePackage.toString());
+
+        session.setAttribute("subjectId", id);
     }
+
+    /**
+     * <h4>Tạo tài khoản mới</h4>
+     * Kiểm tra sự tồn tại của email và số điện thoại, sau đó tạo tài khoản người dùng với thông tin được cung cấp.
+     *
+     * @param email       Email đăng ký
+     * @param fullName    Họ tên đầy đủ
+     * @param phoneNumber Số điện thoại liên hệ
+     * @param gender      Giới tính (mã số nguyên đại diện)
+     * @throws IllegalArgumentException nếu email hoặc số điện thoại đã tồn tại
+     * @author HoanTX
+     */
+    private void createNewAccount(String email, String fullName, String phoneNumber, int gender) {
+        if (aDAO.isEmailExist(email)) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+        if (aDAO.isPhoneNumberExist(phoneNumber)) {
+            throw new IllegalArgumentException("Phone number already exists");
+        }
+        aDAO.createAccount(Account.builder()
+                .id(UUID.randomUUID())
+                .createdDate(LocalDate.now())
+                .password(DEFAULT_PASSWORD)
+                .email(email)
+                .fullName(fullName)
+                .phoneNumber(phoneNumber)
+                .gender(gender)
+                .roleId("b1b69765-397a-11f0-84a1-088fc33f56c7")
+                .build());
+    }
+
+    /**
+     * <h4>Gửi email xác nhận và hướng dẫn thanh toán</h4>
+     * Gửi email đến người dùng chứa thông tin đăng ký khóa học, tài khoản truy cập, hướng dẫn chuyển khoản và liên kết thanh toán.
+     *
+     * @param account      Tài khoản người dùng
+     * @param subject      Môn học đã đăng ký
+     * @param pricePackage Giá tiền gói học
+     * @author HoanTX
+     */
+    private void sendEmail(Account account, Subject subject, String pricePackage) {
+        logger.log(Level.INFO, "Sending mail to {0}", account.getEmail());
+        var mailSubject = "Register Order";
+        var link = "http://localhost:8080/qps/payment?price=" + pricePackage;
+        var template = """
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                  <meta charset="UTF-8">
+                  <title>Course Registration & Payment Instructions</title>
+                  <style>
+                    body {
+                      font-family: Arial, sans-serif;
+                      color: #333;
+                      line-height: 1.6;
+                    }
+                    .container {
+                      max-width: 600px;
+                      margin: auto;
+                      padding: 20px;
+                      border: 1px solid #ddd;
+                      border-radius: 8px;
+                      background-color: #f9f9f9;
+                    }
+                    h2 {
+                      color: #007bff;
+                    }
+                    .section {
+                      margin-bottom: 20px;
+                    }
+                    .qr {
+                      text-align: center;
+                    }
+                    .qr img {
+                      max-width: 200px;
+                    }
+                    .footer {
+                      font-size: 0.9em;
+                      color: #777;
+                      text-align: center;
+                      margin-top: 30px;
+                    }
+                  </style>
+                </head>
+                <body>
+                  <div class="container">
+                    <h2>Course Registration & Payment Instructions</h2>
+                
+                    <div class="section">
+                      <p>Dear <strong>%s</strong>,</p>
+                      <p>Thank you for registering for a course with <strong>Quezee</strong>. Below are the details of your registration:</p>
+                    </div>
+                
+                    <div class="section">
+                      <h3>📚 Course Information</h3>
+                      <ul>
+                        <li><strong>Course Name:</strong> %s</li>
+                        <li><strong>Tuition Fee:</strong> %s</li>
+                      </ul>
+                    </div>
+                
+                    <div class="section">
+                      <h3>👤 Student Account</h3>
+                      <ul>
+                        <li><strong>Login Email:</strong> %s</li>
+                        <li><strong>Password:</strong> %s</li>
+                      </ul>
+                    </div>
+                
+                    <div class="section">
+                      <h3>💳 Payment Instructions</h3>
+                      <ul>
+                        <li><strong>Bank:</strong> Vietcombank</li>
+                        <li><strong>Account Number:</strong> 0123456789</li>
+                        <li><strong>Account Holder:</strong> Quezee Education Co., Ltd.</li>
+                        <li><strong>Transfer Note:</strong> HOAN_BIOLOGY_GOLD</li>
+                      </ul>
+                    </div>
+                
+                    <div class="qr">
+                      <p>Please click the following link to make your payment:</p>
+                      %s
+                    </div>
+                
+                    <div class="footer">
+                      <p>Your course will be activated within 24 hours after payment confirmation.</p>
+                      <p>If you have any questions, please contact us at <a href="mailto:plan@eventplanners.com">plan@eventplanners.com</a> or call 0990001112.</p>
+                    </div>
+                  </div>
+                </body>
+                </html>
+                """
+                .formatted(
+                        account.getFullName(), subject.getName(), pricePackage,
+                        account.getEmail(), DEFAULT_PASSWORD, link
+                );
+        MailUtil.sendMail("hoana5k44nknd@gmail.com", mailSubject, template);
+    }
+    // </editor-fold>
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -20,4 +21,5 @@ public class SubjectsListDTO {
     private String salePrice;
     private String updatedDate;
     private ContactInfo contactInfo;
+    private Map<String, Integer> pricePackage;
 }

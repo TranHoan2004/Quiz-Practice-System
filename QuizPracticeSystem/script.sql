@@ -1,9 +1,3 @@
--- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
---
--- Host: localhost    Database: swp391
--- ------------------------------------------------------
--- Server version	8.0.42
-
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT = @@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS = @@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION = @@COLLATION_CONNECTION */;
@@ -15,10 +9,7 @@
 /*!40101 SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES = @@SQL_NOTES, SQL_NOTES = 0 */;
 
---
 -- Table structure for table `account`
---
-
 DROP TABLE IF EXISTS `account`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -50,10 +41,6 @@ CREATE TABLE `account`
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `account`
---
-
 LOCK TABLES `account` WRITE;
 /*!40000 ALTER TABLE `account`
     DISABLE KEYS */;
@@ -78,8 +65,6 @@ VALUES ('9c9d5b45-5179-11f0-b7ee-088fc33f56c7', 'john.doe@example.com', 'John Do
         '2023-02-05', 1, '+84222333444', 'img/grace.jpg', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22'),
        ('9caf51fa-5179-11f0-b7ee-088fc33f56c7', 'user9@example.com', 'Henry King', 'Vwx(90123', '1982-08-08', 1,
         '2023-02-10', 1, '+84888999000', 'img/henry.jpg', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a23'),
-       ('b283bfb8-397a-11f0-84a1-088fc33f56c7', 'user@gmail.com', 'John Doe', 'SecureP@ss1', '1990-01-01', 0,
-        '2023-01-01', 1, '0911111111', 'img/john.jpg', 'b1b69765-397a-11f0-84a1-088fc33f56c7'),
        ('b287bbd5-397a-11f0-84a1-088fc33f56c7', 'hoana5k44nknd@gmail.com', 'Jane Smith', 'StrongP@ss2', '1992-05-15', 1,
         '2023-01-02', 1, '0922222222', 'img/jane.jpg', 'b1b69765-397a-11f0-84a1-088fc33f56c7'),
        ('b28b4752-397a-11f0-84a1-088fc33f56c7', 'peter.jones@example.com', 'Peter Jones', 'MyP@ssw0rd3', '1988-11-30',
@@ -87,15 +72,31 @@ VALUES ('9c9d5b45-5179-11f0-b7ee-088fc33f56c7', 'john.doe@example.com', 'John Do
        ('b2932a61-397a-11f0-84a1-088fc33f56c7', 'alice.white@example.com', 'Alice White', 'Passw0rd!4', '1995-03-22', 1,
         '2023-01-04', 1, '0944444444', 'img/alice.jpg', 'b1b69765-397a-11f0-84a1-088fc33f56c7'),
        ('b2971e45-397a-11f0-84a1-088fc33f56c7', 'bob.brown@example.com', 'Bob Brown', 'SecureP@ss5!', '1991-07-07', 0,
-        '2023-01-05', 1, '0955555555', 'img/bob.jpg', 'b1b69765-397a-11f0-84a1-088fc33f56c7');
+        '2023-01-05', 1, '0955555555', 'img/bob.jpg', 'b1b69765-397a-11f0-84a1-088fc33f56c7'),
+       -- Admin
+       (UUID(), 'admin@gmail.com', 'Admin Account', 'QEEyMTM0NTY=', '1990-01-01', 1,
+        CURDATE(), 1, '0911111111', 'img/default.jpg', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a21'),
+       -- Expert
+       (UUID(), 'expert@gmail.com', 'Expert Account', 'QEEyMTM0NTY=', '1990-01-02', 1,
+        CURDATE(), 1, '0922222222', 'img/default.jpg', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22'),
+       -- Marketer
+       ('b283bfb8-397a-11f0-84a1-088fc33f56c7', 'marketer@gmail.com', 'Marketer Account', 'QEEyMTM0NTY=', '1990-01-03',
+        1,
+        CURDATE(), 1, '0933333333', 'img/default.jpg', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a30'),
+       -- Sale
+       (UUID(), 'sale@gmail.com', 'Sale Account', 'QEEyMTM0NTY=', '1990-01-04', 1,
+        CURDATE(), 1, '0944444444', 'img/default.jpg', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a31'),
+       -- User
+       (UUID(), 'user@gmail.com', 'User Account', 'QEEyMTM0NTY=', '1990-01-05', 1,
+        CURDATE(), 1, '0955555555', 'img/default.jpg', 'b1b69765-397a-11f0-84a1-088fc33f56c7'),
+       -- Student
+       (UUID(), 'student@gmail.com', 'Student Account', 'QEEyMTM0NTY=', '1990-01-06', 1,
+        CURDATE(), 1, '0966666666', 'img/default.jpg', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a23');
 /*!40000 ALTER TABLE `account`
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `blog`
---
-
 DROP TABLE IF EXISTS `blog`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -121,10 +122,6 @@ CREATE TABLE `blog`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `blog`
---
 
 LOCK TABLES `blog` WRITE;
 /*!40000 ALTER TABLE `blog`
@@ -187,10 +184,6 @@ VALUES ('b3d1a1b5-397a-11f0-84a1-088fc33f56c7', '2024-03-01',
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `blogmedia`
---
-
 DROP TABLE IF EXISTS `blogmedia`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -209,10 +202,6 @@ CREATE TABLE `blogmedia`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `blogmedia`
---
 
 LOCK TABLES `blogmedia` WRITE;
 /*!40000 ALTER TABLE `blogmedia`
@@ -238,142 +227,12 @@ VALUES ('9ada8b90-5179-11f0-b7ee-088fc33f56c7', 'b3d1a1b5-397a-11f0-84a1-088fc33
         'cái này là gì', 4),
        ('9aef946d-5179-11f0-b7ee-088fc33f56c7', 'b3d1b01b-397a-11f0-84a1-088fc33f56c7', 'video',
         'img/quantum_explained.mp4', 'cái này là gì', 3);
+
 /*!40000 ALTER TABLE `blogmedia`
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `chat`
---
-
-DROP TABLE IF EXISTS `chat`;
-/*!40101 SET @saved_cs_client = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `chat`
-(
-    `id`            varchar(36) NOT NULL,
-    `first_person`  varchar(36) NOT NULL,
-    `second_person` varchar(36) NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FKChat197105` (`second_person`),
-    KEY `FKChat395442` (`first_person`),
-    CONSTRAINT `FKChat197105` FOREIGN KEY (`second_person`) REFERENCES `account` (`id`),
-    CONSTRAINT `FKChat395442` FOREIGN KEY (`first_person`) REFERENCES `account` (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `chat`
---
-
-LOCK TABLES `chat` WRITE;
-/*!40000 ALTER TABLE `chat`
-    DISABLE KEYS */;
-INSERT INTO `chat`
-VALUES ('b399c16e-397a-11f0-84a1-088fc33f56c7', 'b283bfb8-397a-11f0-84a1-088fc33f56c7',
-        'b287bbd5-397a-11f0-84a1-088fc33f56c7'),
-       ('b39d8cb6-397a-11f0-84a1-088fc33f56c7', 'b28b4752-397a-11f0-84a1-088fc33f56c7',
-        'b2932a61-397a-11f0-84a1-088fc33f56c7'),
-       ('b3a36da7-397a-11f0-84a1-088fc33f56c7', 'b2971e45-397a-11f0-84a1-088fc33f56c7',
-        'b283bfb8-397a-11f0-84a1-088fc33f56c7'),
-       ('b3abf35e-397a-11f0-84a1-088fc33f56c7', 'b287bbd5-397a-11f0-84a1-088fc33f56c7',
-        'b28b4752-397a-11f0-84a1-088fc33f56c7'),
-       ('b3b1167c-397a-11f0-84a1-088fc33f56c7', 'b2932a61-397a-11f0-84a1-088fc33f56c7',
-        'b2971e45-397a-11f0-84a1-088fc33f56c7'),
-       ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a40', '9c9f87a3-5179-11f0-b7ee-088fc33f56c7',
-        '9ca3a7f6-5179-11f0-b7ee-088fc33f56c7'),
-       ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a41', '9c9d5b45-5179-11f0-b7ee-088fc33f56c7',
-        '9c9f87a3-5179-11f0-b7ee-088fc33f56c7'),
-       ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a42', '9c9d5b45-5179-11f0-b7ee-088fc33f56c7',
-        '9ca3a7f6-5179-11f0-b7ee-088fc33f56c7'),
-       ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a43', '9ca98304-5179-11f0-b7ee-088fc33f56c7',
-        '9ca766b5-5179-11f0-b7ee-088fc33f56c7'),
-       ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', '9cab6d2b-5179-11f0-b7ee-088fc33f56c7',
-        '9cab6d2b-5179-11f0-b7ee-088fc33f56c7'),
-       ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a45', '9c9f87a3-5179-11f0-b7ee-088fc33f56c7',
-        '9ca98304-5179-11f0-b7ee-088fc33f56c7'),
-       ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a46', '9c9f87a3-5179-11f0-b7ee-088fc33f56c7',
-        '9ca187f4-5179-11f0-b7ee-088fc33f56c7'),
-       ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a47', '9c9d5b45-5179-11f0-b7ee-088fc33f56c7',
-        '9c9d5b45-5179-11f0-b7ee-088fc33f56c7'),
-       ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a48', '9ca187f4-5179-11f0-b7ee-088fc33f56c7',
-        '9c9d5b45-5179-11f0-b7ee-088fc33f56c7'),
-       ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a49', '9cab6d2b-5179-11f0-b7ee-088fc33f56c7',
-        '9ca766b5-5179-11f0-b7ee-088fc33f56c7');
-/*!40000 ALTER TABLE `chat`
-    ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `chatdetails`
---
-
-DROP TABLE IF EXISTS `chatdetails`;
-/*!40101 SET @saved_cs_client = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `chatdetails`
-(
-    `id`        varchar(36)  NOT NULL,
-    `message`   varchar(255) NOT NULL,
-    `timestamp` date         NOT NULL,
-    `sender`    varchar(255) NOT NULL,
-    `chat_id`   varchar(36)  NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FKChatDetail513929` (`chat_id`),
-    CONSTRAINT `FKChatDetail513929` FOREIGN KEY (`chat_id`) REFERENCES `chat` (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `chatdetails`
---
-
-LOCK TABLES `chatdetails` WRITE;
-/*!40000 ALTER TABLE `chatdetails`
-    DISABLE KEYS */;
-INSERT INTO `chatdetails`
-VALUES ('b3be6638-397a-11f0-84a1-088fc33f56c7', 'Hi Jane, how are you?', '2024-05-20',
-        'b283bfb8-397a-11f0-84a1-088fc33f56c7', 'b399c16e-397a-11f0-84a1-088fc33f56c7'),
-       ('b3be6e54-397a-11f0-84a1-088fc33f56c7', 'I am good, John! How about you?', '2024-05-20',
-        'b287bbd5-397a-11f0-84a1-088fc33f56c7', 'b399c16e-397a-11f0-84a1-088fc33f56c7'),
-       ('b3be7105-397a-11f0-84a1-088fc33f56c7', 'Meeting at 3 PM today?', '2024-05-21',
-        'b28b4752-397a-11f0-84a1-088fc33f56c7', 'b39d8cb6-397a-11f0-84a1-088fc33f56c7'),
-       ('b3be72d3-397a-11f0-84a1-088fc33f56c7', 'Yes, see you there.', '2024-05-21',
-        'b2932a61-397a-11f0-84a1-088fc33f56c7', 'b39d8cb6-397a-11f0-84a1-088fc33f56c7'),
-       ('b3be7619-397a-11f0-84a1-088fc33f56c7', 'Checking in on the project.', '2024-05-22',
-        'b2971e45-397a-11f0-84a1-088fc33f56c7', 'b3a36da7-397a-11f0-84a1-088fc33f56c7'),
-       ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a50', 'It is on track, thanks!', '2023-05-05', 'Frank Adams',
-        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a45'),
-       ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a51', 'Hi John, how are you?', '2023-05-01', 'Jane Smith',
-        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a41'),
-       ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a52', 'I am good, thanks! How about you?', '2023-05-01', 'John Doe',
-        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a41'),
-       ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a53', 'Checking in on your progress.', '2023-05-02', 'Peter Jones',
-        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a42'),
-       ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a54', 'All good here, thanks for asking!', '2023-05-02', 'John Doe',
-        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a42'),
-       ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55', 'Meeting at 10 AM tomorrow.', '2023-05-03', 'Alice Brown',
-        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a43'),
-       ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a56', 'Got it, see you then.', '2023-05-03', 'Jane Smith',
-        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a43'),
-       ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a57', 'Can you send me the report?', '2023-05-04', 'Bob White',
-        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44'),
-       ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a58', 'Sure, sending it now.', '2023-05-04', 'Charlie Green',
-        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44'),
-       ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a59', 'How is the new project going?', '2023-05-05', 'Diana Ross',
-        'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380a45');
-/*!40000 ALTER TABLE `chatdetails`
-    ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `contact`
---
-
 DROP TABLE IF EXISTS `contact`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -394,10 +253,6 @@ CREATE TABLE `contact`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `contact`
---
 
 LOCK TABLES `contact` WRITE;
 /*!40000 ALTER TABLE `contact`
@@ -467,10 +322,7 @@ VALUES ('9b179f19-5179-11f0-b7ee-088fc33f56c7', 'Tech Solutions Inc.', '{
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `course`
---
-
 DROP TABLE IF EXISTS `course`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -499,10 +351,6 @@ CREATE TABLE `course`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `course`
---
 
 LOCK TABLES `course` WRITE;
 /*!40000 ALTER TABLE `course`
@@ -572,10 +420,7 @@ VALUES ('9ce8ab9c-5179-11f0-b7ee-088fc33f56c7', 'Advanced Algebra', 15.5, 1,
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `learningmaterial`
---
-
 DROP TABLE IF EXISTS `learningmaterial`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -593,10 +438,6 @@ CREATE TABLE `learningmaterial`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `learningmaterial`
---
 
 LOCK TABLES `learningmaterial` WRITE;
 /*!40000 ALTER TABLE `learningmaterial`
@@ -639,10 +480,7 @@ VALUES ('9d015f05-5179-11f0-b7ee-088fc33f56c7', 'Video: Introduction to Advanced
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `lesson`
---
-
 DROP TABLE IF EXISTS `lesson`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -662,10 +500,6 @@ CREATE TABLE `lesson`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `lesson`
---
 
 LOCK TABLES `lesson` WRITE;
 /*!40000 ALTER TABLE `lesson`
@@ -705,79 +539,7 @@ VALUES ('9d015f05-5179-11f0-b7ee-088fc33f56c7', 1, 'Lesson 1: Introduction to Ad
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
--- Table structure for table `notification`
---
-
-DROP TABLE IF EXISTS `notification`;
-/*!40101 SET @saved_cs_client = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `notification`
-(
-    `id`         varchar(36)  NOT NULL,
-    `link`       varchar(255) NOT NULL,
-    `message`    varchar(255) NOT NULL,
-    `title`      varchar(255) NOT NULL,
-    `status`     tinyint(1)   NOT NULL DEFAULT '0',
-    `account_id` varchar(36)  NOT NULL,
-    PRIMARY KEY (`id`),
-    KEY `FKNotificati558491` (`account_id`),
-    CONSTRAINT `FKNotificati558491` FOREIGN KEY (`account_id`) REFERENCES `account` (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `notification`
---
-
-LOCK TABLES `notification` WRITE;
-/*!40000 ALTER TABLE `notification`
-    DISABLE KEYS */;
-INSERT INTO `notification`
-VALUES ('9d25e7e8-5179-11f0-b7ee-088fc33f56c7', 'http://example.com/newcourse',
-        'A new course \"Calculus II\" has been added.', 'New Course Available', 0,
-        '9c9d5b45-5179-11f0-b7ee-088fc33f56c7'),
-       ('9d28695e-5179-11f0-b7ee-088fc33f56c7', 'http://example.com/blogupdate',
-        'New blog post: \"Mastering Python for Data Science\".', 'Blog Update', 0,
-        '9c9f87a3-5179-11f0-b7ee-088fc33f56c7'),
-       ('9d2aabdd-5179-11f0-b7ee-088fc33f56c7', 'http://example.com/quizready', 'Your weekly quiz is now available!',
-        'Quiz Time!', 0, '9c9d5b45-5179-11f0-b7ee-088fc33f56c7'),
-       ('9d2c91ea-5179-11f0-b7ee-088fc33f56c7', 'http://example.com/lessoncomplete',
-        'You completed Lesson 3 in Data Structures.', 'Lesson Completion', 1, '9c9d5b45-5179-11f0-b7ee-088fc33f56c7'),
-       ('9d2fca58-5179-11f0-b7ee-088fc33f56c7', 'http://example.com/accountupdate',
-        'Your profile information has been updated.', 'Profile Update', 1, '9c9f87a3-5179-11f0-b7ee-088fc33f56c7'),
-       ('9d324fe0-5179-11f0-b7ee-088fc33f56c7', 'http://example.com/message', 'You have a new message from Jane Smith.',
-        'New Message', 0, '9c9d5b45-5179-11f0-b7ee-088fc33f56c7'),
-       ('9d345f5c-5179-11f0-b7ee-088fc33f56c7', 'http://example.com/coursereminder',
-        'Reminder: Your course \"Calculus I\" starts soon.', 'Course Reminder', 0,
-        '9c9d5b45-5179-11f0-b7ee-088fc33f56c7'),
-       ('9d368da8-5179-11f0-b7ee-088fc33f56c7', 'http://example.com/systemalert',
-        'System maintenance scheduled for 2 AM UTC.', 'System Alert', 0, '9ca3a7f6-5179-11f0-b7ee-088fc33f56c7'),
-       ('9d386992-5179-11f0-b7ee-088fc33f56c7', 'http://example.com/promotion',
-        'Exclusive discount on all physics courses!', 'Special Offer', 0, '9c9d5b45-5179-11f0-b7ee-088fc33f56c7'),
-       ('9d3a4eb4-5179-11f0-b7ee-088fc33f56c7', 'http://example.com/feedback',
-        'We would love your feedback on our new feature.', 'Feedback Request', 0,
-        '9c9f87a3-5179-11f0-b7ee-088fc33f56c7'),
-       ('b3c6096d-397a-11f0-84a1-088fc33f56c7', '[http://example.com/new_course](http://example.com/new_course)',
-        'A new course on AI is available!', 'New Course Alert', 1, 'b283bfb8-397a-11f0-84a1-088fc33f56c7'),
-       ('b3c60e91-397a-11f0-84a1-088fc33f56c7', '[http://example.com/quiz_result](http://example.com/quiz_result)',
-        'Your quiz results are ready.', 'Quiz Results', 1, 'b287bbd5-397a-11f0-84a1-088fc33f56c7'),
-       ('b3c60fea-397a-11f0-84a1-088fc33f56c7', '[http://example.com/update](http://example.com/update)',
-        'System maintenance scheduled for tomorrow.', 'System Update', 0, 'b28b4752-397a-11f0-84a1-088fc33f56c7'),
-       ('b3c6109b-397a-11f0-84a1-088fc33f56c7', '[http://example.com/promo](http://example.com/promo)',
-        'Get 20% off all courses this week!', 'Limited Time Offer', 1, 'b2932a61-397a-11f0-84a1-088fc33f56c7'),
-       ('b3c61463-397a-11f0-84a1-088fc33f56c7', '[http://example.com/forum](http://example.com/forum)',
-        'Someone replied to your forum post.', 'Forum Activity', 1, 'b2971e45-397a-11f0-84a1-088fc33f56c7');
-/*!40000 ALTER TABLE `notification`
-    ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `option`
---
-
 DROP TABLE IF EXISTS `option`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -795,10 +557,6 @@ CREATE TABLE `option`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `option`
---
 
 LOCK TABLES `option` WRITE;
 /*!40000 ALTER TABLE `option`
@@ -842,10 +600,7 @@ VALUES ('b347e001-397a-11f0-84a1-088fc33f56c7', '4', 1, 'Correct arithmetic oper
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `personalcourse`
---
-
 DROP TABLE IF EXISTS `personalcourse`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -869,10 +624,6 @@ CREATE TABLE `personalcourse`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `personalcourse`
---
 
 LOCK TABLES `personalcourse` WRITE;
 /*!40000 ALTER TABLE `personalcourse`
@@ -924,10 +675,7 @@ VALUES ('9befe344-5179-11f0-b7ee-088fc33f56c7', 'b283bfb8-397a-11f0-84a1-088fc33
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `personallesson`
---
-
 DROP TABLE IF EXISTS `personallesson`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -946,10 +694,6 @@ CREATE TABLE `personallesson`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `personallesson`
---
 
 LOCK TABLES `personallesson` WRITE;
 /*!40000 ALTER TABLE `personallesson`
@@ -989,10 +733,7 @@ VALUES ('9bfe560b-5179-11f0-b7ee-088fc33f56c7', 'b283bfb8-397a-11f0-84a1-088fc33
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `personaloption`
---
-
 DROP TABLE IF EXISTS `personaloption`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1011,10 +752,6 @@ CREATE TABLE `personaloption`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `personaloption`
---
 
 LOCK TABLES `personaloption` WRITE;
 /*!40000 ALTER TABLE `personaloption`
@@ -1054,10 +791,7 @@ VALUES ('9c1226df-5179-11f0-b7ee-088fc33f56c7', 'b347e001-397a-11f0-84a1-088fc33
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `personalquestion`
---
-
 DROP TABLE IF EXISTS `personalquestion`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1077,10 +811,6 @@ CREATE TABLE `personalquestion`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `personalquestion`
---
 
 LOCK TABLES `personalquestion` WRITE;
 /*!40000 ALTER TABLE `personalquestion`
@@ -1120,10 +850,7 @@ VALUES ('9c20e727-5179-11f0-b7ee-088fc33f56c7', 'b283bfb8-397a-11f0-84a1-088fc33
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `personalquiz`
---
-
 DROP TABLE IF EXISTS `personalquiz`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1145,10 +872,6 @@ CREATE TABLE `personalquiz`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `personalquiz`
---
 
 LOCK TABLES `personalquiz` WRITE;
 /*!40000 ALTER TABLE `personalquiz`
@@ -1188,10 +911,7 @@ VALUES ('9c2fdc8d-5179-11f0-b7ee-088fc33f56c7', 'b283bfb8-397a-11f0-84a1-088fc33
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `pricepackage`
---
-
 DROP TABLE IF EXISTS `pricepackage`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1201,7 +921,7 @@ CREATE TABLE `pricepackage`
     `course_id`       varchar(36)  NOT NULL,
     `title`           varchar(255) NOT NULL,
     `price`           int          NOT NULL,
-    `sale_price`      int          NOT NULL,
+    `sale_price`      int          NOT NULL CHECK ( `sale_price` <= 100 ),
     `access_duration` int          NOT NULL,
     `status`          tinyint(1)   NOT NULL DEFAULT '0',
     `description`     varchar(255)          DEFAULT NULL,
@@ -1213,52 +933,45 @@ CREATE TABLE `pricepackage`
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `pricepackage`
---
-
 LOCK TABLES `pricepackage` WRITE;
 /*!40000 ALTER TABLE `pricepackage`
     DISABLE KEYS */;
 INSERT INTO `pricepackage`
 VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a20', '9cfb5ff5-5179-11f0-b7ee-088fc33f56c7', 'Poetry Enthusiast', 2300000,
-        2099000, 60, 1, '60 days access to Poetry Analysis course.'),
+        20, 60, 1, '60 days access to Poetry Analysis course.'),
        ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a21', '9ce8ab9c-5179-11f0-b7ee-088fc33f56c7', 'Standard Access - Algebra',
-        5500000, 4999000, 90, 1, '90 days access to Advanced Algebra course.'),
+        5500000, 10, 90, 1, '90 days access to Advanced Algebra course.'),
        ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', '9cea8b0d-5179-11f0-b7ee-088fc33f56c7', 'Premium Data Structures',
-        3200000, 2999000, 180, 1, '180 days access with premium support for Data Structures.'),
+        3200000, 30, 180, 1, '180 days access with premium support for Data Structures.'),
        ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a23', '9cec66b1-5179-11f0-b7ee-088fc33f56c7', 'Mechanics Basic', 1600000,
-        1299000, 60, 1, '60 days access to Classical Mechanics course.'),
+        40, 60, 1, '60 days access to Classical Mechanics course.'),
        ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a24', '9cee332c-5179-11f0-b7ee-088fc33f56c7', 'Organic Chemistry Trial',
-        1100000, 899000, 30, 0, '30 days trial access to Organic Chemistry Basics.'),
+        1100000, 50, 30, 0, '30 days trial access to Organic Chemistry Basics.'),
        ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', '9cf0366e-5179-11f0-b7ee-088fc33f56c7', 'Calculus Full Access', 4800000,
-        4199000, 365, 1, 'Full year access to Calculus I course.'),
+        70, 365, 1, 'Full year access to Calculus I course.'),
        ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a26', '9cf27a21-5179-11f0-b7ee-088fc33f56c7', 'Genetics Gold', 2800000,
-        2400000, 120, 1, '120 days access to Genetics and Evolution with extra resources.'),
+        15, 120, 1, '120 days access to Genetics and Evolution with extra resources.'),
        ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a27', '9cf47b58-5179-11f0-b7ee-088fc33f56c7', 'Microeconomics Standard',
-        2200000, 1899000, 90, 1, '90 days access to Microeconomics Principles.'),
-       ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a28', '9cf6ccb3-5179-11f0-b7ee-088fc33f56c7', 'History Pro', 4000000, 3600000,
+        1899000, 35, 90, 1, '90 days access to Microeconomics Principles.'),
+       ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a28', '9cf6ccb3-5179-11f0-b7ee-088fc33f56c7', 'History Pro', 4000000, 10,
         240, 1, '240 days access to World History: Ancient Civilizations.'),
        ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a29', '9cf91818-5179-11f0-b7ee-088fc33f56c7', 'Thermodynamics Basic', 2000000,
-        1799000, 75, 1, '75 days access to Introduction to Thermodynamics.'),
+        80, 75, 1, '75 days access to Introduction to Thermodynamics.'),
        ('b2d700aa-397a-11f0-84a1-088fc33f56c7', 'b2b861ab-397a-11f0-84a1-088fc33f56c7', 'Basic Access Algebra', 500000,
-        450000, 90, 1, '90 days access to Algebra course'),
+        25, 90, 1, '90 days access to Algebra course'),
        ('b2d70810-397a-11f0-84a1-088fc33f56c7', 'b2b861ab-397a-11f0-84a1-088fc33f56c7', 'Premium Access Algebra',
-        900000, 750000, 365, 1, 'Full year access to Algebra course with bonus content'),
+        900000, 15, 365, 1, 'Full year access to Algebra course with bonus content'),
        ('b2d70ab6-397a-11f0-84a1-088fc33f56c7', 'b2bffc19-397a-11f0-84a1-088fc33f56c7', 'Standard DS Package', 700000,
-        600000, 180, 1, '180 days access to Data Structures course'),
+        25, 180, 1, '180 days access to Data Structures course'),
        ('b2d70c43-397a-11f0-84a1-088fc33f56c7', 'b2c30ab5-397a-11f0-84a1-088fc33f56c7', 'Mechanics Starter', 400000,
-        350000, 60, 1, '60 days access to Mechanics course'),
+        30, 60, 1, '60 days access to Mechanics course'),
        ('b2d70d9c-397a-11f0-84a1-088fc33f56c7', 'b2c629c9-397a-11f0-84a1-088fc33f56c7', 'Organic Chem Pro', 800000,
-        700000, 270, 1, '270 days access to Organic Chemistry I');
+        45, 270, 1, '270 days access to Organic Chemistry I');
 /*!40000 ALTER TABLE `pricepackage`
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `question`
---
-
 DROP TABLE IF EXISTS `question`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1278,10 +991,6 @@ CREATE TABLE `question`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `question`
---
 
 LOCK TABLES `question` WRITE;
 /*!40000 ALTER TABLE `question`
@@ -1356,10 +1065,7 @@ VALUES ('9d958cdc-5179-11f0-b7ee-088fc33f56c7', 'What is the value of x in 2x + 
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `quiz`
---
-
 DROP TABLE IF EXISTS `quiz`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1388,10 +1094,7 @@ CREATE TABLE `quiz`
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
 -- Dumping data for table `quiz`
---
-
 LOCK TABLES `quiz` WRITE;
 /*!40000 ALTER TABLE `quiz`
     DISABLE KEYS */;
@@ -1448,10 +1151,7 @@ VALUES ('9d77f3c3-5179-11f0-b7ee-088fc33f56c7', 30, 1, 0.7, '2023-05-15', 10, 'B
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `quiz_question_source_config`
---
-
 DROP TABLE IF EXISTS `quiz_question_source_config`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1470,10 +1170,6 @@ CREATE TABLE `quiz_question_source_config`
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `quiz_question_source_config`
---
-
 LOCK TABLES `quiz_question_source_config` WRITE;
 /*!40000 ALTER TABLE `quiz_question_source_config`
     DISABLE KEYS */;
@@ -1481,10 +1177,7 @@ LOCK TABLES `quiz_question_source_config` WRITE;
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `quizlevel`
---
-
 DROP TABLE IF EXISTS `quizlevel`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1497,10 +1190,6 @@ CREATE TABLE `quizlevel`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `quizlevel`
---
 
 LOCK TABLES `quizlevel` WRITE;
 /*!40000 ALTER TABLE `quizlevel`
@@ -1525,10 +1214,7 @@ VALUES ('9d419a71-5179-11f0-b7ee-088fc33f56c7', 'Beginner'),
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `quiztype`
---
-
 DROP TABLE IF EXISTS `quiztype`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1541,10 +1227,6 @@ CREATE TABLE `quiztype`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `quiztype`
---
 
 LOCK TABLES `quiztype` WRITE;
 /*!40000 ALTER TABLE `quiztype`
@@ -1569,10 +1251,7 @@ VALUES ('9d5ed5ed-5179-11f0-b7ee-088fc33f56c7', 'Multiple Choice'),
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `setting`
---
-
 DROP TABLE IF EXISTS `setting`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1592,10 +1271,6 @@ CREATE TABLE `setting`
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Dumping data for table `setting`
---
-
 LOCK TABLES `setting` WRITE;
 /*!40000 ALTER TABLE `setting`
     DISABLE KEYS */;
@@ -1613,6 +1288,12 @@ VALUES ('9c910e7c-5179-11f0-b7ee-088fc33f56c7', 'Business', 1, 'Dimension of sub
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a21', 'Admin', 1, 'Administrator role', '2023-01-01',
         'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', 'Expert', 1, 'Expert user role', '2023-01-01',
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a30', 'Marketer', 1, 'Marketer user role', '2025-07-15',
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a31', 'Sale', 1, 'Sales user role', '2025-07-15',
+        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+       ('b1b69765-397a-11f0-84a1-088fc33f56c7', 'User', 1, 'User account role', '2024-03-01',
         'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a23', 'Student', 1, 'Student user role', '2023-01-01',
         'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
@@ -1635,17 +1316,12 @@ VALUES ('9c910e7c-5179-11f0-b7ee-088fc33f56c7', 'Business', 1, 'Dimension of sub
        ('b1af95b3-397a-11f0-84a1-088fc33f56c7', 'Article', 1, 'General article category for blogs', '2024-02-01',
         'b1a3f45e-397a-11f0-84a1-088fc33f56c7'),
        ('b1b320dd-397a-11f0-84a1-088fc33f56c7', 'Tutorial', 1, 'Step-by-step tutorial category for blogs', '2024-02-05',
-        'b1a3f45e-397a-11f0-84a1-088fc33f56c7'),
-       ('b1b69765-397a-11f0-84a1-088fc33f56c7', 'Admin', 1, 'Administrator account role', '2024-03-01',
-        'b1a3f5e8-397a-11f0-84a1-088fc33f56c7');
+        'b1a3f45e-397a-11f0-84a1-088fc33f56c7');
 /*!40000 ALTER TABLE `setting`
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `setting_question`
---
-
 DROP TABLE IF EXISTS `setting_question`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1661,10 +1337,6 @@ CREATE TABLE `setting_question`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `setting_question`
---
 
 LOCK TABLES `setting_question` WRITE;
 /*!40000 ALTER TABLE `setting_question`
@@ -1713,10 +1385,7 @@ VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a28', '9d958cdc-5179-11f0-b7ee-088fc33
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `setting_subject`
---
-
 DROP TABLE IF EXISTS `setting_subject`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1732,10 +1401,6 @@ CREATE TABLE `setting_subject`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `setting_subject`
---
 
 LOCK TABLES `setting_subject` WRITE;
 /*!40000 ALTER TABLE `setting_subject`
@@ -1763,10 +1428,7 @@ VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a25', '9cc22eb1-5179-11f0-b7ee-088fc33
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `settingtype`
---
-
 DROP TABLE IF EXISTS `settingtype`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1779,10 +1441,6 @@ CREATE TABLE `settingtype`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `settingtype`
---
 
 LOCK TABLES `settingtype` WRITE;
 /*!40000 ALTER TABLE `settingtype`
@@ -1808,10 +1466,7 @@ VALUES ('a0eebc98-9c0b-4ef8-bb6d-6bb9bd380a16', 'Group'),
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `slider`
---
-
 DROP TABLE IF EXISTS `slider`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1831,10 +1486,6 @@ CREATE TABLE `slider`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `slider`
---
 
 LOCK TABLES `slider` WRITE;
 /*!40000 ALTER TABLE `slider`
@@ -1874,10 +1525,7 @@ VALUES ('9df7803e-5179-11f0-b7ee-088fc33f56c7', 'Discover Exclusive Deals You Ca
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `subject`
---
-
 DROP TABLE IF EXISTS `subject`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1897,10 +1545,6 @@ CREATE TABLE `subject`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `subject`
---
 
 LOCK TABLES `subject` WRITE;
 /*!40000 ALTER TABLE `subject`
@@ -1948,10 +1592,7 @@ VALUES ('9cc22eb1-5179-11f0-b7ee-088fc33f56c7', 'History', 'img/course-1.jpg', 0
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `subject_tagline`
---
-
 DROP TABLE IF EXISTS `subject_tagline`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -1967,10 +1608,6 @@ CREATE TABLE `subject_tagline`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `subject_tagline`
---
 
 LOCK TABLES `subject_tagline` WRITE;
 /*!40000 ALTER TABLE `subject_tagline`
@@ -1995,10 +1632,7 @@ VALUES ('b19fb878-397a-11f0-84a1-088fc33f56c7', '9e0f8595-5179-11f0-b7ee-088fc33
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `tagline`
---
-
 DROP TABLE IF EXISTS `tagline`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -2011,10 +1645,6 @@ CREATE TABLE `tagline`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `tagline`
---
 
 LOCK TABLES `tagline` WRITE;
 /*!40000 ALTER TABLE `tagline`
@@ -2039,10 +1669,7 @@ VALUES ('9e0f8595-5179-11f0-b7ee-088fc33f56c7', 'Learn Anytime, Anywhere'),
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `topic`
---
-
 DROP TABLE IF EXISTS `topic`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -2058,10 +1685,6 @@ CREATE TABLE `topic`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `topic`
---
 
 LOCK TABLES `topic` WRITE;
 /*!40000 ALTER TABLE `topic`
@@ -2086,10 +1709,7 @@ VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a80', 'Microeconomics', '9cc69bdd-5179
     ENABLE KEYS */;
 UNLOCK TABLES;
 
---
 -- Table structure for table `userlog`
---
-
 DROP TABLE IF EXISTS `userlog`;
 /*!40101 SET @saved_cs_client = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -2105,10 +1725,6 @@ CREATE TABLE `userlog`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `userlog`
---
 
 LOCK TABLES `userlog` WRITE;
 /*!40000 ALTER TABLE `userlog`
@@ -2132,6 +1748,53 @@ VALUES ('9e2ed53f-5179-11f0-b7ee-088fc33f56c7', '2023-01-01', '9c9d5b45-5179-11f
 /*!40000 ALTER TABLE `userlog`
     ENABLE KEYS */;
 UNLOCK TABLES;
+
+DROP TABLE IF EXISTS `personalsubject`;
+/*!40101 SET @saved_cs_client = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+create table PersonalSubject
+(
+    id                varchar(36) not null unique,
+    account_id        varchar(36) not null,
+    subject_id        varchar(36) not null,
+    status            varchar(50) not null default 'sent', /*0 for sent, 1 for paid, 2 for accepted*/
+    registration_date date        not null,
+    package_name      varchar(255),
+    valid_from        date,
+    valid_to          date,
+    price             double,
+    primary key (id),
+    foreign key (account_id) references Account (id),
+    foreign key (subject_id) references Subject (id)
+);
+LOCK TABLES `personalsubject` WRITE;
+/*!40000 ALTER TABLE `personalsubject`
+    DISABLE KEYS */;
+SET @psubject_id1 = UUID();
+SET @psubject_id2 = UUID();
+SET @psubject_id3 = UUID();
+SET @psubject_id4 = UUID();
+SET @psubject_id5 = UUID();
+SET @psubject_id6 = UUID();
+SET @psubject_id7 = UUID();
+INSERT INTO `personalsubject`
+VALUES (@psubject_id1, 'b283bfb8-397a-11f0-84a1-088fc33f56c7', 'b19fb878-397a-11f0-84a1-088fc33f56c7', 'sent', NOW(),
+        'Bronze', NOW(), NOW() + INTERVAL 2 DAY, 2000),
+       (@psubject_id2, 'b283bfb8-397a-11f0-84a1-088fc33f56c7', 'b19fbc5e-397a-11f0-84a1-088fc33f56c7', 'paid', NOW(),
+        'Sliver', NOW(), NOW() + INTERVAL 2 DAY, 2000),
+       (@psubject_id3, 'b283bfb8-397a-11f0-84a1-088fc33f56c7', 'b19fbdc2-397a-11f0-84a1-088fc33f56c7', 'accepted',
+        NOW(), 'Gold', NOW(), NOW() + INTERVAL 2 DAY, 2000),
+       (@psubject_id4, 'b283bfb8-397a-11f0-84a1-088fc33f56c7', 'b19fbe33-397a-11f0-84a1-088fc33f56c7', 'sent', NOW(),
+        'Bronze', NOW(), NOW() + INTERVAL 2 DAY, 2000),
+       (@psubject_id5, 'b283bfb8-397a-11f0-84a1-088fc33f56c7', 'b19fbe8f-397a-11f0-84a1-088fc33f56c7', 'paid', NOW(),
+        'Sliver', NOW(), NOW() + INTERVAL 2 DAY, 2000),
+       (@psubject_id6, 'b283bfb8-397a-11f0-84a1-088fc33f56c7', 'b19fbe8f-397a-11f0-84a1-088fc33f56c7', 'accepted',
+        NOW(), 'Gold', NOW(), NOW() + INTERVAL 2 DAY, 2000),
+       (@psubject_id7, 'b283bfb8-397a-11f0-84a1-088fc33f56c7', '9cd5ef92-5179-11f0-b7ee-088fc33f56c7', 'sent', NOW(),
+        'Bronze', NOW(), NOW() + INTERVAL 2 DAY, 2000);
+/*!40000 ALTER TABLE `personalsubject`
+    ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE = @OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE = @OLD_SQL_MODE */;
@@ -2141,5 +1804,3 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_RESULTS = @OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION = @OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES = @OLD_SQL_NOTES */;
-
--- Dump completed on 2025-06-25 11:51:31
