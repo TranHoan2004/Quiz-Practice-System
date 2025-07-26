@@ -1,4 +1,4 @@
-let href = `${window.contextPath}/user/practice`; 
+let href = `${window.contextPath}/user/practice`;
 
 /**
  * Chuyển hướng đến trang /practice khi thay đổi bộ lọc môn học.
@@ -161,11 +161,11 @@ document.addEventListener('DOMContentLoaded', function () {
                             },
                             body: JSON.stringify({id: recordId})
                         })
-                                .then(response => response.text())
-                                .then(() => {
-                                    location.href = href;
-                                })
-                                .catch(err => console.log(err));
+                            .then(response => response.text())
+                            .then(() => {
+                                location.href = href;
+                            })
+                            .catch(err => console.log(err));
                         lastDeletedPracticeId = null;
                     }
                 }
@@ -222,6 +222,18 @@ document.querySelector('.btn-success').addEventListener('click', function (e) {
     }
 });
 
+/**
+ * Lấy tiêu đề từ server và gán vào giao diện người dùng.
+ *
+ * Gửi yêu cầu GET đến endpoint được chỉ định bởi biến `href` với header `'X-Source': 'getTitle'`.
+ * Sau khi nhận phản hồi dạng JSON, gán phần tử đầu tiên trong nội dung trả về vào hàm `assignTitle`.
+ *
+ * Nếu xảy ra lỗi trong quá trình gọi API, lỗi sẽ được in ra console.
+ *
+ * @async
+ * @function getHeaderTitle
+ * @author HoanTX
+ */
 const getHeaderTitle = async () => {
     try {
         const response = await fetch(href, {
@@ -238,3 +250,7 @@ const getHeaderTitle = async () => {
 };
 
 await getHeaderTitle();
+
+window.redirectToSimulationExam = () => {
+    window.location.href = `${window.contextPath}/simulation-exams`;
+}

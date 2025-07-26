@@ -39,8 +39,7 @@
 
 <body>
 <jsp:include page="../../component/spinner.html"/>
-<jsp:include page="../../component/navbar.jsp"/>
-<jsp:include page="../../component/header.html"/>
+<jsp:include page="../admin-features/admin-navbar.jsp"/>
 
 <!-- Courses Start -->
 <div class="container-xxl py-5">
@@ -104,25 +103,25 @@
                                         <input type="number" value="" class="w-50"
                                                id="settingOption1" min="2">
                                         <label class="form-check-label" for="settingOption1">
-                                            Chỉnh cỡ bảng
+                                            Edit table size
                                         </label>
                                     </div>
                                     <div class="form-check mb-2 form-switch">
                                         <input class="form-check-input" type="checkbox" id="settingOption2">
                                         <label class="form-check-label" for="settingOption2">
-                                            Ẩn ảnh
+                                            Hide photo
                                         </label>
                                     </div>
                                     <div class="form-check mb-2 form-switch">
                                         <input class="form-check-input" type="checkbox" id="settingOption4">
                                         <label class="form-check-label" for="settingOption4">
-                                            Ẩn trạng thái
+                                            Hide status
                                         </label>
                                     </div>
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" id="settingOption3">
                                         <label class="form-check-label" for="settingOption3">
-                                            Hiện người tạo
+                                            Show author
                                         </label>
                                     </div>
                                 </div>
@@ -136,7 +135,7 @@
                         <!-- No Results Message -->
                         <div id="noResultsMessage" class="text-center text-muted py-5"
                              style="display:none; font-size:1.2rem;">
-                            Không có kết quả
+                            No result
                         </div>
 
                         <!-- Pagination Start -->
@@ -194,7 +193,7 @@
 <script src="${pageContext.request.contextPath}/lib/owlcarousel/owl.carousel.min.js"></script>
 <script src="${pageContext.request.contextPath}/js/main.js"></script>
 <script src="${pageContext.request.contextPath}/js/Notification.js"></script>
-<script src="${pageContext.request.contextPath}/js/SubjectsList.js" type="module"></script>
+<script src="${pageContext.request.contextPath}/js/SlidersList.js" type="module"></script>
 </body>
 
 </html>

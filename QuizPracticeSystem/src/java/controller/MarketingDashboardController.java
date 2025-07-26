@@ -9,7 +9,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import utils.PermissionUtil;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -161,7 +160,7 @@ public class MarketingDashboardController extends HttpServlet {
      */
     private void setSubjectStats(HttpServletRequest request, String start, String end, long daysBetween) {
         int currentNew = subjectDAO.getCountSubjectsByDate(start, end);
-        int currentAll = subjectDAO.getCountAllSubjects();
+        int currentAll = subjectDAO.count();
 
         LocalDate prevStart = LocalDate.parse(start).minusDays(daysBetween);
         LocalDate prevEnd = LocalDate.parse(start).minusDays(1);

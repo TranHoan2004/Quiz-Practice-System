@@ -18,7 +18,7 @@ public class BlogMediaDAO extends DBContext {
     }
 
     public void insertBlogMedia(BlogMedia media) {
-        String sql = """
+        var sql = """
                 INSERT INTO `swp391`.blogmedia (
                     id, blog_id, media_type, file_path,
                     caption, display_order

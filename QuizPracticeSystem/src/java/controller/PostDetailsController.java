@@ -26,9 +26,13 @@ import java.util.logging.Logger;
 /**
  * <h4>PostDetailsController - Quản lý chi tiết bài viết</h4>
  *
- * <p>Servlet cho phép hiển thị, thêm, cập nhật, xóa bài viết Blog cùng với các file đa phương tiện đính kèm (hình ảnh, video).</p>
+ * <p>
+ * Servlet cho phép hiển thị, thêm, cập nhật, xóa bài viết Blog cùng với các
+ * file đa phương tiện đính kèm (hình ảnh, video).</p>
  *
- * <p>Servlet hỗ trợ upload file đa phương tiện, validate đầy đủ dữ liệu và chính sửa nội dung bài viết.</p>
+ * <p>
+ * Servlet hỗ trợ upload file đa phương tiện, validate đầy đủ dữ liệu và chính
+ * sửa nội dung bài viết.</p>
  *
  * @author HuongNI
  */
@@ -40,8 +44,8 @@ import java.util.logging.Logger;
 )
 public class PostDetailsController extends HttpServlet {
 
-    private static final String IMAGE_DIR = "img/";
-    private static final String VIDEO_DIR = "video/";
+    private static final String IMAGE_DIR = "img/blogs/";
+    private static final String VIDEO_DIR = "video/blogs";
     private static final Set<String> IMAGE_EXTS = Set.of("jpg", "jpeg", "png", "gif", "webp");
     private static final Set<String> VIDEO_EXTS = Set.of("mp4", "mov", "avi", "mkv");
 
@@ -58,18 +62,21 @@ public class PostDetailsController extends HttpServlet {
     }
 
     /**
-     * <h4>doGet - Hiển thị danh sách bài viết với phân trang, redirect to homepage if not marketer or admin</h4>
-     * <p>Xử lý truy vấn GET để hiển thị danh sách blog, đánh dấu theo category, keyword, page,...</p>
+     * <h4>doGet - Hiển thị danh sách bài viết với phân trang, redirect to
+     * homepage if not marketer or admin</h4>
+     * <p>
+     * Xử lý truy vấn GET để hiển thị danh sách blog, đánh dấu theo category,
+     * keyword, page,...</p>
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-
         // Check a role to access this page. If not, redirect to the home page.
-//        String redirectUrl = request.getContextPath() + "/home";
-//        if (PermissionUtil.redirectIfNotRole(request, response, "MARKETER" ,redirectUrl)
-//        && PermissionUtil.redirectIfNotRole(request, response, "ADMIN" ,redirectUrl)) return;
+        if (PermissionUtil.hasRole(request, "User") || request.getSession().getAttribute("currentUser") == null) {
+            response.sendRedirect(request.getContextPath() + "/jsp/unauthorized.jsp");
+            return;
+        }
 
         String keyword = request.getParameter("keyword");
         String category = request.getParameter("category");
@@ -94,7 +101,8 @@ public class PostDetailsController extends HttpServlet {
 
     /**
      * <h4>doPost - Xử lý các thao tác: thêm, xóa, cập nhật bài viết</h4>
-     * <p>Dựa vào tham số action trong form để phân quyến đến method tương ứng.</p>
+     * <p>
+     * Dựa vào tham số action trong form để phân quyến đến method tương ứng.</p>
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -105,14 +113,16 @@ public class PostDetailsController extends HttpServlet {
             if (action == null || action.isBlank()) {
                 var message = "Invalid action!";
                 var type = "error";
-                response.sendRedirect(request.getContextPath() + "/post-details" + "?message=" + message + "&type=" + type);
+                response.sendRedirect(request.getContextPath() + "/marketer/post-details" + "?message=" + message + "&type=" + type);
                 return;
             }
             switch (action) {
-                case "add-post" -> handleAddNewPost(request, response);
-                case "update-post" -> handleUpdatePost(request, response);
+                case "add-post" ->
+                    handleAddNewPost(request, response);
+                case "update-post" ->
+                    handleUpdatePost(request, response);
                 default ->
-                        request.getRequestDispatcher("/jsp/marketing-features/post-details.jsp").forward(request, response);
+                    request.getRequestDispatcher("/jsp/marketing-features/post-details.jsp").forward(request, response);
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -122,26 +132,34 @@ public class PostDetailsController extends HttpServlet {
     /**
      * <h4>Xử lý yêu cầu HTTP DELETE để xóa blog theo ID</h4>
      *
-     * <p>Phương thức này thực hiện các bước sau:</p>
+     * <p>
+     * Phương thức này thực hiện các bước sau:</p>
      * <ol>
-     *   <li>Đọc JSON từ body request.</li>
-     *   <li>Trích xuất giá trị `id` (mã hóa).</li>
-     *   <li>Giải mã ID và tiến hành xóa blog & các media liên quan.</li>
-     *   <li>Trả về mã HTTP tương ứng với kết quả xử lý.</li>
+     * <li>Đọc JSON từ body request.</li>
+     * <li>Trích xuất giá trị `id` (mã hóa).</li>
+     * <li>Giải mã ID và tiến hành xóa blog & các media liên quan.</li>
+     * <li>Trả về mã HTTP tương ứng với kết quả xử lý.</li>
      * </ol>
      *
-     * <p><b>Trường hợp thành công:</b> trả về mã <code>200 OK</code> kèm thông điệp "Delete successfully!".</p>
-     * <p><b>Trường hợp thất bại:</b></p>
+     * <p>
+     * <b>Trường hợp thành công:</b> trả về mã <code>200 OK</code> kèm thông
+     * điệp "Delete successfully!".</p>
+     * <p>
+     * <b>Trường hợp thất bại:</b></p>
      * <ul>
-     *   <li>Nếu thiếu `id` → <code>400 Bad Request</code></li>
-     *   <li>Nếu không có blog tương ứng → <code>404 Not Found</code></li>
-     *   <li>Nếu có lỗi khi xử lý → <code>400 Bad Request</code> với log chi tiết.</li>
+     * <li>Nếu thiếu `id` → <code>400 Bad Request</code></li>
+     * <li>Nếu không có blog tương ứng → <code>404 Not Found</code></li>
+     * <li>Nếu có lỗi khi xử lý → <code>400 Bad Request</code> với log chi
+     * tiết.</li>
      * </ul>
      *
-     * <p>Ghi chú: ID là UUID được encode nên cần decode trước khi xử lý.</p>
+     * <p>
+     * Ghi chú: ID là UUID được encode nên cần decode trước khi xử lý.</p>
      *
-     * @param request  đối tượng {@link HttpServletRequest} chứa body JSON với key <code>id</code>.
-     * @param response đối tượng {@link HttpServletResponse} để ghi kết quả trả về.
+     * @param request đối tượng {@link HttpServletRequest} chứa body JSON với
+     * key <code>id</code>.
+     * @param response đối tượng {@link HttpServletResponse} để ghi kết quả trả
+     * về.
      * @throws IOException nếu có lỗi khi đọc request hoặc ghi response.
      * @author HuongNI
      */
@@ -182,7 +200,9 @@ public class PostDetailsController extends HttpServlet {
 
     /**
      * <h4>handleAddNewPost - Thêm bài viết mới</h4>
-     * <p>Kiểm tra đầy đủ trường nhập, upload file, và thên bài với metadata cần thiết.</p>
+     * <p>
+     * Kiểm tra đầy đủ trường nhập, upload file, và thên bài với metadata cần
+     * thiết.</p>
      */
     private void handleUpdatePost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String id = request.getParameter("id");
@@ -200,7 +220,7 @@ public class PostDetailsController extends HttpServlet {
             if (title == null || briefInfo == null || content == null || category == null) {
                 message = "Please fill all fields!";
                 type = "error";
-                response.sendRedirect(request.getContextPath() + "/post-details" + "?message=" + message + "&type=" + type);
+                response.sendRedirect(request.getContextPath() + "/marketer/post-details" + "?message=" + message + "&type=" + type);
             }
 
             boolean featuredBool = featured != null;
@@ -236,12 +256,13 @@ public class PostDetailsController extends HttpServlet {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in handleUpdatePost", e);
         }
-        response.sendRedirect(request.getContextPath() + "/post-details" + "?message=" + message + "&type=" + type);
+        response.sendRedirect(request.getContextPath() + "/marketer/post-details" + "?message=" + message + "&type=" + type);
     }
 
     /**
      * <h4>handleUpdatePost - Cập nhật nội dung bài viết</h4>
-     * <p>Lấy thông tin cập nhật từ form và update vào DB theo ID.</p>
+     * <p>
+     * Lấy thông tin cập nhật từ form và update vào DB theo ID.</p>
      */
     private void handleAddNewPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String message = "";
@@ -257,7 +278,7 @@ public class PostDetailsController extends HttpServlet {
             if (title == null || briefInfo == null || content == null || category == null) {
                 message = "Please fill all fields!";
                 type = "error";
-                response.sendRedirect(request.getContextPath() + "/post-details" + "?message=" + message + "&type=" + type);
+                response.sendRedirect(request.getContextPath() + "/marketer/post-details" + "?message=" + message + "&type=" + type);
                 return;
             }
 
@@ -278,7 +299,7 @@ public class PostDetailsController extends HttpServlet {
                     .status(statusBool)
                     .briefInfo(briefInfo)
                     .category(UUID.fromString(utils.Encoder.decode(category)))
-                    .accountId("0246ca96-45cb-11f0-8270-e1d174d2be43")
+                    .accountId(currentUser.getId().toString())
                     .content(content)
                     .title(title)
                     .createdDate(LocalDate.now())
@@ -300,20 +321,21 @@ public class PostDetailsController extends HttpServlet {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in handleAddNewPost", e);
         }
-        response.sendRedirect(request.getContextPath() + "/post-details" + "?message=" + message + "&type=" + type);
+        response.sendRedirect(request.getContextPath() + "/marketer/post-details" + "?message=" + message + "&type=" + type);
     }
 
     /**
      * <h4>Xử lý upload file media</h4>
      * <p>
-     * Lọc ra danh sách các phần tử media hợp lệ từ form submit, xử lý từng file và tạo danh sách các đối tượng BlogMedia.
+     * Lọc ra danh sách các phần tử media hợp lệ từ form submit, xử lý từng file
+     * và tạo danh sách các đối tượng BlogMedia.
      * </p>
      *
      * @param request yêu cầu HTTP chứa các file media
-     * @param blogId  ID của bài viết cần gắn media
+     * @param blogId ID của bài viết cần gắn media
      * @return danh sách BlogMedia đã xử lý
      * @throws ServletException nếu có lỗi Servlet
-     * @throws IOException      nếu có lỗi IO khi xử lý file
+     * @throws IOException nếu có lỗi IO khi xử lý file
      * @author HuongNI
      */
     private List<BlogMedia> handleUploadFile(HttpServletRequest request, UUID blogId) throws ServletException, IOException {
@@ -348,13 +370,14 @@ public class PostDetailsController extends HttpServlet {
     /**
      * <h4>Xử lý từng file media</h4>
      * <p>
-     * Lưu file, xác định loại file (image/video), caption và vị trí hiển thị để tạo đối tượng BlogMedia.
+     * Lưu file, xác định loại file (image/video), caption và vị trí hiển thị để
+     * tạo đối tượng BlogMedia.
      * </p>
      *
-     * @param mediaPart    file media từ form
-     * @param blogId       ID của bài viết
+     * @param mediaPart file media từ form
+     * @param blogId ID của bài viết
      * @param displayOrder thứ tự hiển thị của file
-     * @param captions     map chứa các caption theo thứ tự
+     * @param captions map chứa các caption theo thứ tự
      * @return đối tượng BlogMedia nếu thành công, null nếu không hợp lệ
      * @throws IOException nếu xảy ra lỗi IO khi lưu file
      * @author HuongNI
@@ -386,11 +409,12 @@ public class PostDetailsController extends HttpServlet {
     /**
      * <h4>Lưu file vào hệ thống</h4>
      * <p>
-     * Tạo tên file an toàn và lưu vào thư mục tương ứng. Trả về đường dẫn tương đối đến file.
+     * Tạo tên file an toàn và lưu vào thư mục tương ứng. Trả về đường dẫn tương
+     * đối đến file.
      * </p>
      *
-     * @param part     phần dữ liệu file
-     * @param folder   thư mục lưu trữ (ví dụ: "img/", "video/")
+     * @param part phần dữ liệu file
+     * @param folder thư mục lưu trữ (ví dụ: "img/", "video/")
      * @param fileName tên gốc của file
      * @return đường dẫn tương đối tới file đã lưu
      * @throws IOException nếu xảy ra lỗi ghi file
@@ -422,7 +446,8 @@ public class PostDetailsController extends HttpServlet {
     /**
      * <h4>Kiểm tra tính hợp lệ của file</h4>
      * <p>
-     * Đảm bảo file có tên và dung lượng hợp lệ, và có phần mở rộng nằm trong danh sách được hỗ trợ.
+     * Đảm bảo file có tên và dung lượng hợp lệ, và có phần mở rộng nằm trong
+     * danh sách được hỗ trợ.
      * </p>
      *
      * @param part phần dữ liệu file
@@ -496,7 +521,7 @@ public class PostDetailsController extends HttpServlet {
     /**
      * <h4>Tạo tên file an toàn và không trùng lặp</h4>
      * <p>
-     * Loại bỏ ký tự đặc biệt, Unicode, và thêm UUID để tránh trùng tên.
+     * timestamp và UUID để tránh trùng tên.
      * </p>
      *
      * @param originalFileName tên file ban đầu
@@ -504,25 +529,17 @@ public class PostDetailsController extends HttpServlet {
      * @author HuongNI
      */
     public static String getSafeFileName(String originalFileName) {
-        String name = Normalizer.normalize(originalFileName, Normalizer.Form.NFD)
-                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "")
-                .replaceAll("đ", "d")
-                .replaceAll("Đ", "D")
-                .toLowerCase();
+        int dotIndex = originalFileName.lastIndexOf(".");
+        String extension = (dotIndex != -1) ? originalFileName.substring(dotIndex) : "";
 
-        name = name.replaceAll("[^a-zA-Z0-9._-]", "_");
-
-        int dotIndex = name.lastIndexOf(".");
-        String baseName = (dotIndex != -1) ? name.substring(0, dotIndex) : name;
-        String extension = (dotIndex != -1) ? name.substring(dotIndex) : "";
-
-        return UUID.randomUUID() + "_" + baseName + extension;
+        return System.currentTimeMillis() + "_" + UUID.randomUUID() + extension;
     }
 
     /**
      * <h4>Xác định thư mục lưu trữ theo phần mở rộng</h4>
      * <p>
-     * Trả về đường dẫn thư mục tương ứng ("img/" hoặc "video/") dựa trên phần mở rộng của file.
+     * Trả về đường dẫn thư mục tương ứng ("img/" hoặc "video/") dựa trên phần
+     * mở rộng của file.
      * </p>
      *
      * @param extension phần mở rộng của file (vd: "jpg", "mp4")
@@ -542,15 +559,16 @@ public class PostDetailsController extends HttpServlet {
     /**
      * <h4>Xử lý và forward thông báo tới trang JSP</h4>
      * <p>
-     * Thiết lập các thuộc tính thông báo và chuyển hướng đến trang post-details.
+     * Thiết lập các thuộc tính thông báo và chuyển hướng đến trang
+     * post-details.
      * </p>
      *
-     * @param request  yêu cầu từ client
+     * @param request yêu cầu từ client
      * @param response phản hồi về client
-     * @param message  nội dung thông báo
-     * @param type     loại thông báo (vd: "success", "error")
+     * @param message nội dung thông báo
+     * @param type loại thông báo (vd: "success", "error")
      * @throws ServletException nếu xảy ra lỗi servlet
-     * @throws IOException      nếu xảy ra lỗi IO khi forward
+     * @throws IOException nếu xảy ra lỗi IO khi forward
      * @author HuongNI
      */
     private void handleRequest(HttpServletRequest request, HttpServletResponse response, String message, String type) throws ServletException, IOException {
@@ -581,7 +599,8 @@ public class PostDetailsController extends HttpServlet {
     /**
      * <h4>Chuyển danh sách Blog sang BlogDTO</h4>
      * <p>
-     * Gắn thêm thông tin người dùng, danh mục, media, và encode các ID cho từng blog.
+     * Gắn thêm thông tin người dùng, danh mục, media, và encode các ID cho từng
+     * blog.
      * </p>
      *
      * @param blogs danh sách blog
@@ -611,7 +630,12 @@ public class PostDetailsController extends HttpServlet {
                         .accountName(acc.getFullName())
                         .briefInfo(blog.getBriefInfo())
                         .title(blog.getTitle())
-                        .content(blog.getContent())
+                        .content(blog.getContent()
+                                .replace("&", "&amp;")
+                                .replace("\"", "&quot;")
+                                .replace("<", "&lt;")
+                                .replace(">", "&gt;")
+                                .replace("'", "&#39;"))
                         .category(categoryName)
                         .categoryId(utils.Encoder.encode(blog.getCategory().toString()))
                         .createdDate(blog.getCreatedDate())
@@ -633,14 +657,15 @@ public class PostDetailsController extends HttpServlet {
     /**
      * <h4>Xử lý phân trang blog và đổ dữ liệu cho view</h4>
      * <p>
-     * Lấy danh sách blog theo từ khóa, danh mục và số trang. Tính toán tổng số trang, sau đó thiết lập dữ liệu hiển thị.
+     * Lấy danh sách blog theo từ khóa, danh mục và số trang. Tính toán tổng số
+     * trang, sau đó thiết lập dữ liệu hiển thị.
      * </p>
      *
-     * @param request    yêu cầu từ client
-     * @param keyword    từ khóa tìm kiếm (có thể null)
+     * @param request yêu cầu từ client
+     * @param keyword từ khóa tìm kiếm (có thể null)
      * @param categoryId ID danh mục (có thể null, sẽ được decode)
-     * @param page       trang hiện tại
-     * @param pageSize   số blog mỗi trang
+     * @param page trang hiện tại
+     * @param pageSize số blog mỗi trang
      * @author HuongNI
      */
     private void renderBlogPagination(HttpServletRequest request, String keyword, String categoryId, int page, int pageSize) {

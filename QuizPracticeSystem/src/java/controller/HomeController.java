@@ -89,18 +89,24 @@ public class HomeController extends HttpServlet {
             List<PersonalCourse> personalCourses = personalCourseDAO.getTopCoursePurchases(limit);
             for (PersonalCourse personalCourse : personalCourses) {
                 Course course = courseDAO.getById(personalCourse.getCourseId());
-                PricePackage pricePackage = pricePackageDAO.getByCourse(course.getId().toString());
-                if (course == null || pricePackage == null) {
+                if (course == null || course.getId() == null) {
                     continue;
                 }
 
+                List<PricePackage> pricePackages = pricePackageDAO.getByCourseId(course.getId().toString());
+                if (pricePackages == null || pricePackages.isEmpty()) {
+                    continue;
+                }
+
+                PricePackage firstPackage = pricePackages.get(0);
+
                 CourseDTO courseDTO = CourseDTO.builder()
-                        .price(pricePackage.getPrice())
-                        .salePrice(pricePackage.getSalePrice())
                         .id(utils.Encoder.encode(course.getId().toString()))
-                        .image(course.getThumbnailUrl())
-                        .description(course.getDescription())
                         .title(course.getTitle())
+                        .description(course.getDescription())
+                        .image(course.getThumbnailUrl())
+                        .price(firstPackage.getPrice())
+                        .salePrice(firstPackage.getSalePrice())
                         .build();
 
                 courses.add(courseDTO);
@@ -229,6 +235,8 @@ public class HomeController extends HttpServlet {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(HomeController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return list;
     }

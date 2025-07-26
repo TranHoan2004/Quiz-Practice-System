@@ -8,7 +8,7 @@ import {assignSubjects, renderFeaturedSubjects, renderSubjects} from './Subjects
  */
 async function sendPrompt(prompt) {
     try {
-        const path = `${window.contextPath}/user/subject_list?page=${currentPage}&size=${numberItemsPerPage}`;
+        const path = `${window.contextPath}/subject-list?page=${currentPage}&size=${numberItemsPerPage}`;
         const response = await fetch(path, {
             method: 'POST',
             body: JSON.stringify({prompt})
@@ -21,7 +21,6 @@ async function sendPrompt(prompt) {
         socket.send(prompt);
         return response.status;
     } catch (e) {
-        console.error(e.message);
         showNotification(e.message, 'not success');
         return 400;
     }
@@ -34,7 +33,7 @@ async function sendPrompt(prompt) {
 document.getElementById('subjectSearchForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const request = document.getElementById('subjectSearch').value.trim();
-    const path = `${window.contextPath}/user/subject_list?query=${request}&page=${currentPage}&size=${numberItemsPerPage}`;
+    const path = `${window.contextPath}/subject-list?query=${request}&page=${currentPage}&size=${numberItemsPerPage}`;
     fetch(path, {method: 'GET', headers: {'Content-Type': 'application/text', 'X-Source': 'search'}})
         .then(res => res.json())
         .then(data => {
@@ -90,11 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let responseDiv = document.getElementById('aiResponseCourse');
         responseDiv.classList.remove('d-none');
-        responseDiv.innerHTML = '<i class="fas fa-robot me-2"></i> Đang xử lý...';
+        responseDiv.innerHTML = '<i class="fas fa-robot me-2"></i> Processing...';
 
         setTimeout(async () => {
             const status = await sendPrompt(prompt);
-            console.log(status);
             if (status === 400) {
                 input.value = '';
                 responseDiv?.classList.add('d-none');

@@ -2,6 +2,9 @@ package dao;
 
 import model.Lesson;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -28,15 +31,12 @@ public class LessonDAO extends DBContext {
                             .build();
                 }
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return lesson;
     }
 
     public int countByCourseId(String courseId) throws Exception {
-        String sql = "SELECT COUNT(*) FROM lesson WHERE course_id = ?";
+        var sql = "SELECT COUNT(*) FROM lesson WHERE course_id = ?";
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             ps.setString(1, courseId);
             try (var rs = ps.executeQuery()) {
@@ -82,10 +82,10 @@ public class LessonDAO extends DBContext {
     }
 
     public void insertLesson(Lesson lesson) throws Exception {
-        String sql = """
-                    INSERT INTO `swp391`.lesson (id, status, name, course_id, lesson_type_id)
-                    VALUES (?, ?, ?, ?, ?)
-                    """;
+        var sql = """
+                INSERT INTO `swp391`.lesson (id, status, name, course_id, lesson_type_id)
+                VALUES (?, ?, ?, ?, ?)
+                """;
 
         try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
             pre.setString(1, lesson.getId().toString());
@@ -94,10 +94,58 @@ public class LessonDAO extends DBContext {
             pre.setString(4, lesson.getCourseId());
             pre.setString(5, lesson.getLessonTypeId());
             pre.executeUpdate();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
+    }
+
+    /**
+     * Lấy danh sách các bài học liên quan đến một ID môn học cụ thể. Phương
+     * thức này thực hiện join các bảng lesson, course, topic và subject để lọc
+     * các bài học dựa trên ID môn học được cung cấp.
+     *
+     * @param subjectId ID của môn học để lọc bài học.
+     * @return Một danh sách các đối tượng Lesson.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình truy cập cơ sở dữ
+     *                   liệu.
+     */
+    public List<Lesson> getLessonsBySubjectId(String subjectId) throws Exception {
+        List<Lesson> lessons = new ArrayList<>();
+        // Truy vấn SQL để join các bảng lesson, course, topic và subject
+        // để truy xuất các bài học liên quan đến subjectId đã cho.
+        var sql = """
+                SELECT
+                l.id,
+                l.status,
+                l.name,
+                l.course_id,
+                l.lesson_type_id
+                FROM `swp391`.subject s
+                JOIN
+                    `swp391`.topic t ON t.subject_id = s.id
+                JOIN
+                    `swp391`.course c ON c.topic_id = t.id
+                JOIN
+                    `swp391`.lesson l ON l.course_id = c.id
+                WHERE
+                    t.subject_id = ?
+                ORDER BY
+                    l.name ASC;
+                """;
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
+            pre.setString(1, subjectId); // Đặt tham số subjectId
+            try (var rs = pre.executeQuery()) {
+                while (rs.next()) {
+                    // Xây dựng đối tượng Lesson từ ResultSet
+                    lessons.add(Lesson.builder()
+                            .id(UUID.fromString(rs.getString("id")))
+                            .status(rs.getBoolean("status"))
+                            .name(rs.getString("name"))
+                            .courseId(rs.getString("course_id"))
+                            .lessonTypeId(rs.getString("lesson_type_id"))
+                            .build()); // Thêm vào danh sách
+                }
+            }
+        }
+        return lessons; // Trả về danh sách các bài học
     }
 
     public void updateLesson(Lesson lesson) throws Exception {
@@ -114,23 +162,7 @@ public class LessonDAO extends DBContext {
             pre.setString(4, lesson.getLessonTypeId());
             pre.setString(5, lesson.getId().toString()); // WHERE id = ?
             pre.executeUpdate();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
-    }
-
-    public int countLessonsByCourse(String courseId) throws Exception {
-        var sql = "SELECT COUNT(*) FROM `swp391`.lesson WHERE course_id = ?";
-        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
-            ps.setString(1, courseId);
-            try (var rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-            }
-        }
-        return 0;
     }
 
     public int getOrderOfLesson(String lessonId) throws Exception {
@@ -149,6 +181,45 @@ public class LessonDAO extends DBContext {
             }
         }
         return 1;
+    }
+
+    public String getNameByLessonId(String lessonId) throws Exception {
+        var sql = "SELECT name FROM `swp391`.lesson WHERE id = ?";
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
+            pre.setString(1, lessonId);
+            var rs = pre.executeQuery();
+            if (rs.next()) {
+                return rs.getString("name");
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Lấy tất cả các Lesson từ cơ sở dữ liệu.
+     *
+     * @return Danh sách các đối tượng Lesson.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình truy vấn cơ sở dữ
+     *                   liệu.
+     */
+    public List<Lesson> getAllLesson() throws Exception {
+        List<Lesson> lessons = new ArrayList<>(); // Khởi tạo một danh sách rỗng để chứa các Lesson
+        var sql = "SELECT id, status, name, course_id, lesson_type_id FROM `swp391`.lesson"; // Lấy tất cả các cột cần thiết
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
+            // Không cần setString cho tham số vì không có WHERE clause
+            try (var rs = pre.executeQuery()) {
+                while (rs.next()) { // Duyệt qua TẤT CẢ các bản ghi trả về
+                    lessons.add(Lesson.builder()
+                            .id(UUID.fromString(rs.getString("id")))
+                            .status(rs.getBoolean("status"))
+                            .name(rs.getString("name"))
+                            .courseId(rs.getString("course_id"))
+                            .lessonTypeId(rs.getString("lesson_type_id"))
+                            .build()); // Thêm Lesson vào danh sách
+                }
+            }
+        }
+        return lessons; // Trả về danh sách các Lesson
     }
 
 }

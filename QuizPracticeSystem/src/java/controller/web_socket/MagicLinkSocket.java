@@ -33,9 +33,10 @@ public class MagicLinkSocket {
     }
 
     @OnClose
-    public void onClose(Session session) {
+    public void onClose(Session session) throws IOException {
         sessions.values().removeIf(s -> s.getId().equals(session.getId()));
         logger.log(Level.INFO, "Connection closed: {0}", session.getId());
+        session.close();
     }
 
     @OnError

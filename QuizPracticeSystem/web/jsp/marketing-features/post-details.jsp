@@ -26,20 +26,20 @@
     </head>
 
     <body>
-        <jsp:include page="../../component/navbar.jsp"/>
+        <jsp:include page="../admin-features/admin-navbar.jsp"/>
+
+        <script>
+            const contextPath = '${pageContext.request.contextPath}';
+            console.log(contextPath);
+        </script>
 
         <div class="d-none">
             <p id="message" class="d-none">${message}</p>
             <p id="type" class="d-none">${type}</p>
         </div>
 
-        <div class="container bg-white p-4 mt-2 ">
-            <h2 class="mb-0">Post-Details Management</h2>
-            <p class="text-muted mb-3" style="font-size: 0.95rem;">
-                <a href="${pageContext.request.contextPath}/marketing/dashboard" class="btn btn-outline-secondary mb-2 mt-1">
-                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
-                </a>
-            </p>
+        <div class="container bg-white p-4 mt-2 mb-2 ">
+            <h2 class="mb-0">Posts Management</h2>
 
             <!-- Toolbar -->
             <div class="mb-4 d-flex flex-wrap align-items-center gap-3 justify-content-between">
@@ -60,28 +60,28 @@
                             <i class="fas fa-search search-icon"></i>
                             <input type="text" id="searchInput" name="keyword"
                                    class="form-control form-control-sm"
-                                   placeholder="Search by title or category..." />
+                                   placeholder="Search by title or description..." />
                         </div>
                         <button type="submit" class="btn btn-primary btn-sm">Search</button>
                     </form>
 
                     <!-- Page Size Selector -->
-                    <form action="${pageContext.request.contextPath}/post-details" method="get">
+                    <form action="${pageContext.request.contextPath}/marketer/post-details" method="get">
                         <div class="d-flex align-items-center gap-2 mx-1 dropdown">
                             <label for="pageSize" class="fw-bold form-label mb-0 text-primary fw-semibold">Show</label>
                             <select id="pageSize" name="pageSize" class="page-size-selector form-select-sm text-primary"
                                     onchange="this.form.submit()">
                                 <option value="5" ${pageSize == 5 ? 'selected' : ''}>5</option>
                                 <option value="10" ${pageSize == 10 ? 'selected' : ''}>10</option>
-                                <option value="15" ${pageSize == 15 ? 'selected' : ''}>15</option>
-                                <option value="20" ${pageSize == 20 ? 'selected' : ''}>20</option>
+                                <option value="15" ${pageSize == 20 ? 'selected' : ''}>20</option>
+                                <option value="20" ${pageSize == 50 ? 'selected' : ''}>50</option>
                             </select>
                         </div>
                     </form>
 
                     <!-- Filter + Column Display -->
                     <div class="d-flex gap-2">
-                        <form action="${pageContext.request.contextPath}/marketer/post-details" method="get">
+<!--                        <form action="${pageContext.request.contextPath}/marketer/post-details" method="get">
                             <div class="dropdown">
                                 <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
                                         type="button" data-bs-toggle="dropdown">Filter</button>
@@ -94,7 +94,7 @@
 
                                     <li><h6 class="dropdown-header">Feature</h6></li>
                                     <li><a class="dropdown-item" href="?feature=true">Featured</a></li>
-                                    <li><a class="dropdown-item" href="?feature=flase">Not Featured</a></li>
+                                    <li><a class="dropdown-item" href="?feature=false">Not Featured</a></li>
 
                                     <li><hr class="dropdown-divider" /></li>
 
@@ -103,7 +103,7 @@
                                     <li><a class="dropdown-item" href="?sortBy=oldest">Oldest First</a></li>
                                 </ul>
                             </div>
-                        </form>
+                        </form>-->
 
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary btn-sm dropdown-toggle"
@@ -116,6 +116,7 @@
                                 <div class="form-check"><input class="form-check-input column-toggle" type="checkbox" value="desc" checked /> Description</div>
                                 <div class="form-check"><input class="form-check-input column-toggle" type="checkbox" value="featuring" checked /> Featuring</div>
                                 <div class="form-check"><input class="form-check-input column-toggle" type="checkbox" value="status" checked /> Status</div>
+                                <div class="form-check"><input class="form-check-input column-toggle" type="checkbox" value="action" checked /> Action</div>
                             </div>
                         </div>
                     </div>
@@ -164,7 +165,6 @@
                                             </c:if>
 
                                         </td>
-
                                         <td class="category">${blog.category}</td>
                                         <td class="title">${blog.title}</td>
                                         <td class="brief">${blog.briefInfo}</td>
@@ -190,9 +190,9 @@
 
                                             <button class="btn btn-sm btn-outline-primary btn-edit"
                                                     data-index="${loop.index}"
+                                                    data-id="${blog.id}"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#editPostModal"
-                                                    data-id="${blog.id}"
                                                     data-title="${blog.title}"
                                                     data-category="${blog.categoryId}"
                                                     data-status="${blog.status}"
@@ -414,19 +414,21 @@
                                 <p id="viewBriefInfo" class="text-justify"></p>
                                 <hr />
                                 <h5 class="fw-semibold">Description</h5>
-                                <p id="viewDescription" class="text-justify"></p>
-                                <hr />
+                                <div style="white-space: pre-line;">
+                                    <p id="viewDescription" class="text-justify"></p>
+                                    <hr />
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="modal-footer border-0">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
+        
         <%-- Edit Post Modal --%>
         <div class="modal fade" id="editPostModal" tabindex="-1" aria-labelledby="editPostModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -441,30 +443,31 @@
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                         </div>
-
+                        
                         <div class="modal-body">
                             <div class="row g-4">
                                 <div class="col-md-4 text-center">
                                     <input type="file" id="editMediaInput"
                                            class="form-control"
-                                           accept="image/*,video/*"
+                                           accept=".jpg,.jpeg,.png,.gif,.webp,.mp4,.mov,.avi,.mkv"
                                            multiple="multiple"
-                                           name="media" />
+                                           name="media"
+                                    />
                                     <div id="editPreviewArea" class="mt-2"></div>
-
+                                    
                                     <div id="editMediaContainer"
                                          class="d-flex flex-column justify-content-center align-items-center">
                                     </div>
                                 </div>
-
+                                
                                 <!-- Right column: form fields -->
                                 <div class="col-md-8">
                                     <label for="editTitle" class="form-label fw-semibold">Title</label>
                                     <input type="text" id="editTitle" name="title" class="form-control mb-3" required />
-
+                                    
                                     <label for="editBriefInfo" class="form-label fw-semibold">Brief Info</label>
                                     <input type="text" id="editBriefInfo" name="briefInfo" class="form-control mb-3" />
-
+                                    
                                     <!-- Category, Featuring, Status on one row -->
                                     <div class="row mb-3 align-items-center">
                                         <div class="col-md-5">
@@ -492,14 +495,14 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    
                                     <label for="editDescription" class="form-label fw-semibold">Description</label>
                                     <textarea id="editDescription" name="content" class="form-control"
                                               rows="7"></textarea>
                                 </div>
                             </div>
                         </div>
-
+                        
                         <div class="modal-footer border-0">
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -508,14 +511,20 @@
                 </div>
             </div>
         </div>
+        
 
-        <jsp:include page="../../component/footer.html"/>
+            <jsp:include page="../../component/footer.html"/>
 
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="${pageContext.request.contextPath}/js/PostDetails.js"></script>
+            <script src="${pageContext.request.contextPath}/js/Toast.js"></script>
+            <script>
+                                        function getContextPath() {
+                                            const path = window.location.pathname; // VD: "/QuizPracticeSystem/post/edit"
+                                            const firstSlash = path.indexOf("/", 1);
+                                            return firstSlash !== -1 ? path.substring(0, firstSlash) : "";
+                                        }
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="js/PostDetails.js"></script>
-        <script src="js/Toast.js"></script>
-        <script>
                                         const message = document.getElementById("message").innerHTML;
                                         const type = document.getElementById("type").innerHTML;
                                         if (message && type) {
@@ -589,7 +598,7 @@
 
                                                         const createMediaElement = (tagName, file_path) => {
                                                             const media = document.createElement(tagName);
-                                                            media.src = `${pageContext.request.contextPath}/` + file_path;
+                                                            media.src = window.location.origin + "/qps/" + file_path;
                                                             media.width = 250;
                                                             media.classList.add('me-2', 'mb-2');
                                                             if (tagName === 'video') {
@@ -644,7 +653,7 @@
                                                             const mediaList = JSON.parse(this.dataset.blogMedia);
 
                                                             mediaList.forEach(({ mediaType, file_path, caption }) => {
-                                                                const fullUrl = `${pageContext.request.contextPath}/` + file_path;
+                                                                const fullUrl = window.location.origin + "/qps/" + file_path;
 
                                                                 let mediaEl;
                                                                 if (mediaType === 'image') {
@@ -678,7 +687,27 @@
                                             });
 
                                         });
+            </script>
+        <script>
+            const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'mkv'];
+            
+            document.querySelector('input[type="file"]').addEventListener('change', function (e) {
+                const fileInput = e.target;
+                const file = fileInput.files[0];
+                if (!file) return;
+                
+                const fileName = file.name.toLowerCase();
+                const ext = fileName.substring(fileName.lastIndexOf('.') + 1);
+                
+                if (!allowedExtensions.includes(ext)) {
+                    createToast("File type doesn't support!", "error", 3000);
+                    fileInput.value = ''; // reset input
+                }
+            });
         </script>
+    
+    
+    
     </body>
 
 </html>

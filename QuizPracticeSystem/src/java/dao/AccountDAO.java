@@ -23,15 +23,13 @@ public class AccountDAO extends DBContext {
     }
 
     public boolean createAccount(Account account) {
-        logger.info("createAccount");
-
         var sql = """
-                    INSERT INTO `swp391`.account (id, email, full_name, password,
-                    dob, gender, created_date, status, phone, image_url, role_id)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """;
+                INSERT INTO `swp391`.account (id, email, full_name, password,
+                dob, gender, created_date, status, phone, image_url, role_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, account.getId().toString());
             ps.setString(2, account.getEmail());
             ps.setString(3, account.getFullName());
@@ -52,10 +50,10 @@ public class AccountDAO extends DBContext {
     }
 
     public boolean isEmailExist(String email) {
-        String sql = "SELECT * FROM `swp391`.account WHERE email = ?";
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        var sql = "SELECT * FROM `swp391`.account WHERE email = ?";
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (var rs = ps.executeQuery()) {
                 return rs.next();
             }
         } catch (Exception e) {
@@ -66,10 +64,10 @@ public class AccountDAO extends DBContext {
 
     // Kiểm tra xem số điện thoại đã tồn tại trong cơ sở dữ liệu hay chưa.
     public boolean isPhoneNumberExist(String phoneNumber) {
-        String sql = "SELECT * FROM `swp391`.account WHERE phone = ?";
-        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+        var sql = "SELECT * FROM `swp391`.account WHERE phone = ?";
+        try (var ps = getConnection().prepareStatement(sql)) {
             ps.setString(1, phoneNumber);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (var rs = ps.executeQuery()) {
                 return rs.next();
             }
         } catch (Exception e) {
@@ -80,17 +78,15 @@ public class AccountDAO extends DBContext {
 
     // Cập nhật thông tin tài khoản người dùng trong cơ sở dữ liệu.
     public void updateAccount(Account account) {
-        String sql = "UPDATE `swp391`.`account` "
-                + "SET `full_name` = ?, "
-                + "    `dob` = ?, "
-                + "    `gender` = ?, "
-                + "    `phone` = ?, "
-                + "    `image_url` = ? "
-                + "WHERE `id` = ?";
-
-        logger.log(Level.INFO, "Giá trị image_url trước khi cập nhật: {0}", account.getImageUrl());
-
-        try (PreparedStatement ptm = getConnection().prepareStatement(sql)) {
+        var sql = """
+                UPDATE `swp391`.`account`
+                SET `full_name` = ?,
+                    `dob` = ?,
+                    `gender` = ?,
+                    `phone` = ?,
+                    `image_url` = ?
+                WHERE `id` = ?""";
+        try (var ptm = getConnection().prepareStatement(sql)) {
             ptm.setString(1, account.getFullName());
             ptm.setDate(2, account.getDob() != null ? java.sql.Date.valueOf(account.getDob()) : null);
             ptm.setInt(3, account.getGender());
@@ -111,22 +107,20 @@ public class AccountDAO extends DBContext {
     }
 
     public Account getAccountById(String id) {
-        logger.info("getById " + id);
-        Account account = Account.builder().build();
+        var account = Account.builder().build();
 
-        String sql = "SELECT * FROM `swp391`.account WHERE id = ?";
+        var sql = "SELECT * FROM `swp391`.account WHERE id = ?";
 
         return query(id, account, sql);
     }
 
     public Account findUserByEmailAndPassword(String email, String password) throws Exception {
-        logger.info("Finding account by email and password: " + email);
-        Account acc = Account.builder().build();
-        String sql = " SELECT * FROM `swp391`.account WHERE email = ? AND password = ? ";
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        var acc = Account.builder().build();
+        var sql = " SELECT * FROM `swp391`.account WHERE email = ? AND password = ? ";
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
             ps.setString(2, password);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (var rs = ps.executeQuery()) {
                 acc = getAccount(rs);
             }
         } catch (SQLException e) {
@@ -136,17 +130,16 @@ public class AccountDAO extends DBContext {
     }
 
     public Account getAccountByEmail(String email) {
-        logger.info("getByEmail " + email);
-        Account account = Account.builder().build();
-        String sql = " SELECT * FROM `swp391`.account WHERE email = ? ";
+        var account = Account.builder().build();
+        var sql = "SELECT * FROM `swp391`.account WHERE email = ? ";
         return query(email, account, sql);
     }
 
     public String getRoleIdByRoleName(String role) {
-        String sql = "SELECT id FROM `swp391`.setting WHERE value = ?";
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        var sql = "SELECT id FROM `swp391`.setting WHERE value = ?";
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, role);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (var rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getString("id");
                 }
@@ -158,10 +151,10 @@ public class AccountDAO extends DBContext {
     }
 
     public String getRoleNameById(String id) {
-        String sql = "SELECT value FROM `swp391`.setting WHERE id = ?";
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        var sql = "SELECT value FROM `swp391`.setting WHERE id = ?";
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (var rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getString("value");
                 }
@@ -173,12 +166,12 @@ public class AccountDAO extends DBContext {
     }
 
     public void updatePasswordByEmail(String password, String email) {
-        String sql = """
+        var sql = """
                 UPDATE `swp391`.account a
                 SET a.password = ?
                 WHERE a.email = ?
                 """;
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, password);
             ps.setString(2, email);
             ps.executeUpdate();
@@ -188,11 +181,11 @@ public class AccountDAO extends DBContext {
     }
 
     public int getCountNewAccountByDate(String startDate, String endDate) {
-        String sql = "SELECT COUNT(*) FROM `swp391`.account WHERE created_date BETWEEN ? AND ?";
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
+        var sql = "SELECT COUNT(*) FROM `swp391`.account WHERE created_date BETWEEN ? AND ?";
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, startDate);
             ps.setString(2, endDate);
-            try (ResultSet rs = ps.executeQuery()) {
+            try (var rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1);
                 }
@@ -202,44 +195,23 @@ public class AccountDAO extends DBContext {
         }
         return 0;
     }
-    
-
-
-    private Account getAccount(ResultSet rs) throws SQLException {
-        if (rs.next()) {
-            return Account.builder()
-                    .id(UUID.fromString(rs.getString("id")))
-                    .email(rs.getString("email"))
-                    .fullName(rs.getString("full_name"))
-                    .password(rs.getString("password"))
-                    .dob(rs.getObject("dob", LocalDate.class))
-                    .gender(rs.getInt("gender"))
-                    .createdDate(rs.getObject("created_date", LocalDate.class))
-                    .status(rs.getBoolean("status"))
-                    .phoneNumber(rs.getString("phone"))
-                    .imageUrl(rs.getString("image_url"))
-                    .roleId(rs.getString("role_id"))
-                    .build();
-        }
-        return null;
-    }
 
     public List<Account> getAllExperts() throws ClassNotFoundException {
         List<Account> experts = new ArrayList<>();
 
-        String sql = """
-        SELECT * FROM `swp391`.account
-        WHERE role_id = (
-            SELECT id FROM `swp391`.setting
-            WHERE value = 'Expert'
-            LIMIT 1
-        )
-        """;
+        var sql = """
+                SELECT * FROM `swp391`.account
+                WHERE role_id = (
+                    SELECT id FROM `swp391`.setting
+                    WHERE value = 'Expert'
+                    LIMIT 1
+                )
+                """;
 
-        try (Connection connection = getConnection(); PreparedStatement ps = connection.prepareStatement(sql)) {
-            try (ResultSet rs = ps.executeQuery()) {
+        try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
+            try (var rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Account expert = Account.builder()
+                    experts.add(Account.builder()
                             .id(UUID.fromString(rs.getString("id")))
                             .email(rs.getString("email"))
                             .fullName(rs.getString("full_name"))
@@ -251,8 +223,7 @@ public class AccountDAO extends DBContext {
                             .phoneNumber(rs.getString("phone"))
                             .imageUrl(rs.getString("image_url"))
                             .roleId(rs.getString("role_id"))
-                            .build();
-                    experts.add(expert);
+                            .build());
                 }
             }
         } catch (SQLException e) {
@@ -272,5 +243,24 @@ public class AccountDAO extends DBContext {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return account;
+    }
+
+    private Account getAccount(ResultSet rs) throws SQLException {
+        if (rs.next()) {
+            return Account.builder()
+                    .id(UUID.fromString(rs.getString("id")))
+                    .email(rs.getString("email"))
+                    .fullName(rs.getString("full_name"))
+                    .password(rs.getString("password"))
+                    .dob(rs.getObject("dob", LocalDate.class))
+                    .gender(rs.getInt("gender"))
+                    .createdDate(rs.getObject("created_date", LocalDate.class))
+                    .status(rs.getBoolean("status"))
+                    .phoneNumber(rs.getString("phone"))
+                    .imageUrl(rs.getString("image_url"))
+                    .roleId(rs.getString("role_id"))
+                    .build();
+        }
+        return null;
     }
 }

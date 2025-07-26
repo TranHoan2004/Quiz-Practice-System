@@ -25,48 +25,51 @@
 
 <div class="container py-5">
     <div class="qr-section wow fadeInUp" data-wow-delay="0.1s">
-        <h2 class="text-center mb-4">
-            <i class="bi bi-credit-card-2-front me-2"></i>Course Payment
-        </h2>
+        <c:if test="${pr ne null}">
+            <h2 class="text-center mb-4">
+                <i class="bi bi-credit-card-2-front me-2"></i>Subject Payment
+            </h2>
 
-        <div class="mb-3">
-            <span class="info-label">Course Name:</span>
-            <span class="info-value ms-2" id="courseName">Web Development</span>
-        </div>
-        <div class="mb-3">
-            <span class="info-label">Package:</span>
-            <span class="info-value ms-2" id="packageName">Premium</span>
-        </div>
-        <div class="mb-3">
-            <span class="info-label">Price:</span>
-            <span class="info-value ms-2 text-primary" id="coursePrice">$120</span>
-        </div>
-
-        <hr>
-
-        <div class="mb-3">
-            <span class="info-label">Registrant:</span>
-            <span class="info-value ms-2" id="userName">Nguyen Van A</span>
-        </div>
-        <div class="mb-3">
-            <span class="info-label">Email:</span>
-            <span class="info-value ms-2" id="userEmail">nguyenvana@email.com</span>
-        </div>
-
-        <hr>
-
-        <div class="text-center">
-            <img src="${qr}" alt="VietQR" class="qr-img mb-2">
-            <div class="qr-guide pt-4">
-                <i class="bi bi-info-circle me-1"></i>
-                Scan the QR code with your banking app to make the payment.<br>
-                <span class="d-block mt-1">Transfer content: <b id="transferContent">QUEZEE-1001</b></span>
-                <span class="d-block mt-1 text-muted qr-note">Note: Please transfer the exact amount and content for automatic confirmation.</span>
+            <div class="mb-3">
+                <span class="info-label">Subject Name:</span>
+                <span class="info-value ms-2" id="courseName">${pr.subjectName()}</span>
             </div>
-            <button class="btn btn-primary btn-confirm mt-2 px-4 py-2 w-auto w-sm-100 qr-confirm-btn" id="confirmBtn">
-                <i class="bi bi-check-circle me-2"></i>I have transferred
-            </button>
-        </div>
+            <div class="mb-3">
+                <span class="info-label">Package:</span>
+                <span class="info-value ms-2" id="packageName">${pr.packageName()}</span>
+            </div>
+            <div class="mb-3">
+                <span class="info-label">Price:</span>
+                <span class="info-value ms-2 text-primary" id="coursePrice">$${pr.price()}</span>
+            </div>
+
+            <hr>
+
+            <div class="mb-3">
+                <span class="info-label">Registrant:</span>
+                <span class="info-value ms-2" id="userName">${pr.registrantName()}</span>
+            </div>
+            <div class="mb-3">
+                <span class="info-label">Email:</span>
+                <span class="info-value ms-2" id="userEmail">${pr.email()}</span>
+            </div>
+
+            <hr>
+
+            <div class="text-center">
+                <img src="${qr}" alt="VietQR" class="qr-img mb-2">
+                <div class="qr-guide pt-4">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Scan the QR code with your banking app to make the payment.<br>
+                    <span class="d-block mt-1">Transfer content: <b id="transferContent">QUEZEE-1001</b></span>
+                    <span class="d-block mt-1 text-muted qr-note">Note: Please transfer the exact amount and content for automatic confirmation.</span>
+                </div>
+                <button class="btn btn-primary btn-confirm mt-2 px-4 py-2 w-auto w-sm-100 qr-confirm-btn"
+                        id="confirmBtn">
+                    <i class="bi bi-check-circle me-2"></i>I have transferred
+                </button>
+            </div>
+        </c:if>
     </div>
 </div>
 

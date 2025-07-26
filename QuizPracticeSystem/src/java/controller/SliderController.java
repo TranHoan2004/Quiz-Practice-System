@@ -6,20 +6,30 @@ import dao.AccountDAO;
 import dao.SliderDAO;
 import dto.SliderResponse;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import model.Account;
 import model.Slider;
 import utils.Encoder;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
+import java.text.Normalizer;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024 * 2,
+        maxFileSize = 1024 * 1024 * 30,
+        maxRequestSize = 1024 * 1024 * 50
+)
 @WebServlet(name = "SliderController", urlPatterns = {"/slider"})
 public class SliderController extends HttpServlet {
 
@@ -76,6 +86,7 @@ public class SliderController extends HttpServlet {
                 var uuid = UUID.fromString(Encoder.decode(id));
                 logger.log(Level.INFO, "slider id: {0}", uuid);
                 var slider = sDao.getSliderById(uuid);
+                System.out.println("Slider get from id: " + slider);
                 if (slider == null) {
                     req.setAttribute("error", "Slider not found");
                 } else {
@@ -104,12 +115,76 @@ public class SliderController extends HttpServlet {
                 out.println(json);
                 resp.setStatus(HttpServletResponse.SC_OK);
             }
+        }
+    }
+
+    /**
+     * <h4>Xử lý POST request để cập nhật slider</h4>
+     * <p>
+     * Cập nhật thông tin slider như tiêu đề, liên kết, trạng thái và hình ảnh.
+     * Nếu có tải lên hình ảnh, lưu file và cập nhật đường dẫn hình ảnh.
+     * Trả về phản hồi JSON thông báo kết quả.
+     * </p>
+     *
+     * @param req  Yêu cầu HTTP chứa dữ liệu slider và hình ảnh (nếu có)
+     * @param resp Phản hồi HTTP với kết quả JSON
+     * @throws ServletException nếu xảy ra lỗi servlet
+     * @throws IOException      nếu xảy ra lỗi I/O
+     * @author HoanTX
+     */
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        var id = req.getParameter("id");
+        var title = req.getParameter("title");
+        var link = req.getParameter("link");
+        var status = req.getParameter("status");
+
+        var image = req.getPart("image");
+
+        String relativePath = null;
+
+        System.out.println("Raw id: " + id);
+        System.out.println("Decode id: " + Encoder.decode(id));
+        System.out.println("Convert to UUID: " + UUID.fromString(Encoder.decode(id)));
+        var slider = sDao.getSliderById(UUID.fromString(Encoder.decode(id)));
+        System.out.println("Slider: " + slider);
+
+        slider.setTitle(title != null ? title : slider.getTitle());
+        slider.setBacklinkUrl(link != null ? link : slider.getBacklinkUrl());
+        slider.setStatus(status != null ? Boolean.parseBoolean(status) : slider.isStatus());
+
+        if (image != null && image.getSize() > 0) {
+            var uniqueFileName = UUID.randomUUID() + "_" + Paths.get(image.getSubmittedFileName()).getFileName();
+            var imgDir = "img/sliders";
+
+            var realPath = getServletContext().getRealPath("/");
+            if (realPath.contains("build")) {
+                realPath = realPath.replace("\\build", "").replace("/build", ""); // cho chắc chắn trên cả Windows và Unix
+            }
+            var absolutePath = Paths.get(realPath, "img", "sliders").toString();
+            var uploadDir = new File(absolutePath);
+            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+            // Ghi file
+            var fileToSave = new File(uploadDir, uniqueFileName);
+            image.write(fileToSave.getAbsolutePath());
+
+            // Đường dẫn trả về cho frontend
+            relativePath = imgDir + "/" + uniqueFileName;
+            slider.setImageUrl(relativePath);
+        }
+        System.out.println("New slider: " + slider);
+        sDao.updateSlider(slider);
+
+        // Trả về phản hồi JSON chứa đường dẫn
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        resp.setStatus(HttpServletResponse.SC_OK);
+
+        if (relativePath != null) {
+            resp.getWriter().write("{\"message\": \"Slider updated successfully!\", \"imageUrl\": \"" + relativePath + "\"}");
         } else {
-            logger.log(Level.INFO, "header: {0}", titleHeader);
-            Map<String, String> mapper = new HashMap<>();
-            mapper.put("main_title", "Slider");
-            mapper.put("items", "Sliders List");
-            sendData(resp, mapper);
+            resp.getWriter().write("{\"message\": \"Slider updated without image\"}");
         }
     }
 
@@ -194,22 +269,5 @@ public class SliderController extends HttpServlet {
                 .author(a.getFullName())
                 .note(slider.getNote())
                 .build();
-    }
-
-    /**
-     * <h4>Gửi dữ liệu JSON phản hồi cho client</h4>
-     * Dùng Gson để chuyển đổi dữ liệu thành JSON và gửi về client với mã trạng thái HTTP.
-     *
-     * @param res Đối tượng phản hồi HTTP
-     * @param obj Các đối tượng cần serialize và gửi dưới dạng JSON
-     * @throws IOException Nếu xảy ra lỗi khi ghi dữ liệu ra response stream
-     */
-    private void sendData(HttpServletResponse res, Object... obj) throws IOException {
-        res.setContentType("application/json");
-        try (PrintWriter out = res.getWriter()) {
-            var gson = new Gson();
-            res.setStatus(HttpServletResponse.SC_OK);
-            out.println(gson.toJson(obj));
-        }
     }
 }

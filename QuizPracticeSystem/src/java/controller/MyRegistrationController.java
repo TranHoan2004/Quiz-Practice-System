@@ -1,22 +1,22 @@
 package controller;
 
 import com.google.gson.Gson;
+import controller.utils.HandleRequestBody;
 import dao.*;
 import dto.ContactInfo;
+import dto.RegistrationSubject;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import dto.RegistrationCourse;
-
 import java.io.IOException;
 
 import model.*;
 import utils.Encoder;
 
-import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,12 +31,14 @@ public class MyRegistrationController extends HttpServlet {
     private final ContactDAO ccDAO;
     private final SubjectDAO sDAO;
     private final Logger logger;
+    private final HandleRequestBody hrb;
 
     public MyRegistrationController() {
         this.logger = Logger.getLogger(this.getClass().getName());
         this.psDAO = new PersonalSubjectDAO();
         this.ccDAO = new ContactDAO();
         this.sDAO = new SubjectDAO();
+        this.hrb = new HandleRequestBody();
     }
 
     /**
@@ -66,31 +68,45 @@ public class MyRegistrationController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getHeader("X-Source") != null) {
-            logger.log(Level.INFO, "header: {0}", request.getHeader("X-Source"));
+            System.out.println("Header: " + request.getHeader("X-Source"));
             Map<String, String> mapper = new HashMap<>();
             mapper.put("main_title", "My Registration");
             mapper.put("items", "My Registration");
             sendData(response, mapper);
         } else {
-            String keyword = request.getParameter("keyword");
-            String filter = request.getParameter("filter");
-            String contact = request.getParameter("org");
+            var keyword = request.getParameter("keyword");
+            var filter = request.getParameter("filter");
+            var contact = request.getParameter("org");
             String message = "";
             try {
-                List<RegistrationCourse> registrationCourses = getRegisteredSubjects(request);
+                List<RegistrationSubject> registeredSubjects = getRegisteredSubjects(request);
                 if (keyword == null && filter == null) {
-                    renderCoursePagination(request, registrationCourses);
+                    renderCoursePagination(request, registeredSubjects);
                 } else {
-                    handleSearchAndFilter(request, keyword, filter, registrationCourses);
+                    handleSearchAndFilter(request, keyword, filter, registeredSubjects);
                 }
-                handleOrgFilter(request, contact, registrationCourses);
+                handleOrgFilter(request, contact, registeredSubjects);
                 convertContactInformation(request, ccDAO.getAllContacts());
                 request.setAttribute("subjects", sDAO.getAllSubjects());
             } catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage());
                 message = e.getMessage();
             }
-            handleRequest(request, response, message);
+            navigate(request, response, message);
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Map<String, Object> body = hrb.getDataFromRequest(req);
+        var id = Encoder.decode(body.get("id").toString());
+        var session = req.getSession();
+        var account = (Account) session.getAttribute("currentUser");
+        System.out.println(id);
+        try {
+            psDAO.deleteByAccountIdAndSubjectId(account.getId().toString(), id);
+        } catch (SQLException | ClassNotFoundException e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -104,7 +120,7 @@ public class MyRegistrationController extends HttpServlet {
      */
     private void sendData(HttpServletResponse res, Object... obj) throws IOException {
         res.setContentType("application/json");
-        try (PrintWriter out = res.getWriter()) {
+        try (var out = res.getWriter()) {
             var gson = new Gson();
             res.setStatus(HttpServletResponse.SC_OK);
             out.println(gson.toJson(obj));
@@ -121,7 +137,7 @@ public class MyRegistrationController extends HttpServlet {
      * @throws IOException      nếu lỗi I/O
      * @author HoanTX
      */
-    private void handleRequest(HttpServletRequest request, HttpServletResponse response, String message) throws ServletException, IOException {
+    private void navigate(HttpServletRequest request, HttpServletResponse response, String message) throws ServletException, IOException {
         request.setAttribute("message", message);
         request.getRequestDispatcher("/jsp/customer-features/my_registration.jsp").forward(request, response);
     }
@@ -130,22 +146,23 @@ public class MyRegistrationController extends HttpServlet {
      * <h4>Truy xuất danh sách môn học đã đăng ký của người dùng</h4>
      * Phương thức lấy thông tin môn học mà người dùng đã đăng ký từ session,
      * sau đó truy vấn các môn học cá nhân tương ứng và xây dựng danh sách các
-     * đối tượng {@code RegistrationCourse} để phục vụ cho giao diện lịch sử đăng ký.
+     * đối tượng {@code RegistrationSubject} để phục vụ cho giao diện lịch sử đăng ký.
      * Nếu không có tài khoản trong phiên làm việc, sẽ sử dụng ID mặc định để xử lý.
      *
      * @param request Đối tượng HTTP chứa thông tin phiên người dùng
-     * @return Danh sách các đối tượng {@code RegistrationCourse} đã đăng ký
+     * @return Danh sách các đối tượng {@code RegistrationSubject} đã đăng ký
      * @author HoanTX
      */
-    private List<RegistrationCourse> getRegisteredSubjects(HttpServletRequest request) {
+    private List<RegistrationSubject> getRegisteredSubjects(HttpServletRequest request) {
         var account = (Account) request.getSession().getAttribute("currentUser");
         var id = account != null ? account.getId().toString() : "b283bfb8-397a-11f0-84a1-088fc33f56c7";
         List<PersonalSubject> subjects = psDAO.getPersonalSubjectsByAccount(id);
-        List<RegistrationCourse> registrationCourses = new ArrayList<>();
+        List<RegistrationSubject> registrationSubjects = new ArrayList<>();
         subjects.forEach(subject -> {
             try {
-                Subject s = sDAO.getById(subject.getSubjectId());
-                registrationCourses.add(RegistrationCourse.builder()
+                var s = sDAO.getById(subject.getSubjectId());
+                System.out.println("Get subject with name " + s.getName() + "and id " + s.getId().toString());
+                registrationSubjects.add(RegistrationSubject.builder()
                         .courseId(Encoder.encode(s.getId().toString()))
                         .subject(s.getName())
                         .registrationTime(subject.getRegistrationTime())
@@ -159,37 +176,38 @@ public class MyRegistrationController extends HttpServlet {
                 logger.log(Level.SEVERE, e.getMessage());
             }
         });
-        return registrationCourses;
+        System.out.println();
+        return registrationSubjects;
     }
 
     /**
-     * <h4>Tìm kiếm và lọc danh sách RegistrationCourse</h4>
+     * <h4>Tìm kiếm và lọc danh sách RegistrationSubject</h4>
      * - Lọc theo từ khóa (keyword) hoặc tên môn học (filter).<br>
      * - Sau khi lọc, gọi phương thức phân trang để cập nhật dữ liệu view.
      *
-     * @param request             HTTP request
-     * @param keyword             từ khóa tìm kiếm
-     * @param filter              bộ lọc môn học
-     * @param registrationCourses danh sách khóa học đăng ký
+     * @param request              HTTP request
+     * @param keyword              từ khóa tìm kiếm
+     * @param filter               bộ lọc môn học
+     * @param registrationSubjects danh sách khóa học đăng ký
      * @author HoanTX
      */
-    private void handleSearchAndFilter(HttpServletRequest request, String keyword, String filter, List<RegistrationCourse> registrationCourses) {
-        List<RegistrationCourse> results = new ArrayList<>();
+    private void handleSearchAndFilter(HttpServletRequest request, String keyword, String filter, List<RegistrationSubject> registrationSubjects) {
+        List<RegistrationSubject> results = new ArrayList<>();
         if (keyword != null) {
             logger.info("Searching for " + keyword);
-            for (RegistrationCourse registrationCourse : registrationCourses) {
-                if ((registrationCourse.getStatus() != null && registrationCourse.getStatus().toLowerCase().contains(keyword.toLowerCase()))
-                        || (registrationCourse.getPackageName() != null && registrationCourse.getPackageName().toLowerCase().contains(keyword.toLowerCase()))
-                        || registrationCourse.getSubject().toLowerCase().contains(keyword.toLowerCase())) {
-                    results.add(registrationCourse);
+            for (var registrationSubject : registrationSubjects) {
+                if ((registrationSubject.getStatus() != null && registrationSubject.getStatus().toLowerCase().contains(keyword.toLowerCase()))
+                        || (registrationSubject.getPackageName() != null && registrationSubject.getPackageName().toLowerCase().contains(keyword.toLowerCase()))
+                        || registrationSubject.getSubject().toLowerCase().contains(keyword.toLowerCase())) {
+                    results.add(registrationSubject);
                 }
             }
         }
         if (filter != null) {
             logger.info("Filter for " + filter);
-            for (RegistrationCourse registrationCourse : registrationCourses) {
-                if (registrationCourse.getSubject().toLowerCase().contains(filter.toLowerCase())) {
-                    results.add(registrationCourse);
+            for (var registrationSubject : registrationSubjects) {
+                if (registrationSubject.getSubject().toLowerCase().contains(filter.toLowerCase())) {
+                    results.add(registrationSubject);
                 }
             }
         }
@@ -207,13 +225,15 @@ public class MyRegistrationController extends HttpServlet {
      * @throws Exception nếu lỗi DB
      * @author HoanTX
      */
-    private void handleOrgFilter(HttpServletRequest request, String keyword, List<RegistrationCourse> course) throws Exception {
+    private void handleOrgFilter(HttpServletRequest request, String keyword, List<RegistrationSubject> course) throws Exception {
         if (keyword != null) {
             keyword = Encoder.decode(keyword);
             logger.info("Filter for " + keyword);
             Subject s = sDAO.getById(keyword);
             Contact contact = ccDAO.getById(s.getAuthorId());
+            System.out.println("Subject that fits to keyword: " + s.getName() + " and id " + s.getId().toString());
             request.setAttribute("contact", contact);
+            System.out.println("Contact of above subject: " + contact.getName() + " and id " + contact.getId().toString());
             renderCoursePagination(request, course);
         }
     }
@@ -228,7 +248,7 @@ public class MyRegistrationController extends HttpServlet {
      */
     private void convertContactInformation(HttpServletRequest request, List<Contact> contacts) {
         List<ContactInfo> contactInfos = new ArrayList<>();
-        for (Contact contact : contacts) {
+        for (var contact : contacts) {
             contactInfos.add(ContactInfo.builder()
                     .id(Encoder.encode(contact.getId().toString()))
                     .name(contact.getName())
@@ -249,12 +269,12 @@ public class MyRegistrationController extends HttpServlet {
      * @param course  danh sách khóa học đăng ký
      * @author HoanTX
      */
-    private void renderCoursePagination(HttpServletRequest request, List<RegistrationCourse> course) {
-        String page = request.getParameter("page");
-        int currentPage = (page == null ? 1 : Integer.parseInt(page));
+    private void renderCoursePagination(HttpServletRequest request, List<RegistrationSubject> course) {
+        var page = request.getParameter("page");
+        var currentPage = (page == null ? 1 : Integer.parseInt(page));
 
-        int startIndex = (currentPage - 1) * 10;
-        int endIndex = Math.min(course.size(), startIndex + 10);
+        var startIndex = (currentPage - 1) * 10;
+        var endIndex = Math.min(course.size(), startIndex + 10);
 
         request.setAttribute("courses", course.subList(startIndex, endIndex)); // Dữ liệu chính
         request.setAttribute("currentIndex", currentPage); // Trang hiện tại

@@ -39,7 +39,7 @@
                 <div class="row g-4">
                     <div class="col-sm-2 d-flex flex-column">
                         <div class="wow fadeInUp shadow mt-2" data-wow-delay="0.1s">
-                            <form action="${pageContext.request.contextPath}/user/subject_lesson" method="get"
+                            <form action="${pageContext.request.contextPath}/subject-lesson" method="get"
                                   class="p-3 rounded shadow-sm bg-white h-100 d-flex flex-column justify-content-center align-items-center">
                                 <input type="hidden" name="id" value="${param.id}" />
                                 <label for="lessonSearcher" class="form-label mb-2">
@@ -97,7 +97,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-2">
                             <div></div>
                             <div>
-                                <a href="${pageContext.request.contextPath}/user/subject_lesson/lesson_detail?courseId=${param.id}"
+                                <a href="${pageContext.request.contextPath}/lesson-detail?courseId=${param.id}"
                                    class="btn btn-sm btn-primary">
                                     <i class="bi bi-plus-lg"></i> Add New Lesson
                                 </a>
@@ -154,7 +154,7 @@
                                                     </c:choose>
                                                 </td>
                                                 <td>
-                                                    <form method="get" action="${pageContext.request.contextPath}/user/subject_lesson/lesson_detail" class="d-inline">
+                                                    <form method="get" action="${pageContext.request.contextPath}/lesson-detail" class="d-inline">
                                                         <input type="hidden" name="lessonId" value="${l.id}" />
                                                         <button type="submit"
                                                                 class="btn btn-link btn-sm text-info p-0"
@@ -162,7 +162,7 @@
                                                             <i class="bi bi-pencil-square fs-5"></i>
                                                         </button>
                                                     </form>
-                                                    <form method="post" action="${pageContext.request.contextPath}/user/subject_lesson/status-toggle" class="d-inline">
+                                                    <form method="post" action="${pageContext.request.contextPath}/status-toggle" class="d-inline">
                                                         <input type="hidden" name="lessonId" value="${l.id}" />
                                                         <input type="hidden" name="courseId" value="${not empty courseId ? courseId : param.id}" />
                                                         <button type="submit" class="btn btn-sm p-0 border-0 bg-transparent" title="Toggle Status">
@@ -185,7 +185,7 @@
                                     <ul class="pagination mb-0">
                                         <li class="page-item ${currentIndex == 1 ? 'disabled' : ''}">
                                             <a class="page-link"
-                                               href="${pageContext.request.contextPath}/user/subject_lesson?page=${currentIndex - 1}&id=${not empty courseId ? courseId : param.id}">
+                                               href="${pageContext.request.contextPath}/subject-lesson?page=${currentIndex - 1}&id=${not empty courseId ? courseId : param.id}">
                                                 Prev
                                             </a>
                                         </li>
@@ -193,7 +193,7 @@
                                         <c:forEach var="i" begin="1" end="${totalPages}">
                                             <li class="page-item ${i == currentIndex ? 'active' : ''}">
                                                 <a class="page-link"
-                                                   href="${pageContext.request.contextPath}/user/subject_lesson?page=${i}&id=${not empty courseId ? courseId : param.id}">
+                                                   href="${pageContext.request.contextPath}/subject-lesson?page=${i}&id=${not empty courseId ? courseId : param.id}">
                                                     ${i}
                                                 </a>
                                             </li>
@@ -201,7 +201,7 @@
 
                                         <li class="page-item ${currentIndex == totalPages ? 'disabled' : ''}">
                                             <a class="page-link"
-                                               href="${pageContext.request.contextPath}/user/subject_lesson?page=${currentIndex + 1}&id=${not empty courseId ? courseId : param.id}">
+                                               href="${pageContext.request.contextPath}/subject-lesson?page=${currentIndex + 1}&id=${not empty courseId ? courseId : param.id}">
                                                 Next
                                             </a>
                                         </li>
@@ -228,7 +228,7 @@
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
         <script src="${pageContext.request.contextPath}/js/Notification.js"></script>
         <script>
-                                            const baseHref = `${pageContext.request.contextPath}/user/subject_lesson`;
+                                            const baseHref = `${pageContext.request.contextPath}/subject-lesson`;
 
                                             document.getElementById('lessonTypeFilter').addEventListener('change', function () {
                                                 const value = this.value;

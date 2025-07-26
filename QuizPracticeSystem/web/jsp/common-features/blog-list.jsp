@@ -49,7 +49,7 @@
                         </ol>
                     </nav>
 
-                    <h3 class="mb-4">📰 Danh sách bài viết</h3>
+                    <h3 class="mb-4">📰 Blogs List</h3>
 
                     <%-- Blog List --%>
                     <c:choose>
@@ -92,7 +92,7 @@
 
                         <c:otherwise>
                             <div class="alert alert-warning text-center">
-                                Không tìm thấy bài viết nào.
+                                No posts found.
                             </div>
                         </c:otherwise>
                     </c:choose>
@@ -121,7 +121,7 @@
                     <nav>
                         <ul class="pagination justify-content-center mt-4">
                             <li class="page-item ${currentIndex == 1 ? 'disabled' : ''}">
-                                <a class="page-link" href="?page=${currentIndex - 1}">Trước</a>
+                                <a class="page-link" href="?page=${currentIndex - 1}">Prev</a>
                             </li>
 
                             <c:forEach var="i" begin="${startPage}" end="${endPage}">
@@ -131,7 +131,7 @@
                             </c:forEach>
 
                             <li class="page-item ${currentIndex == totalPages ? 'disabled' : ''}">
-                                <a class="page-link" href="?page=${currentIndex + 1}">Sau</a>
+                                <a class="page-link" href="?page=${currentIndex + 1}">Next</a>
                             </li>
                         </ul>
                     </nav>
@@ -141,20 +141,20 @@
                 <!-- Sidebar -->
                 <div class="col-lg-3 col-md-4 mb-4 sidebar">
                     <form action="${pageContext.request.contextPath}/blog-list" method="get">
-                        <h5 class="section-title"><label for="search">🔍 Tìm kiếm</label></h5>
-                        <input type="text" name="keyword" class="form-control mb-3" id="search" placeholder="Tìm bài viết...">
-                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                        <h5 class="section-title"><label for="search">🔍 Search</label></h5>
+                        <input type="text" name="keyword" class="form-control mb-3" id="search" placeholder="Search blog...">
+                        <button type="submit" class="btn btn-primary">Search</button>
                     </form>
 
 
-                    <h5 class="section-title">📂 Danh mục</h5>
+                    <h5 class="section-title">📂 Category</h5>
                     <ul class="list-group mb-3 sidebar-categories" id="category-list">
                         <c:forEach items="${categories}" var="category">
                             <a href="?category=${category.categoryId}" class="list-group-item">${category.category}</a>
                         </c:forEach>
                     </ul>
 
-                    <h5 class="section-title">🕒 Bài viết mới</h5>
+                    <h5 class="section-title">🕒 Latest Blog</h5>
                     <ul class="list-group mb-3 gap-3">
                         <c:forEach var="blog" items="${latestBlogs}">
                             <li class="list-group-item p-3 latest-blog-item">
@@ -183,7 +183,7 @@
                         </c:forEach>
                     </ul>
 
-                    <h5 class="section-title">📌 Liên hệ</h5>
+                    <h5 class="section-title">📌 Contact</h5>
                     <ul class="list-group">
                         <li class="list-group-item">📞 1900 0000</li>
                         <li class="list-group-item">✉ support@abc.com</li>

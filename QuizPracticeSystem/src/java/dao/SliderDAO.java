@@ -114,6 +114,29 @@ public class SliderDAO extends DBContext {
         }
     }
 
+    public void updateSlider(Slider slider) {
+        var sql = """
+                UPDATE `swp391`.slider
+                SET status = ?,
+                    title = ?,
+                    image_url = ?,
+                    backlink_url = ?,
+                    status = ?
+                WHERE id = ?""";
+        try (var connection = getConnection();
+             var ps = connection.prepareStatement(sql)) {
+            ps.setBoolean(1, slider.isStatus());
+            ps.setString(2, slider.getTitle());
+            ps.setString(3, slider.getImageUrl());
+            ps.setString(4, slider.getBacklinkUrl());
+            ps.setBoolean(5, slider.isStatus());
+            ps.setString(6, slider.getId().toString());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+    }
+
     private Slider getEntity(ResultSet rs) throws SQLException {
         return Slider.builder()
                 .id(UUID.fromString(rs.getString("id")))

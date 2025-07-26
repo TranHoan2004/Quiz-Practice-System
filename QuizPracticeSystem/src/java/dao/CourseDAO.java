@@ -1,6 +1,10 @@
 package dao;
 
 import dto.RegistrationDTO;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
 import model.Course;
 
 import java.sql.ResultSet;
@@ -25,19 +29,16 @@ public class CourseDAO extends DBContext {
 
     public List<Course> getAllCourses() throws Exception {
         List<Course> list = new ArrayList<>();
-        String sql = "SELECT * FROM `swp391`.course";
+        var sql = "SELECT * FROM `swp391`.course";
         try (var connection = getConnection(); var pre = connection.prepareStatement(sql); ResultSet rs = pre.executeQuery()) {
             while (rs.next()) {
                 list.add(buildCourse(rs));
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return list;
     }
 
-    public Course getById(String id) throws Exception {
+    public Course getById(String id) {
         var s = Course.builder().build();
         var sql = "SELECT * FROM `swp391`.course s WHERE s.id = ?";
         try (var connection = getConnection(); var pre = connection.prepareStatement(sql)) {
@@ -51,22 +52,22 @@ public class CourseDAO extends DBContext {
         return s;
     }
 
-    public Course getByTopic(String topicId) throws Exception {
+    public Course getByTopic(String topicId) {
         var s = Course.builder().build();
         var sql = "SELECT * FROM `swp391`.course s WHERE s.topic_id = ?";
         try (var connection = getConnection(); var pre = connection.prepareStatement(sql)) {
             pre.setString(1, topicId);
             try (var rs = pre.executeQuery()) {
                 s = getEntityFromResultSet(s, rs);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, e.getMessage());
             }
-            return s;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
         }
+        return s;
     }
 
     public void deleteById(String id) {
-        String sql = "DELETE FROM `swp391`.course s WHERE s.id = ?";
+        var sql = "DELETE FROM `swp391`.course s WHERE s.id = ?";
         try (var connection = getConnection(); var pre = connection.prepareStatement(sql)) {
             pre.setString(1, id);
             pre.executeUpdate();
@@ -100,12 +101,12 @@ public class CourseDAO extends DBContext {
     }
 
     public void insert(Course course) {
-        String sql = """
-        INSERT INTO `swp391`.course (
-            id, title, duration, status, description, created_date, updated_date,
-            thumbnail_url, number_of_lessons, topic_id, contact, expert_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """;
+        var sql = """
+                    INSERT INTO `swp391`.course (
+                        id, title, duration, status, description, created_date, updated_date,
+                        thumbnail_url, number_of_lessons, topic_id, contact, expert_id
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
         try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, course.getId().toString());
@@ -127,13 +128,6 @@ public class CourseDAO extends DBContext {
         }
     }
 
-    private Course getEntityFromResultSet(Course s, ResultSet rs) throws SQLException {
-        while (rs.next()) {
-            s = buildCourse(rs);
-        }
-        return s;
-    }
-
     public List<RegistrationDTO> pagingRegistrationDto(
             int index,
             int numberOfLine,
@@ -149,28 +143,24 @@ public class CourseDAO extends DBContext {
         // 1. Đổi thành LEFT JOIN để lấy cả những đăng ký của khóa học chưa có gói giá.
         // 2. Thêm GROUP BY để chống trùng lặp dữ liệu khi một khóa học có nhiều gói giá.
         // 3. Dùng MIN() để chọn ra 1 gói giá nếu có nhiều gói (bạn có thể đổi thành MAX() tùy logic).
-        // Dùng MIN() để lấy 1 giá trị
-        // Dùng MIN()
-        // GIẢI PHÁP 1: Dùng LEFT JOIN
-        var sql = new StringBuilder(
-                """
-                        SELECT
-                        pc.id,
-                        acc.email,
-                        pc.enroll_date AS registration_time,
-                        s.name AS subject_name,
-                        MIN(pp.title) AS package_name,
-                        MIN(pp.sale_price) AS total_cost,
-                        pc.status,
-                        pc.enroll_date AS valid_from,
-                        pc.expire_date AS valid_to
-                        FROM personalcourse pc
-                        JOIN account acc ON pc.account_id = acc.id
-                        JOIN course c ON pc.course_id = c.id
-                        JOIN topic t ON c.topic_id = t.id
-                        JOIN subject s ON t.subject_id = s.id
-                        LEFT JOIN pricepackage pp ON pc.course_id = pp.course_id
-                        WHERE 1=1"""
+        StringBuilder sql = new StringBuilder(
+                "SELECT "
+                + "pc.id, "
+                + "acc.email, "
+                + "pc.enroll_date AS registration_time, "
+                + "s.name AS subject_name, "
+                + "MIN(pp.title) AS package_name, " // Dùng MIN() để lấy 1 giá trị
+                + "MIN(pp.sale_price) AS total_cost, " // Dùng MIN()
+                + "pc.status, "
+                + "pc.enroll_date AS valid_from, "
+                + "pc.expire_date AS valid_to "
+                + "FROM personalcourse pc "
+                + "JOIN account acc ON pc.account_id = acc.id "
+                + "JOIN course c ON pc.course_id = c.id "
+                + "JOIN topic t ON c.topic_id = t.id "
+                + "JOIN subject s ON t.subject_id = s.id "
+                + "LEFT JOIN pricepackage pp ON pc.course_id = pp.course_id " // GIẢI PHÁP 1: Dùng LEFT JOIN
+                + "WHERE 1=1 "
         );
 
         List<Object> params = new ArrayList<>();
@@ -203,14 +193,14 @@ public class CourseDAO extends DBContext {
         params.add(numberOfLine);
         params.add((index - 1) * numberOfLine);
 
-        try (var conn = getConnection(); var pre = conn.prepareStatement(sql.toString())) {
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {
                 pre.setObject(i + 1, params.get(i));
             }
 
-            try (var rs = pre.executeQuery()) {
+            try (ResultSet rs = pre.executeQuery()) {
                 while (rs.next()) {
-                    list.add(RegistrationDTO.builder()
+                    RegistrationDTO dto = RegistrationDTO.builder()
                             .id(UUID.fromString(rs.getString("id")))
                             .email(rs.getString("email"))
                             .registrationTime(rs.getObject("registration_time", LocalDate.class))
@@ -220,13 +210,15 @@ public class CourseDAO extends DBContext {
                             .status(rs.getString("status"))
                             .validFrom(rs.getObject("valid_from", LocalDate.class))
                             .validTo(rs.getObject("valid_to", LocalDate.class))
-                            .build());
+                            .build();
+                    list.add(dto);
                 }
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e); // Nên có logger
+            // logger.log(Level.SEVERE, e.getMessage(), e); // Nên có logger
             throw e;
         }
+
         return list;
     }
 
@@ -239,16 +231,18 @@ public class CourseDAO extends DBContext {
     ) throws Exception {
         int total = 0;
 
-        var sql = new StringBuilder("""
-                SELECT COUNT(*) as total FROM (
-                SELECT pc.id
-                FROM personalcourse pc
-                JOIN account acc ON pc.account_id = acc.id
-                JOIN course c ON pc.course_id = c.id
-                JOIN topic t ON c.topic_id = t.id
-                JOIN subject s ON t.subject_id = s.id
-                LEFT JOIN pricepackage pp ON pc.course_id = pp.course_id
-                WHERE 1=1""");
+        
+        StringBuilder sql = new StringBuilder(
+                "SELECT COUNT(*) as total FROM ( "
+                + "SELECT pc.id "
+                + "FROM personalcourse pc "
+                + "JOIN account acc ON pc.account_id = acc.id "
+                + "JOIN course c ON pc.course_id = c.id "
+                + "JOIN topic t ON c.topic_id = t.id "
+                + "JOIN subject s ON t.subject_id = s.id "                
+                + "LEFT JOIN pricepackage pp ON pc.course_id = pp.course_id "
+                + "WHERE 1=1 "
+        );
 
         List<Object> params = new ArrayList<>();
 
@@ -274,22 +268,23 @@ public class CourseDAO extends DBContext {
             params.add("%" + email + "%");
         }
 
-        sql.append(" GROUP BY pc.id) AS subquery");
+        sql.append(" GROUP BY pc.id) AS subquery"); 
 
-        try (var conn = getConnection(); var pre = conn.prepareStatement(sql.toString())) {
+        try (Connection conn = getConnection(); PreparedStatement pre = conn.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {
                 pre.setObject(i + 1, params.get(i));
             }
 
-            try (var rs = pre.executeQuery()) {
+            try (ResultSet rs = pre.executeQuery()) {
                 if (rs.next()) {
                     total = rs.getInt("total");
                 }
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e); // Nên có logger
+            // logger.log(Level.SEVERE, e.getMessage(), e); // Nên có logger
             throw e;
         }
+
         return total;
     }
 
@@ -324,6 +319,41 @@ public class CourseDAO extends DBContext {
         return list;
     }
 
+    private Course getEntityFromResultSet(Course s, ResultSet rs) throws SQLException {
+        while (rs.next()) {
+            s = buildCourse(rs);
+        }
+        return s;
+    }
+
+    public List<Course> getCoursesByExpertId(String expertId) throws Exception {
+        List<Course> list = new ArrayList<>();
+        String sql = "SELECT * FROM `swp391`.course WHERE expert_id = ?";
+
+        try (var connection = getConnection(); var pre = connection.prepareStatement(sql)) {
+
+            pre.setString(1, expertId);
+
+            try (ResultSet rs = pre.executeQuery()) {
+                while (rs.next()) {
+                    list.add(buildCourse(rs));  // Dùng lại phương thức đã có
+                }
+            }
+        }
+
+        return list;
+    }
+
+    public void updateCourseOverview(String courseId, String description, boolean status) throws Exception {
+        String sql = "UPDATE `swp391`.course SET description = ?, status = ? WHERE id = ?";
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, description);
+            ps.setBoolean(2, status);
+            ps.setString(3, courseId);
+            ps.executeUpdate();
+        }
+    }
+
     private Course buildCourse(ResultSet rs) throws SQLException {
         return Course.builder()
                 .id(UUID.fromString(rs.getString("id")))
@@ -340,4 +370,5 @@ public class CourseDAO extends DBContext {
                 .expertId(rs.getString("expert_id"))
                 .build();
     }
+
 }

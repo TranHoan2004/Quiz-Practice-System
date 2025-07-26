@@ -10,34 +10,38 @@ const step2 = document.getElementById('step2');
 document.getElementById('send-code').addEventListener('click', function (e) {
     e.preventDefault();
     email = document.getElementById('reset_email').value;
-    fetch(`${window.contextPath}/user`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content': "email"
-        },
-        body: JSON.stringify({email: email})
+    if (isValidEmail(email)) {
+        fetch(`${window.contextPath}/user`, {
+        method: 'POST', headers: {
+            'Content-Type': 'application/json', 'Content': "email"
+        }, body: JSON.stringify({email: email})
     })
-            .then(response => {
-                return response.text()
-                        .then(text => ({
-                                status: response.status,
-                                data: text
-                            }));
-            })
-            .then(data => {
-                console.log(data);
-                if (data.status !== 200) {
-                    throw new Error(data.data);
-                }
-                step2.hidden = false;
-                document.getElementById('step1').hidden = true;
-            })
-            .catch(err => {
-                console.log(err);
-                showNotification(err.message, "not success");
-            });
+        .then(response => {
+            return response.text()
+                .then(text => ({
+                    status: response.status, data: text
+                }));
+        })
+        .then(data => {
+            if (data.status !== 200) {
+                throw new Error(data.data);
+            }
+            step2.hidden = false;
+            document.getElementById('step1').hidden = true;
+        })
+        .catch(err => {
+            console.log(err);
+            showNotification(err.message, "not success");
+        });
+    } else {
+        showNotification('Email must follow the format', 'not success');
+    }
 });
+
+function isValidEmail(email) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+}
 
 /**
  * Bước 2: Người dùng chọn phương thức xác thực
@@ -67,6 +71,15 @@ document.getElementById('scan-success').addEventListener('click', function (e) {
     e.preventDefault();
     googleAuth.hidden = true;
     step3.hidden = false;
+    const div = document.getElementById('previous');
+    if (method === 'google_auth') {
+        div.innerHTML = `<a id="scan" class="link-primary text-decoration-none">Scan QR</a>`;
+        document.getElementById('scan').addEventListener('click', function (e) {
+            e.preventDefault();
+            googleAuth.hidden = false;
+            step3.hidden = true;
+        });
+    }
 });
 
 /**
@@ -79,35 +92,31 @@ document.getElementById('verify-code').addEventListener('click', function (e) {
     const key = method === 'google_auth' ? "otp" : "code";
 
     fetch(`${window.contextPath}/user`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content': method
-        },
-        body: JSON.stringify({[key]: code})
+        method: 'POST', headers: {
+            'Content-Type': 'application/json', 'Content': method
+        }, body: JSON.stringify({[key]: code})
     })
-            .then(response => {
-                return response.text()
-                        .then(text => ({
-                                status: response.status,
-                                data: text
-                            }));
-            })
-            .then(data => {
-                console.log(data);
-                if (data.status !== 200) {
-                    throw new Error(data.data);
-                }
-                showNotification("Verify code successfully", "success");
-                document.getElementById('step4').hidden = false;
-                step3.hidden = true;
-                googleAuth.hidden = true;
-            })
-            .catch(err => {
-                console.log(err);
-                showNotification(err.message, "not success");
-                codeInputs.forEach(input => input.value = '');
-            });
+        .then(response => {
+            return response.text()
+                .then(text => ({
+                    status: response.status, data: text
+                }));
+        })
+        .then(data => {
+            console.log(data);
+            if (data.status !== 200) {
+                throw new Error(data.data);
+            }
+            showNotification("Verify code successfully", "success");
+            document.getElementById('step4').hidden = false;
+            step3.hidden = true;
+            googleAuth.hidden = true;
+        })
+        .catch(err => {
+            console.log(err);
+            showNotification(err.message, "not success");
+            codeInputs.forEach(input => input.value = '');
+        });
 });
 
 /**
@@ -167,30 +176,24 @@ function selectAuthMethod(method) {
  */
 function sendRequestToCreateOtp() {
     fetch(`${window.contextPath}/user`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content': "sent_otp"
-        },
-        body: JSON.stringify({status: true})
+        method: 'POST', headers: {
+            'Content-Type': 'application/json', 'Content': "sent_otp"
+        }, body: JSON.stringify({status: true})
     })
-            .then(response => {
-                return response.text()
-                        .then(text => ({
-                                status: response.status,
-                                data: text
-                            }));
-            })
-            .then(data => {
-                console.log(data);
-                if (data.status !== 200) {
-                    throw new Error(data.data);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                showNotification(err.message, "not success");
-            });
+        .then(response => {
+            return response.text()
+                .then(text => ({
+                    status: response.status, data: text
+                }));
+        })
+        .then(data => {
+            if (data.status !== 200) {
+                throw new Error(data.data);
+            }
+        })
+        .catch(err => {
+            showNotification(err.message, "not success");
+        });
 }
 
 /**
@@ -198,32 +201,26 @@ function sendRequestToCreateOtp() {
  */
 function sendRequestToCreateQR() {
     fetch(`${window.contextPath}/user`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content': "qr"
-        },
-        body: JSON.stringify({status: true})
+        method: 'POST', headers: {
+            'Content-Type': 'application/json', 'Content': "qr"
+        }, body: JSON.stringify({status: true})
     })
-            .then(response => {
-                return response.text()
-                        .then(text => ({
-                                status: response.status,
-                                data: text
-                            }));
-            })
-            .then(data => {
-                console.log(data);
-                if (data.status !== 200) {
-                    throw new Error(data.data);
-                }
-                const qrCode = data.data.trim();
-                document.querySelector('#googleauth-step1 img').src = 'data:image/png;base64,' + qrCode;
-            })
-            .catch(err => {
-                console.log(err);
-                showNotification(err.message, "not success");
-            });
+        .then(response => {
+            return response.text()
+                .then(text => ({
+                    status: response.status, data: text
+                }));
+        })
+        .then(data => {
+            if (data.status !== 200) {
+                throw new Error(data.data);
+            }
+            const qrCode = data.data.trim();
+            document.querySelector('#googleauth-step1 img').src = 'data:image/png;base64,' + qrCode;
+        })
+        .catch(err => {
+            showNotification(err.message, "not success");
+        });
 }
 
 /**
@@ -231,30 +228,24 @@ function sendRequestToCreateQR() {
  */
 function sendRequestToSendEmail() {
     fetch(`${window.contextPath}/user`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content': "magic_link"
-        },
-        body: JSON.stringify({status: true})
+        method: 'POST', headers: {
+            'Content-Type': 'application/json', 'Content': "magic_link"
+        }, body: JSON.stringify({status: true})
     })
-            .then(response => {
-                return response.text()
-                        .then(text => ({
-                                status: response.status,
-                                data: text
-                            }));
-            })
-            .then(data => {
-                console.log(data);
-                if (data.status !== 200) {
-                    throw new Error(data.data);
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                showNotification(err.message, "not success");
-            });
+        .then(response => {
+            return response.text()
+                .then(text => ({
+                    status: response.status, data: text
+                }));
+        })
+        .then(data => {
+            if (data.status !== 200) {
+                throw new Error(data.data);
+            }
+        })
+        .catch(err => {
+            showNotification(err.message, "not success");
+        });
 }
 
 (function () {
@@ -361,32 +352,29 @@ document.getElementById('passwordForm').onsubmit = function (e) {
     if (valid) {
         console.log('Go here');
         fetch(`${window.contextPath}/user`, {
-            method: 'PUT',
-            headers: {
+            method: 'PUT', headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({password: password})
+            }, body: JSON.stringify({password: password})
         })
-                .then(response => {
-                    return response.text()
-                            .then(text => ({
-                                    status: response.status,
-                                    data: text
-                                }));
-                })
-                .then(data => {
-                    console.log(data);
-                    if (data.status !== 200) {
-                        throw new Error(data.data);
-                    }
-                    showNotification("Reset successfully", "success");
-                    setTimeout(() => {
-                        window.location.href = `login_account.jsp`;
-                    }, 3000);
-                })
-                .catch(err => {
-                    console.log(err);
-                    showNotification(err.message, "not success");
-                });
+            .then(response => {
+                return response.text()
+                    .then(text => ({
+                        status: response.status, data: text
+                    }));
+            })
+            .then(data => {
+                console.log(data);
+                if (data.status !== 200) {
+                    throw new Error(data.data);
+                }
+                showNotification("Reset successfully", "success");
+                setTimeout(() => {
+                    window.location.href = `login_account.jsp`;
+                }, 3000);
+            })
+            .catch(err => {
+                console.log(err);
+                showNotification(err.message, "not success");
+            });
     }
 };

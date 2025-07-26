@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package controller;
 
 import dao.*;
@@ -22,48 +18,52 @@ import java.util.logging.Logger;
 import utils.Encoder;
 import utils.Validation;
 
-@WebServlet(name = "SubjectDetailController", urlPatterns = {"/user/subject_detail"})
+@WebServlet(name = "SubjectDetailController", urlPatterns = {"/subject-detail"})
 public class SubjectDetailController extends HttpServlet {
 
-    private final SubjectDAO subjectDAO;
-    private final TopicDAO topicDAO;
-    private final CourseDAO courseDAO;
-    private final ContactDAO contactDAO;
-    private final AccountDAO accountDAO;
-    private final SettingDAO settingDAO;
-    private final PricePackageDAO pricePackageDAO;
-    private final Logger logger;
-
-    public SubjectDetailController() {
-        this.subjectDAO = new SubjectDAO();
-        this.topicDAO = new TopicDAO();
-        this.courseDAO = new CourseDAO();
-        this.contactDAO = new ContactDAO();
-        this.accountDAO = new AccountDAO();
-        this.settingDAO = new SettingDAO();
-        this.pricePackageDAO = new PricePackageDAO();
-        this.logger = Logger.getLogger(this.getClass().getName());
-    }
+    private final SubjectDAO subjectDAO = new SubjectDAO();
+    private final TopicDAO topicDAO = new TopicDAO();
+    private final CourseDAO courseDAO = new CourseDAO();
+    private final ContactDAO contactDAO = new ContactDAO();
+    private final AccountDAO accountDAO = new AccountDAO();
+    private final SettingDAO settingDAO = new SettingDAO();
+    private final PricePackageDAO pricePackageDAO = new PricePackageDAO();
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String encodedId = request.getParameter("id");
+        String encodedCourseId = request.getParameter("id");
         String message = (String) request.getAttribute("message");
         if (message == null) {
             message = "";
         }
 
-        try {
+        if (encodedCourseId == null || encodedCourseId.isBlank()) {
+            request.setAttribute("message", "Không tìm thấy thông tin khóa học (id rỗng hoặc null)");
+            request.getRequestDispatcher("/jsp/course-features/subject_details.jsp").forward(request, response);
+            return;
+        }
 
-            // Trường hợp không xoá → Load chi tiết subject
-            SubjectDetailDTO dto = buildSubjectDetailDTO(encodedId);
+        try {
+            String courseId = Encoder.decode(encodedCourseId);
+            String subjectId = subjectDAO.getSubjectIdByCourseId(courseId);
+            if (subjectId == null) {
+                throw new Exception("Không tìm thấy Subject với courseId: " + courseId);
+            }
+
+            String encodedSubjectId = Encoder.encode(subjectId);
+            SubjectDetailDTO dto = buildSubjectDetailDTO(encodedSubjectId, courseId);
+
             request.setAttribute("subjectDetail", dto);
+            request.setAttribute("subjectId", encodedSubjectId);
+            request.setAttribute("courseId", courseId);
+            request.setAttribute("userRole", request.getSession().getAttribute("userRole"));
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
-            message = e.getMessage();
+            message = "Lỗi khi tải dữ liệu: " + e.getMessage();
         }
 
         request.setAttribute("message", message);
@@ -73,16 +73,19 @@ public class SubjectDetailController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String deleteType = request.getParameter("deleteType");
-        String deleteId = request.getParameter("deleteId");
-        String encodedId = request.getParameter("subjectId");
 
-        String action = request.getParameter("action"); // để phân biệt chức năng
+        String action = request.getParameter("action");
+        String encodedSubjectId = request.getParameter("subjectId");
+        String courseId = request.getParameter("courseId");
+        String userRole = (String) request.getSession().getAttribute("userRole");
 
         try {
-
             if ("addPricePackage".equals(action)) {
-                String courseId = request.getParameter("courseId");
+                if (!"Admin".equals(userRole)) {
+                    response.sendRedirect(request.getContextPath() + "/unauthorized.jsp");
+                    return;
+                }
+
                 String name = request.getParameter("packageName");
                 int duration = Integer.parseInt(request.getParameter("packageDuration"));
                 int listPrice = Integer.parseInt(request.getParameter("packagePrice"));
@@ -92,9 +95,18 @@ public class SubjectDetailController extends HttpServlet {
                 String checkPrice = Validation.validatePricePackage(listPrice, salePrice);
                 if (checkPrice != null) {
                     request.setAttribute("message", checkPrice);
-                    request.setAttribute("showModal", "add");
-                    doGet(request, response); // render lại trang với message
+                    request.setAttribute("showModal", "add"); 
+
+                    // Tải lại subjectDetail để render lại giao diện
+                    SubjectDetailDTO dto = buildSubjectDetailDTO(encodedSubjectId, courseId);
+                    request.setAttribute("subjectDetail", dto);
+                    request.setAttribute("subjectId", encodedSubjectId);
+                    request.setAttribute("courseId", courseId);
+                    request.setAttribute("userRole", request.getSession().getAttribute("userRole"));
+
+                    request.getRequestDispatcher("/jsp/course-features/subject_details.jsp").forward(request, response);
                     return;
+
                 }
 
                 PricePackage pkg = PricePackage.builder()
@@ -109,34 +121,28 @@ public class SubjectDetailController extends HttpServlet {
                         .build();
 
                 pricePackageDAO.create(pkg);
+            } else if ("addDimension".equals(action)) {
+                if (encodedSubjectId != null) {
+                    String subjectId = Encoder.decode(encodedSubjectId);
+                    String name = request.getParameter("dimensionName");
+                    String description = request.getParameter("dimensionDescription");
 
-                String encodedRedirectId = request.getParameter("id");
-                response.sendRedirect(request.getContextPath() + "/user/subject_detail?id=" + encodedRedirectId);
-                return;
-            }
+                    Setting setting = Setting.builder()
+                            .id(UUID.randomUUID())
+                            .value(name)
+                            .description(description)
+                            .status(true)
+                            .build();
 
-            if ("addDimension".equals(action)) {
-                String name = request.getParameter("dimensionName");         // from input[name=dimensionName]
-                String description = request.getParameter("dimensionDescription");
-                String encodedSubjectId = request.getParameter("subjectId");
-                String subjectId = Encoder.decode(encodedSubjectId);
+                    settingDAO.createSettingAndAttachToSubject(setting, subjectId);
+                }
+            } else if ("editPricePackage".equals(action)) {
+                if (!"Admin".equals(userRole)) {
+                    response.sendRedirect(request.getContextPath() + "/unauthorized.jsp");
+                    return;
+                }
 
-                Setting setting = Setting.builder()
-                        .id(UUID.randomUUID())
-                        .value(name)
-                        .description(description)
-                        .status(true) // mặc định true
-                        .build();
-
-                settingDAO.createSettingAndAttachToSubject(setting, subjectId);
-
-                response.sendRedirect(request.getContextPath() + "/user/subject_detail?id=" + encodedSubjectId);
-                return;
-            }
-
-            if ("editPricePackage".equals(action)) {
                 UUID id = UUID.fromString(request.getParameter("packageId"));
-                String courseId = request.getParameter("courseId");
                 String title = request.getParameter("packageName");
                 int duration = Integer.parseInt(request.getParameter("packageDuration"));
                 int price = Integer.parseInt(request.getParameter("packagePrice"));
@@ -147,8 +153,6 @@ public class SubjectDetailController extends HttpServlet {
                 if (checkPrice != null) {
                     request.setAttribute("message", checkPrice);
                     request.setAttribute("showModal", "edit");
-                    doGet(request, response); // render lại trang với message
-                    return;
                 }
 
                 PricePackage pkg = PricePackage.builder()
@@ -163,23 +167,26 @@ public class SubjectDetailController extends HttpServlet {
                         .build();
 
                 pricePackageDAO.update(pkg);
-
-                response.sendRedirect(request.getContextPath() + "/user/subject_detail?id=" + request.getParameter("id"));
-                return;
+            } else if ("updateOverview".equals(action)) {
+                if (encodedSubjectId != null) {
+                    String description = request.getParameter("description");
+                    boolean published = Boolean.parseBoolean(request.getParameter("subjectStatus"));
+                    String courseId1 = request.getParameter("courseId"); // Đã là UUID thật
+                    courseDAO.updateCourseOverview(courseId1, description, published);
+                }
             }
 
-            if (deleteType != null && deleteId != null && encodedId != null) {
-                String subjectId = Encoder.decode(encodedId);
-
+            // Delete logic - không phụ thuộc action nữa
+            String deleteType = request.getParameter("deleteType");
+            String deleteId = request.getParameter("deleteId");
+            if (deleteType != null && deleteId != null && encodedSubjectId != null && "Admin".equals(userRole)) {
+                String subjectId = Encoder.decode(encodedSubjectId);
                 switch (deleteType) {
                     case "dimension" ->
                         settingDAO.deleteSubjectDimension(deleteId, subjectId);
                     case "pricePackage" ->
                         pricePackageDAO.deleteById(deleteId);
                 }
-
-                response.sendRedirect(request.getContextPath() + "/user/subject_detail?id=" + encodedId);
-                return;
             }
 
         } catch (Exception e) {
@@ -187,22 +194,29 @@ public class SubjectDetailController extends HttpServlet {
             request.setAttribute("message", "Action failed: " + e.getMessage());
         }
 
-        // fallback
-        String fallbackId = request.getParameter("id") != null
-                ? request.getParameter("id")
-                : request.getParameter("subjectId");
-
-        response.sendRedirect(request.getContextPath() + "/user/subject_detail?id=" + fallbackId);
-
+        // fallback redirect an toàn
+        if (courseId != null) {
+            response.sendRedirect(request.getContextPath() + "/subject-detail?id=" + Encoder.encode(courseId));
+        } else {
+            response.sendRedirect(request.getContextPath() + "/subject-detail");
+        }
     }
 
-    private SubjectDetailDTO buildSubjectDetailDTO(String encodedId) throws Exception {
-        String subjectId = Encoder.decode(encodedId);
+    private SubjectDetailDTO buildSubjectDetailDTO(String encodedSubjectId, String courseIdParam) throws Exception {
+        String subjectId = Encoder.decode(encodedSubjectId);
         Subject subject = subjectDAO.getById(subjectId);
-        List<Topic> topics = topicDAO.getTopicsBySubjectId(subjectId);
+        if (subject == null) {
+            throw new Exception("Subject không tồn tại.");
+        }
+
         Course course = null;
-        if (!topics.isEmpty()) {
-            course = courseDAO.getByTopic(topics.get(0).getId().toString());
+        if (courseIdParam != null && !courseIdParam.isBlank()) {
+            course = courseDAO.getById(courseIdParam);
+        } else {
+            List<Topic> topics = topicDAO.getTopicsBySubjectId(subjectId);
+            course = !topics.isEmpty()
+                    ? courseDAO.getByTopic(topics.getFirst().getId().toString())
+                    : courseDAO.getById(subjectDAO.getCourseIdBySubjectId(subjectId));
         }
 
         String ownerName = "Unknown";
@@ -218,24 +232,21 @@ public class SubjectDetailController extends HttpServlet {
 
         String category = subjectDAO.getCategoryBySubjectId(subjectId);
         List<SubjectDimensionDTO> dimensions = settingDAO.getDimensionsBySubjectId(subjectId);
-
         List<PricePackage> packages = course != null
                 ? pricePackageDAO.getByCourseId(course.getId().toString())
                 : new ArrayList<>();
 
         for (PricePackage pkg : packages) {
-            int salePrice = pkg.getSalePrice(); // đây là % đã lưu
-            int price = pkg.getPrice();
-            int finalPrice = price - (price * salePrice / 100);
-            pkg.setSalePrice(finalPrice); // hoặc set vào field phụ nếu có
+            int discount = pkg.getSalePrice();
+            int original = pkg.getPrice();
+            int finalPrice = original - (original * discount / 100);
+            pkg.setSalePrice(finalPrice); // override for display
         }
 
-        String courseId = course != null ? course.getId().toString() : null;
-
         return SubjectDetailDTO.builder()
-                .id(Encoder.encode(subject.getId().toString()))
+                .id(encodedSubjectId)
                 .name(subject.getName())
-                .thumbnailUrl(subject.getThumbnailURL())
+                .thumbnailUrl(course.getThumbnailUrl())
                 .featured(subject.isFeatureFlag())
                 .category(category)
                 .description(course != null ? course.getDescription() : "")
@@ -243,7 +254,7 @@ public class SubjectDetailController extends HttpServlet {
                 .owner(ownerName)
                 .dimensions(dimensions)
                 .pricePackages(packages)
-                .courseId(courseId)
+                .courseId(course != null ? course.getId().toString() : null)
                 .build();
     }
 }

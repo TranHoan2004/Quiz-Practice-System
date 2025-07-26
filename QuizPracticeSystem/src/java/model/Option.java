@@ -22,4 +22,9 @@ public class Option {
     private boolean isTrue;
     private String explanation;
     private String questionId;
+    
+    // THÊM PHƯƠNG THỨC NÀY VÀO
+    public boolean getIsTrue() {
+        return this.isTrue;
+    }
 }

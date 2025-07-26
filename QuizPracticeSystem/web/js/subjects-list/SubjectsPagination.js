@@ -5,8 +5,6 @@
 export function renderSubjects() {
     subjects.sort((a, b) => (b.updatedDate || '').localeCompare(a.updatedDate || ''));
 
-    console.log(subjects);
-
     const list = document.getElementById('subjectList');
     list.innerHTML = '';
 
@@ -127,7 +125,6 @@ export function renderFeaturedSubjects() {
  * @throws {Error} Nếu không có dữ liệu môn học.
  */
 export function assignSubjects(data) {
-    console.log('subjects in assignSubjects: ', data[0].subjects);
     const d = data[0].subjects;
     if (!d)
         throw new Error("There is no subjects like your description");
@@ -154,7 +151,7 @@ export function assignSubjects(data) {
  */
 export async function openOtherPages() {
     try {
-        const path = `${window.contextPath}/user/subject_list?page=${currentPage}&size=${numberItemsPerPage}`;
+        const path = `${window.contextPath}/subject-list?page=${currentPage}&size=${numberItemsPerPage}`;
         const response = await fetch(path, {method: 'GET', headers: {'X-Source': 'pagination'}});
         const data = await response.json();
         assignSubjects(data);
@@ -167,10 +164,16 @@ export async function openOtherPages() {
 }
 
 let selectedSubjectId = null;
+const subjectRegisterModal = new bootstrap.Modal(document.getElementById('subjectRegisterModal'));
 
+/**
+ * Hiển thị modal đăng ký môn học với các gói giá khác nhau.
+ * Tác giả: HoanTX
+ *
+ * @param {number|string} subjectId - ID của môn học được chọn để đăng ký.
+ */
 window.openRegisterModal = (subjectId) => {
     selectedSubjectId = subjectId;
-    const subjectRegisterModal = new bootstrap.Modal(document.getElementById('subjectRegisterModal'));
     const userInfoNotice = document.getElementById('userInfoNotice');
     userInfoNotice.classList.add('d-none');
 
@@ -180,7 +183,6 @@ window.openRegisterModal = (subjectId) => {
     const selection = document.getElementById('registerPackageSelect')
     const subject = subjects.find(subject => subject.id === subjectId);
     if (Object.keys(subject.pricePackage).length > 0) {
-        console.log(subject.pricePackage.Bronze === 'undefined' || subject.pricePackage.Bronze === 0 ? '' : `<option>Bronze - ${subject.pricePackage.Bronze}đ</option>`)
         selection.innerHTML += `
          ${subject.pricePackage.Bronze === 'undefined' || subject.pricePackage.Bronze === 0 ? '' : `<option value="${subject.pricePackage.Bronze}" data-type="Bronze">Bronze - ${subject.pricePackage.Bronze}đ</option>`}
          ${subject.pricePackage.Silver === 'undefined' || subject.pricePackage.Silver === 0 ? '' : `<option value="${subject.pricePackage.Silver}" data-type="Silver">Silver - ${subject.pricePackage.Silver}đ</option>`}
@@ -189,6 +191,14 @@ window.openRegisterModal = (subjectId) => {
     }
 }
 
+/**
+ * Xử lý sự kiện submit form đăng ký môn học.
+ * Tác giả: HoanTX
+ *
+ * Gửi thông tin người dùng và gói đăng ký đến server.
+ *
+ * @param {SubmitEvent} e - Sự kiện submit form.
+ */
 document.getElementById('subjectRegisterForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const pricePackage = document.getElementById('registerPackageSelect').value;
@@ -198,10 +208,9 @@ document.getElementById('subjectRegisterForm').addEventListener('submit', async 
     const gender = document.getElementById('gender').value;
     const selectedOption = document.querySelector('#registerPackageSelect option:checked');
     const pricePackageName = selectedOption?.dataset.type;
-    console.log(pricePackageName)
 
     try {
-        const response = await fetch(`${window.contextPath}/user/subject_list`, {
+        const response = await fetch(`${window.contextPath}/subject-list`, {
             method: 'POST',
             headers: {
                 'X-Source': 'register',
@@ -217,8 +226,15 @@ document.getElementById('subjectRegisterForm').addEventListener('submit', async 
                 pricePackageName
             })
         })
-        const data = await response.json();
-        console.log(data);
+        subjectRegisterModal.hide();
+        if (response.status === 200) {
+            showNotification('Register successfully! Please check your email');
+        } else {
+            const data = await response.text();
+            const parsed = JSON.parse(data);
+            const message = parsed[0];
+            showNotification(message, 'not success');
+        }
     } catch (e) {
         showNotification('There is an error happening', 'not success')
     }

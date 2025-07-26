@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 import utils.Encoder;
 
-@WebServlet(name = "LessonDetailController", urlPatterns = {"/user/subject_lesson/lesson_detail"})
+@WebServlet(name = "LessonDetailController", urlPatterns = {"/lesson-detail"})
 public class LessonDetailController extends HttpServlet {
 
     TopicDAO topicDAO = new TopicDAO();
@@ -63,7 +63,7 @@ public class LessonDetailController extends HttpServlet {
 
             } else {
                 // === ADD MODE ===
-                int nextOrder = lessonDAO.countLessonsByCourse(courseId) + 1;
+                int nextOrder = lessonDAO.countByCourseId(courseId) + 1;
                 dto.setOrder(nextOrder);
                 dto.setActive(true);
 
@@ -150,18 +150,18 @@ public class LessonDetailController extends HttpServlet {
                 }
             }
 
-            response.sendRedirect(request.getContextPath() + "/user/subject_lesson?id=" + courseId);
+            response.sendRedirect(request.getContextPath() + "/subject-lesson?id=" + courseId);
 
         } catch (Exception e) {
             e.printStackTrace();
             String errorMessage = "Đã xảy ra lỗi khi xử lý bài học. Vui lòng thử lại.";
 
             if (lessonId == null || lessonId.isEmpty()) {
-                response.sendRedirect(request.getContextPath() + "/user/subject_lesson/lesson_detail?courseId="
+                response.sendRedirect(request.getContextPath() + "/lesson-detail?courseId="
                         + courseId + "&error=" + java.net.URLEncoder.encode(errorMessage, "UTF-8"));
             } else {
                 String encodedLessonId = Encoder.encode(lessonId);
-                response.sendRedirect(request.getContextPath() + "/user/subject_lesson/lesson_detail?lessonId="
+                response.sendRedirect(request.getContextPath() + "/lesson-detail?lessonId="
                         + encodedLessonId + "&error=" + java.net.URLEncoder.encode(errorMessage, "UTF-8"));
             }
         }

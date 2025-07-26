@@ -43,7 +43,7 @@ public class QuizDetailsOverview extends HttpServlet {
             request.setAttribute("quizTypeList", quizTypeList);
             request.setAttribute("subjectList", subjectList);
             request.setAttribute("quizLevelList", quizLevelList);
-            request.getRequestDispatcher("/jsp/course-features/quiz_detail_overview.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/test-content-features/quiz_detail_overview.jsp").forward(request, response);
         } catch (Exception ex) {
             Logger.getLogger(QuizDetailsOverview.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -120,7 +120,7 @@ public class QuizDetailsOverview extends HttpServlet {
 
             if (!errors.isEmpty()) {
                 request.setAttribute("errors", errors);
-                request.getRequestDispatcher("/jsp/course-features/quiz_detail_overview.jsp").forward(request, response);
+                request.getRequestDispatcher("/jsp/test-content-features/quiz_detail_overview.jsp").forward(request, response);
                 return;
             }
 
@@ -137,12 +137,12 @@ public class QuizDetailsOverview extends HttpServlet {
             quizDao.updateBasicInfoOfQuiz(quiz);
 
             request.setAttribute("success", "Cập nhập thành công");
-            request.getRequestDispatcher("/jsp/course-features/quiz_detail_overview.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/test-content-features/quiz_detail_overview.jsp").forward(request, response);
 
         } catch (Exception ex) {
             Logger.getLogger(QuizDetailsOverview.class.getName()).log(Level.SEVERE, null, ex);
             request.setAttribute("errors", errors);
-            request.getRequestDispatcher("/jsp/course-features/quiz_detail_overview.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/test-content-features/quiz_detail_overview.jsp").forward(request, response);
         }
     }
 

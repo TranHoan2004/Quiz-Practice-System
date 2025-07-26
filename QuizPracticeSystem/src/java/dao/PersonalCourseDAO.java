@@ -1,6 +1,6 @@
 package dao;
 
-import dto.StasusPersonalCourseDTO;
+import dto.StatusPersonalCourseDTO;
 import model.PersonalCourse;
 import enumerate.PersonalCourseStatus;
 
@@ -30,9 +30,6 @@ public class PersonalCourseDAO extends DBContext {
              var pre = connection.prepareStatement(sql);
              var rs = pre.executeQuery()) {
             query(list, rs);
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return list;
     }
@@ -55,7 +52,7 @@ public class PersonalCourseDAO extends DBContext {
         return getData(id, list, sql);
     }
 
-    public List<PersonalCourse> getTopCoursePurchases(int limit) throws Exception {
+    public List<PersonalCourse> getTopCoursePurchases(int limit) {
         List<PersonalCourse> list = new ArrayList<>();
         var sql = """
                 SELECT course_id, COUNT(*) AS total_purchases
@@ -81,7 +78,7 @@ public class PersonalCourseDAO extends DBContext {
         return list;
     }
 
-    public PersonalCourse getAllByAccountAndCourse(String accountId, String courseId) throws Exception {
+    public PersonalCourse getByAccountAndCourse(String accountId, String courseId) throws Exception {
         var pc = PersonalCourse.builder().build();
         var sql = """
                 SELECT * FROM `swp391`.personalcourse p
@@ -103,9 +100,6 @@ public class PersonalCourseDAO extends DBContext {
                             .build();
                 }
             }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return pc;
     }
@@ -120,9 +114,6 @@ public class PersonalCourseDAO extends DBContext {
             ps.setString(1, courseID);
             ps.setString(2, accountID);
             ps.executeUpdate();
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
     }
 
@@ -135,9 +126,6 @@ public class PersonalCourseDAO extends DBContext {
              var ps = connection.prepareStatement(sql)) {
             ps.setString(1, id);
             ps.executeUpdate();
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
     }
 
@@ -156,9 +144,6 @@ public class PersonalCourseDAO extends DBContext {
             ps.setInt(6, pc.getProgress());
             ps.setString(7, pc.getStatus().toString());
             ps.executeUpdate();
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
     }
 
@@ -180,7 +165,7 @@ public class PersonalCourseDAO extends DBContext {
     }
 
     public int getCountPersonalCourse(String startDate, String endDate) {
-        String sql = "SELECT COUNT(*) FROM `swp391`.personalcourse WHERE enroll_date BETWEEN ? AND ?";
+        var sql = "SELECT COUNT(*) FROM `swp391`.personalcourse WHERE enroll_date BETWEEN ? AND ?";
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             ps.setString(1, startDate);
             ps.setString(2, endDate);
@@ -219,6 +204,23 @@ public class PersonalCourseDAO extends DBContext {
         return 0;
     }
 
+    public List<StatusPersonalCourseDTO> getStatus() throws Exception {
+        List<StatusPersonalCourseDTO> list = new ArrayList<>();
+
+        var sql = "SELECT DISTINCT status FROM `swp391`.personalcourse WHERE status IS NOT NULL";
+
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
+            try (var rs = pre.executeQuery()) {
+                while (rs.next()) {
+                    list.add(StatusPersonalCourseDTO.builder()
+                            .status(rs.getString("status"))
+                            .build());
+                }
+            }
+        }
+        return list;
+    }
+
     private void query(List<PersonalCourse> list, ResultSet rs) throws SQLException {
         while (rs.next()) {
             var c = PersonalCourse.builder()
@@ -243,32 +245,7 @@ public class PersonalCourseDAO extends DBContext {
             try (var rs = ps.executeQuery()) {
                 query(list, rs);
             }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return list;
     }
-
-    public List<StasusPersonalCourseDTO> getStatus() throws Exception {
-        List<StasusPersonalCourseDTO> list = new ArrayList<>();
-
-        var sql = "SELECT DISTINCT status FROM `swp391`.personalcourse WHERE status IS NOT NULL";
-
-        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
-            try (var rs = pre.executeQuery()) {
-                while (rs.next()) {
-                    list.add(StasusPersonalCourseDTO.builder()
-                            .status(rs.getString("status"))
-                            .build());
-                }
-            }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
-        }
-
-        return list;
-    }
-
 }

@@ -60,24 +60,25 @@ public class PracticeListController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (req.getHeader("X-Source") != null) {
-            logger.log(Level.INFO, "header: {0}", req.getHeader("X-Source"));
+            System.out.println("Header: " + req.getHeader("X-Source"));
             Map<String, String> mapper = new HashMap<>();
             mapper.put("main_title", "Practice");
             mapper.put("items", "Practices List");
             sendData(resp, mapper);
         } else {
-            String message = "";
-            String keyword = req.getParameter("keyword");
-            String filter = req.getParameter("filter");
+            var message = "";
+            var keyword = req.getParameter("keyword");
+            var filter = req.getParameter("filter");
             try {
-                Account account = (Account) req.getSession().getAttribute("currentUser");
-                List<PersonalQuiz> quizz = pDAO.getAllByAccount(account == null ? "b283bfb8-397a-11f0-84a1-088fc33f56c7" : account.getId().toString());
-                List<PracticeExam> exams = getPracticesList(quizz);
-                if (filter == null && keyword == null) {
-                    renderExamsPagination(req, exams);
-                } else {
-                    renderExamsPagination(req, handleSearchAndFilter(exams, keyword, filter));
-                }
+                var account = (Account) req.getSession().getAttribute("currentUser");
+                System.out.println(account == null ? "Account is null" : "Account not null");
+                List<PersonalQuiz> quiz = pDAO.getAllByAccount(account == null ? "b283bfb8-397a-11f0-84a1-088fc33f56c7" : account.getId().toString());
+                quiz.forEach(q -> {
+                    System.out.println("Quiz of current user: " + q.toString());
+                });
+                List<PracticeExam> exams = getPracticesList(quiz);
+                List<PracticeExam> param = (filter == null && keyword == null) ? exams : handleSearchAndFilter(exams, keyword, filter);
+                renderExamsPagination(req, param);
                 req.setAttribute("subjects", sDAO.getAllSubjects());
             } catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);
@@ -101,15 +102,19 @@ public class PracticeListController extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Map<String, Object> response = hrb.getDataFromRequest(req);
-        String id = (String) response.get("id");
+        var id = (String) response.get("id");
         try {
+            System.out.println("Personal Quiz will be deleted: " + Encoder.decode(id));
+            if (pDAO.getById(Encoder.decode(id)) == null) {
+                throw new Exception("This quiz is not existing");
+            }
             pDAO.deleteById(Encoder.decode(id));
             resp.setStatus(200);
             resp.getWriter().println("OK");
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().println("Bad request");
+            resp.getWriter().println(e.getMessage());
         }
     }
 
@@ -123,11 +128,11 @@ public class PracticeListController extends HttpServlet {
      * @author HoanTX
      */
     private void renderExamsPagination(HttpServletRequest request, List<PracticeExam> exams) {
-        String page = request.getParameter("page");
-        int currentPage = (page == null ? 1 : Integer.parseInt(page));
+        var page = request.getParameter("page");
+        var currentPage = (page == null ? 1 : Integer.parseInt(page));
 
-        int startIndex = (currentPage - 1) * 10;
-        int endIndex = Math.min(exams.size(), startIndex + 10);
+        var startIndex = (currentPage - 1) * 10;
+        var endIndex = Math.min(exams.size(), startIndex + 10);
 
         request.setAttribute("exams", exams.subList(startIndex, endIndex)); // Dữ liệu chính
         request.setAttribute("currentIndex", currentPage); // Trang hiện tại
@@ -147,9 +152,12 @@ public class PracticeListController extends HttpServlet {
      */
     private List<PracticeExam> getPracticesList(List<PersonalQuiz> quizzes) throws Exception {
         List<PracticeExam> exams = new ArrayList<>();
-        for (PersonalQuiz quiz : quizzes) {
-            Quiz q = qDAO.getById(quiz.getQuizId());
-            Subject s = sDAO.getById(q.getSubjectId());
+        for (var quiz : quizzes) {
+            var q = qDAO.getById(quiz.getQuizId());
+            System.out.println("Quiz of this id " + q);
+            var s = sDAO.getById(q.getSubjectId());
+            System.out.println("Subject of this personal quiz: " + s.toString());
+            System.out.println();
             exams.add(PracticeExam.builder()
                     .id(Encoder.encode(quiz.getId().toString()))
                     .subjectName(s.getName())
@@ -175,6 +183,9 @@ public class PracticeListController extends HttpServlet {
      */
     private String getDomains(String id) throws Exception {
         List<String> domains = stDAO.getDimensionBySubject(id);
+        domains.forEach(domain -> {
+            System.out.println("Domain of subjects: " + domain);
+        });
         return String.join(", ", domains);
     }
 
@@ -187,8 +198,8 @@ public class PracticeListController extends HttpServlet {
      * @author HoanTX
      */
     private String getDuration(int numberOfQuestions) {
-        Duration d = Duration.ofSeconds((numberOfQuestions * 90L));
-        LocalTime time = LocalTime.MIDNIGHT.plus(d);
+        var d = Duration.ofSeconds((numberOfQuestions * 90L));
+        var time = LocalTime.MIDNIGHT.plus(d);
         return time.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 
@@ -209,7 +220,7 @@ public class PracticeListController extends HttpServlet {
         logger.info("handling search and filter: " + keyword + " " + filter);
         List<PracticeExam> results = new ArrayList<>();
         if (keyword != null) {
-            for (PracticeExam exam : exams) {
+            for (var exam : exams) {
                 if ((exam.getExamName() != null && exam.getExamName().toLowerCase().contains(keyword))
                         || (exam.getSubjectName() != null && exam.getSubjectName().toLowerCase().contains(keyword))
                         || (exam.getMoreInformation() != null && exam.getMoreInformation().toLowerCase().contains(keyword))
@@ -222,7 +233,7 @@ public class PracticeListController extends HttpServlet {
             }
         }
         if (filter != null) {
-            for (PracticeExam exam : exams) {
+            for (var exam : exams) {
                 if (exam.getSubjectName().toLowerCase().equals(filter)) {
                     results.add(exam);
                 }
@@ -235,13 +246,13 @@ public class PracticeListController extends HttpServlet {
      * <h4>Gửi dữ liệu JSON phản hồi cho client</h4>
      * Dùng Gson để chuyển đổi dữ liệu thành JSON và gửi về client với mã trạng thái HTTP.
      *
-     * @param res    Đối tượng phản hồi HTTP
-     * @param obj    Các đối tượng cần serialize và gửi dưới dạng JSON
+     * @param res Đối tượng phản hồi HTTP
+     * @param obj Các đối tượng cần serialize và gửi dưới dạng JSON
      * @throws IOException Nếu xảy ra lỗi khi ghi dữ liệu ra response stream
      */
     private void sendData(HttpServletResponse res, Object... obj) throws IOException {
         res.setContentType("application/json");
-        try (PrintWriter out = res.getWriter()) {
+        try (var out = res.getWriter()) {
             var gson = new Gson();
             res.setStatus(HttpServletResponse.SC_OK);
             out.println(gson.toJson(obj));

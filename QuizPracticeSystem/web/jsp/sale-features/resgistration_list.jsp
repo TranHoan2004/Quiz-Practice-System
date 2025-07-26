@@ -6,6 +6,17 @@
     <head>
         <title>Registration Management</title>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/resgistration_list.css">
+        <link href="${pageContext.request.contextPath}/lib/animate/animate.min.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+              integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+              crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+        <!-- Customized Bootstrap Stylesheet -->
+        <link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/css/header.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/css/post-details.css" rel="stylesheet">
+        <link href="${pageContext.request.contextPath}/css/questions-list.css" rel="stylesheet">
         <style>
             .date-picker {
                 padding: 8px;
@@ -36,12 +47,13 @@
         </script>
     </head>
     <body>
+        <jsp:include page="../../component/navbar.jsp"/>
         <div class="container">
             <div class="header">
                 <h2>Registration Management</h2>
                 <a href="#" class="add-new">Add New Registration</a>
             </div>
-            <form action="${pageContext.request.contextPath}/resgistrationList" method="get">
+            <form action="${pageContext.request.contextPath}/registration-list" method="get">
                 <div class="filter-row">
                     <div class="filter-group">
                         <label>SELECT SUBJECTS</label>
@@ -128,17 +140,23 @@
                 <div class="pagination">
                     <%-- ================= LOGIC ĐÃ SỬA ================= --%>
                     <c:if test="${currentPage > 1}">
-                        <a href="${pageContext.request.contextPath}/resgistrationList?page=${currentPage - 1}&subjectId=${param.subjectId}&email=${param.email}&status=${param.status}&validFrom=${param.validFrom}&validTo=${param.validTo}&numberOfLine=${param.numberOfLine}<c:forEach var='col' items='${selectedColumns}'>&columns=${col}</c:forEach>">Previous</a>
+                        <a href="${pageContext.request.contextPath}/registration-list?page=${currentPage - 1}&subjectId=${param.subjectId}&email=${param.email}&status=${param.status}&validFrom=${param.validFrom}&validTo=${param.validTo}&numberOfLine=${param.numberOfLine}<c:forEach var='col' items='${selectedColumns}'>&columns=${col}</c:forEach>">Previous</a>
                     </c:if>
                     <c:forEach var="i" begin="1" end="${endPage}">
-                        <a href="${pageContext.request.contextPath}/resgistrationList?page=${i}&subjectId=${param.subjectId}&email=${param.email}&status=${param.status}&validFrom=${param.validFrom}&validTo=${param.validTo}&numberOfLine=${param.numberOfLine}<c:forEach var='col' items='${selectedColumns}'>&columns=${col}</c:forEach>" ${i == currentPage ? 'class="active"' : ''}>${i}</a>
+                        <a href="${pageContext.request.contextPath}/registration-list?page=${i}&subjectId=${param.subjectId}&email=${param.email}&status=${param.status}&validFrom=${param.validFrom}&validTo=${param.validTo}&numberOfLine=${param.numberOfLine}<c:forEach var='col' items='${selectedColumns}'>&columns=${col}</c:forEach>" ${i == currentPage ? 'class="active"' : ''}>${i}</a>
                     </c:forEach>
                     <c:if test="${currentPage < endPage}">
-                        <a href="${pageContext.request.contextPath}/resgistrationList?page=${currentPage + 1}&subjectId=${param.subjectId}&email=${param.email}&status=${param.status}&validFrom=${param.validFrom}&validTo=${param.validTo}&numberOfLine=${param.numberOfLine}<c:forEach var='col' items='${selectedColumns}'>&columns=${col}</c:forEach>">Next</a>
+                        <a href="${pageContext.request.contextPath}/registration-list?page=${currentPage + 1}&subjectId=${param.subjectId}&email=${param.email}&status=${param.status}&validFrom=${param.validFrom}&validTo=${param.validTo}&numberOfLine=${param.numberOfLine}<c:forEach var='col' items='${selectedColumns}'>&columns=${col}</c:forEach>">Next</a>
                     </c:if>
                     <%-- ================= KẾT THÚC SỬA ================= --%>
                 </div>
             </c:if>
         </div>
+        <jsp:include page="../../component/footer.html"/>
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="js/PostDetails.js"></script>
+        <script src="js/Toast.js"></script>
     </body>
 </html>

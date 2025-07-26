@@ -17,12 +17,6 @@ import model.QuizType;
  * @author Admin
  */
 public class QuizTypeDAO extends DBContext {
-    private final Logger logger;
-
-    public QuizTypeDAO() {
-        logger = Logger.getLogger(this.getClass().getName());
-    }
-
     public List<QuizType> getAllQuizType() throws Exception {
         List<QuizType> quizTypeList = new ArrayList<>();
         var sql = "SELECT * FROM `swp391`.quiztype";
@@ -32,9 +26,6 @@ public class QuizTypeDAO extends DBContext {
             while (rs.next()) {
                 quizTypeList.add(getQuizType(rs));
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return quizTypeList;
     }

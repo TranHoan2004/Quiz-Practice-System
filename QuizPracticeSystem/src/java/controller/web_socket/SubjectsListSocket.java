@@ -24,7 +24,7 @@ public class SubjectsListSocket {
     public void onMessage(String message, Session session) {
         logger.log(Level.INFO, "Received message: {0} from session: {1}", new Object[]{message, session.getId()});
         sessions.put(message, session);
-        
+
         try {
             String response = "Processed: " + message;
             session.getBasicRemote().sendText(response); // Phải có dòng này
@@ -34,9 +34,10 @@ public class SubjectsListSocket {
     }
 
     @OnClose
-    public void onClose(Session session) {
+    public void onClose(Session session) throws IOException {
         sessions.values().removeIf(s -> s.getId().equals(session.getId()));
         logger.log(Level.INFO, "Connection closed: {0}", session.getId());
+        session.close();
     }
 
     @OnError
@@ -56,7 +57,7 @@ public class SubjectsListSocket {
             sessions.remove(userId);
             return;
         }
-        
+
         try {
             logger.log(Level.INFO, "Prompt [{0}] has been notified.", prompt);
             session.getBasicRemote().sendText(prompt);

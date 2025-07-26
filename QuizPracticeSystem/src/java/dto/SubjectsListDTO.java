@@ -13,6 +13,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 public class SubjectsListDTO {
+
     private String id;
     private String name;
     private String thumbnailURL;

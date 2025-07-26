@@ -75,7 +75,7 @@ public class UserController extends HttpServlet {
         var contentHeader = request.getHeader("Content");
         try {
             if (contentHeader != null) {
-                logger.log(Level.INFO, "Header: {0}", contentHeader);
+                System.out.println("Header: " + contentHeader);
                 switch (contentHeader) {
                     case "google_auth" ->
                         authenticateOtp(request, response);
@@ -148,7 +148,7 @@ public class UserController extends HttpServlet {
         var random = new Random();
         var randomInt = 100000 + random.nextInt(900000);
         code = String.valueOf(randomInt);
-        logger.info(code);
+        System.out.println("6-digit code: " + code);
     }
 
     /**
@@ -217,6 +217,14 @@ public class UserController extends HttpServlet {
     // </editor-fold>
 
     // <editor-fold> desc="Handle Google Authenticator method"
+    /**
+     * - Ban đầu, ứng dụng sẽ tạo 1 secret key dựa vào email mà người dùng cung cấp
+     * - Dựa vào secret key đó, 1 mã OTP nội bộ được tạo ra. Sau đó OTP này được so sánh 
+     * với OTP mà web truyền về.
+     * - Vì 2 mã OTP này được tạo ra chính xác cùng 1 thời điểm, nên chúng sẽ có chung giá trị,
+     * dẫn đến việc được xác thực thành công.
+     */
+
     /**
      * <p>
      * Xử lý yêu cầu tạo mã QR cho Google Authenticator dựa trên email người
@@ -308,8 +316,8 @@ public class UserController extends HttpServlet {
         TokenUtils.setToken(UUID.randomUUID().toString(), 5 * 60 * 1000); // 5-minute expiration
         token = TokenUtils.getToken();
         logger.info("Received Magic Link: " + token);
-//        var link = "http://localhost:8080/qps/user?token=" + token;
-//        sendEmail(email, acc.getFullName(), "Đây là đường dẫn xác thực. Hãy nhấn vào <a href='" + link + "'>đường dẫn</a>  để xác minh tài khoản của bạn");
+        var link = "http://localhost:8080/qps/user?token=" + token;
+        sendEmail(email, acc.getFullName(), "Đây là đường dẫn xác thực. Hãy nhấn vào <a href='" + link + "'>đường dẫn</a>  để xác minh tài khoản của bạn");
         resp.setStatus(HttpServletResponse.SC_OK);
         resp.getWriter().println("Magic link sent to your email.");
     }
@@ -336,6 +344,6 @@ public class UserController extends HttpServlet {
             resp.getWriter().println("This email does not exist in the system.");
         }
         acc = aDAO.getAccountByEmail(email);
-        logger.log(Level.INFO, "Email: {0}", email);
+        System.out.println("Account that fits to " + email + ": " + acc);
     }
 }

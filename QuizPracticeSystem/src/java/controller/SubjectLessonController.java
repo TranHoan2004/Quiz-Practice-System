@@ -20,7 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import utils.Encoder;
 
-@WebServlet(name = "LessonListController", urlPatterns = {"/user/subject_lesson"})
+@WebServlet(name = "LessonListController", urlPatterns = {"/subject-lesson"})
 public class SubjectLessonController extends HttpServlet {
 
     private final LessonDAO lessonDAO;

@@ -1,7 +1,5 @@
 package utils;
 
-import lombok.Getter;
-
 public class TokenUtils {
     private static String token;
     private static long expirationTime;

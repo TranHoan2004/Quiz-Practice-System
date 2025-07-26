@@ -111,7 +111,7 @@ public class BlogDAO extends DBContext {
     }
 
     public boolean insertBlog(Blog blog) {
-        String sql = """
+        var sql = """
                 INSERT INTO `swp391`.blog (
                     id, account_id, title, content, views,
                     category, brief_info, status,
@@ -126,12 +126,11 @@ public class BlogDAO extends DBContext {
             ps.setString(4, blog.getContent());
             ps.setInt(5, blog.getViews());
             ps.setString(6, blog.getCategory().toString());
-            ps.setString(7, blog.getThumbnailUrl());
-            ps.setString(8, blog.getBriefInfo());
-            ps.setBoolean(9, blog.isStatus());
-            ps.setObject(10, blog.getUpdatedDate());
-            ps.setObject(11, blog.getCreatedDate());
-            ps.setBoolean(12, blog.isFlagFeature());
+            ps.setString(7, blog.getBriefInfo());
+            ps.setBoolean(8, blog.isStatus());
+            ps.setObject(9, blog.getUpdatedDate());
+            ps.setObject(10, blog.getCreatedDate());
+            ps.setBoolean(11, blog.isFlagFeature());
 
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0;
@@ -142,7 +141,7 @@ public class BlogDAO extends DBContext {
     }
 
     public boolean updateBlog(Blog blog) {
-        String sql = """
+        var sql = """
                 UPDATE `swp391`.blog SET
                     title = ?, content = ?, views = ?,
                     category = ?, brief_info = ?, status = ?,
@@ -169,7 +168,11 @@ public class BlogDAO extends DBContext {
     }
 
     public List<Blog> getHottestBlogs(int limit) {
-        var sql = "SELECT * FROM `swp391`.blog ORDER BY views DESC LIMIT ?";
+        var sql = """
+                  SELECT * FROM `swp391`.blog
+                  WHERE status = true and flag_feature = true
+                  ORDER BY created_date DESC LIMIT ?
+                  """;
         try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setInt(1, limit);
             try (var rs = ps.executeQuery()) {
@@ -183,7 +186,11 @@ public class BlogDAO extends DBContext {
 
     // Get latest blogs from DB
     public List<Blog> getLatestBlogs(int limit) {
-        var sql = "SELECT * FROM `swp391`.blog ORDER BY created_date DESC LIMIT ?";
+        var sql = """
+                  SELECT * FROM `swp391`.blog
+                  WHERE status = true
+                  ORDER BY created_date DESC LIMIT ?
+                  """;
         try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setInt(1, limit);
             try (var rs = ps.executeQuery()) {
@@ -201,7 +208,6 @@ public class BlogDAO extends DBContext {
                 SELECT DISTINCT s.id, s.value
                 FROM `swp391`.settingtype st
                 JOIN `swp391`.setting s ON st.id = s.setting_type_id
-                JOIN `swp391`.blog b ON s.id = b.category
                 WHERE st.name = ?
                 """;
 

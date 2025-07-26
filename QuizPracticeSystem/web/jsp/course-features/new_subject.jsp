@@ -48,7 +48,7 @@
                 </c:if>
             </div>
             <div class="modal-dialog modal-xl modal-dialog-centered mx-auto">
-                <form class="centered-form" method="post" action="${pageContext.request.contextPath}/user/new_subject">
+                <form class="centered-form" method="post" action="${pageContext.request.contextPath}/new-subject" enctype="multipart/form-data">
 
                     <div class="modal-content">
                         <div class="modal-body">
@@ -60,7 +60,7 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label">Thumbnail URL</label>
-                                    <input type="text" class="form-control" name="thumbnailURL" placeholder="Enter Thumbnail URL..." required>
+                                    <input type="file" class="form-control" name="thumbnailURL" placeholder="Enter Thumbnail URL..." accept=".jpg,.jpeg,.png,.gif,.webp,.mp4,.mov,.avi,.mkv" required>
                                 </div>
 
                                 <div class="col-md-6">
@@ -113,7 +113,7 @@
                         </div>
 
                         <div class="modal-footer border-0">
-                            <a href="${pageContext.request.contextPath}/user/subject_list" class="btn btn-outline-secondary">Back</a>
+                            <a href="${pageContext.request.contextPath}/subject-list" class="btn btn-outline-secondary">Back</a>
                             <button type="submit" class="btn btn-primary">Add Subject</button>
                         </div>
                     </div>
@@ -134,8 +134,24 @@
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
         <script src="${pageContext.request.contextPath}/js/Notification.js"></script>
         <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const fileInput = document.querySelector('input[name="thumbnailURL"]');
+                const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'mp4', 'mov', 'avi', 'mkv'];
 
+                fileInput.addEventListener('change', function () {
+                    const file = this.files[0];
+                    if (!file)
+                        return;
 
+                    const fileName = file.name.toLowerCase();
+                    const extension = fileName.substring(fileName.lastIndexOf('.') + 1);
+
+                    if (!validExtensions.includes(extension)) {
+                        alert('Chỉ cho phép các định dạng ảnh/video: ' + validExtensions.join(', '));
+                        this.value = ''; // Clear file input
+                    }
+                });
+            });
         </script>
     </body>
 

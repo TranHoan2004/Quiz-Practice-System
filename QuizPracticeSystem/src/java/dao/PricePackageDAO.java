@@ -29,9 +29,6 @@ public class PricePackageDAO extends DBContext {
             while (rs.next()) {
                 list.add(getEntity(rs));
             }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return list;
     }
@@ -49,9 +46,6 @@ public class PricePackageDAO extends DBContext {
                     pp = getEntity(rs);
                 }
             }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return pp;
     }
@@ -64,9 +58,6 @@ public class PricePackageDAO extends DBContext {
         try (var connection = getConnection(); var ps = connection.prepareStatement(sql)) {
             ps.setString(1, id);
             ps.executeUpdate();
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
     }
 
@@ -85,9 +76,6 @@ public class PricePackageDAO extends DBContext {
             ps.setBoolean(7, pp.isStatus());
             ps.setString(8, pp.getDescription());
             ps.executeUpdate();
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
     }
 
@@ -104,9 +92,6 @@ public class PricePackageDAO extends DBContext {
                     list.add(getEntity(rs));
                 }
             }
-        } catch (Exception e) {
-            log.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return list;
     }

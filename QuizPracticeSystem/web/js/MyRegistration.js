@@ -34,31 +34,39 @@ document.querySelectorAll('.record').forEach(function (row) {
  * Gửi yêu cầu hủy đăng ký khóa học theo ID đến server.
  * @param {string} id - Mã ID của khóa học cần hủy đăng ký.
  */
-function updateCourse(id) {
-    fetch(`${window.contextPath}/user/course`, {
-        method: 'PUT',
+window.updateCourse = (id) => {
+    fetch(`${window.contextPath}/user/registration`, {
+        method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({id: id})
     })
-            .then(response => {
-                if (!response.ok)
-                    throw new Error("Request failed");
-                return response.body;
-            })
-            .then(data => {
-                console.log(data);
-                showNotification("Cancel register successfully", "success");
-                setTimeout(() => {
-                    location.href = href;
-                }, 4500);
-            })
-            .catch(error => {
-                console.log(error);
-            });
+        .then(response => {
+            if (!response.ok)
+                throw new Error("Request failed");
+            return response.body;
+        })
+        .then(data => {
+            showNotification("Cancel register successfully", "success");
+            setTimeout(() => {
+                location.href = href;
+            }, 4500);
+        })
+        .catch(error => {
+            console.log(error);
+        });
 }
 
+/**
+ * Gửi yêu cầu HTTP GET để lấy tiêu đề từ `href` và gán tiêu đề đầu tiên vào giao diện.
+ *
+ * @async
+ * @function getHeaderTitle
+ * @throws {Error} Nếu xảy ra lỗi trong quá trình fetch hoặc parse JSON.
+ *
+ * @author HoanTX
+ */
 const getHeaderTitle = async () => {
     try {
         const response = await fetch(`${href}`, {

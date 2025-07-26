@@ -28,7 +28,7 @@
 </head>
 <body>
 <jsp:include page="../../component/spinner.html"/>
-<jsp:include page="../../component/navbar.jsp"/>
+<jsp:include page="../admin-features/admin-navbar.jsp"/>
 
 <div class="container-xxl py-5">
     <div class="container">
@@ -56,11 +56,11 @@
                     <div class="mb-3">
                         <div class="form-check form-switch mb-2">
                             <input class="form-check-input" type="checkbox" id="cb1">
-                            <label class="form-check-label hiddenItems" for="cb1" id="cb1_label">Ẩn ảnh</label>
+                            <label class="form-check-label hiddenItems" for="cb1" id="cb1_label">Hide photo</label>
                         </div>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="cb2">
-                            <label class="form-check-label hiddenItems" for="cb2" id="cb2_label">Ẩn người tạo</label>
+                            <label class="form-check-label hiddenItems" for="cb2" id="cb2_label">Hide author</label>
                         </div>
                     </div>
                     <button class="btn w-100 mb-2 editBtn"
@@ -123,7 +123,7 @@
 <div class="modal fade" id="editSliderModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
-            <form action="/updateSlider" method="POST" enctype="multipart/form-data">
+            <form id="updateSliderForm" action="/updateSlider" method="POST" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Slider</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -170,8 +170,9 @@
 <div class="modal fade" id="theatreModal" tabindex="-1">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content bg-dark bg-opacity-75 d-flex align-items-center justify-content-center border-0">
-            <img id="theatreImage" class="img-fluid rounded shadow-lg" style="max-height: 90vh;" />
-            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-4" data-bs-dismiss="modal"></button>
+            <img id="theatreImage" class="img-fluid rounded shadow-lg" style="max-height: 90vh;"/>
+            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-4"
+                    data-bs-dismiss="modal"></button>
         </div>
     </div>
 </div>
@@ -195,7 +196,7 @@
         const imageBox = document.querySelector(".image-box");
         imageBox.hidden = this.checked;
         const label = document.getElementById("cb1_label");
-        label.innerHTML = this.checked ? "Hiện ảnh" : "Ẩn ảnh";
+        label.innerHTML = this.checked ? "Show photo" : "Hide photo";
     });
 
     // Checkbox: Hiện người tạo (Author)
@@ -207,8 +208,9 @@
             authorRow.setAttribute("hidden", true);
         }
         const label = document.getElementById("cb2_label");
-        label.innerHTML = this.checked ? "Hiện người tạo" : "Ẩn người tạo";
+        label.innerHTML = this.checked ? "Hide author" : "Show author";
     });
+    const modal = new bootstrap.Modal(document.getElementById('editSliderModal'));
 
     document.getElementById('editSliderBtn').addEventListener('click', function () {
         const id = this.getAttribute('data-id');
@@ -217,19 +219,15 @@
         const status = this.getAttribute('data-status');
         const image = this.getAttribute('data-image');
 
-        // Gán vào modal form
         document.getElementById('editSliderId').value = id;
         document.getElementById('editSliderTitle').value = title;
         document.getElementById('editSliderLink').value = link;
         document.getElementById('editSliderStatus').value = status === 'true' ? 'true' : 'false';
 
-        // Gán preview ảnh
         const preview = document.getElementById('previewImage');
         preview.src = image;
         preview.style.display = 'block';
 
-        // Hiển thị modal
-        const modal = new bootstrap.Modal(document.getElementById('editSliderModal'));
         modal.show();
     });
 
@@ -253,6 +251,29 @@
 
         const modal = new bootstrap.Modal(document.getElementById('theatreModal'));
         modal.show();
+    });
+
+    document.getElementById("updateSliderForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(`${pageContext.request.contextPath}/slider`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                showNotification('Update Successfully!')
+                modal.hide();
+                setTimeout(function () {
+                    window.location.reload();
+                }, 3000)
+            }
+        } catch (error) {
+            showNotification('Error during update slider: ' + error.message, 'not success');
+        }
     });
 </script>
 </body>

@@ -17,6 +17,8 @@
               crossorigin="anonymous" referrerpolicy="no-referrer"/>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
+        <link href="${pageContext.request.contextPath}/css/homepage.css" rel="stylesheet">
+
         <link href="${pageContext.request.contextPath}/css/marketer-dashboard.css" rel="stylesheet">
     </head>
 
@@ -43,19 +45,21 @@
              data-change-revenue='${changePercentRevenue}'>
         </div>
 
+        <jsp:include page="../admin-features/admin-navbar.jsp"/>
+
         <nav class="sidebar" id="sidebarNav">
             <a class="navbar-brand px-3 mb-4 fw-bold d-flex align-items-center gap-2" href="#">
-                <i class="bi bi-bar-chart-fill"></i> Marketing
+                <i class="bi bi-bar-chart-fill"></i> Dashboard
             </a>
             <ul class="nav flex-column gap-2">
                 <li class="nav-item"><a class="nav-link active d-flex align-items-center gap-2" href="#"><i class="bi bi-clipboard-data-fill"></i> Dashboard</a>
                 </li>
                 <li class="nav-item"><a class="nav-link d-flex align-items-center gap-2"
                                         href="${pageContext.request.contextPath}/home"><i
-                    <i
+                            <i
                             class="bi bi-house"></i> Home</a>
                 </li>
-                
+
                 <c:if test="${sessionScope.userRole == 'Admin' || sessionScope.userRole == 'Marketer'}">
                     <li class="nav-item">
                         <a class="nav-link d-flex align-items-center gap-2"
@@ -64,18 +68,18 @@
                         </a>
                     </li>
                 </c:if>
-                
+
                 <c:if test="${sessionScope.userRole == 'Admin' || sessionScope.userRole == 'Marketer'}">
                     <li class="nav-item"><a class="nav-link d-flex align-items-center gap-2"
                                             href="${pageContext.request.contextPath}/jsp/marketing-features/sliders_list.jsp">
-                        <i class="bi bi-file-earmark-slides-fill"></i> Slider</a>
+                            <i class="bi bi-file-earmark-slides-fill"></i> Slider</a>
                     </li>
                 </c:if>
 
                 <c:if test="${sessionScope.userRole == 'Admin'}">
                     <li class="nav-item"><a class="nav-link d-flex align-items-center gap-2"
-                                            href="${pageContext.request.contextPath}/user/subject-list">
-                        <i class="bi bi-stack-overflow"></i> Subject List</a>
+                                            href="${pageContext.request.contextPath}/subject-list">
+                            <i class="bi bi-stack-overflow"></i> Subject List</a>
                     </li>
                 </c:if>
 
@@ -87,60 +91,38 @@
                         </a>
                     </li>
                 </c:if>
+
+                <c:if test="${sessionScope.userRole == 'Admin' || sessionScope.userRole == 'Expert'}">
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2"
+                           href="${pageContext.request.contextPath}/questionsList">
+                            <i class="bi bi-patch-question"></i>Question List
+                        </a>
+                    </li>
+                </c:if>
+
+                <c:if test="${sessionScope.userRole == 'Admin' || sessionScope.userRole == 'Expert'}">
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2"
+                           href="${pageContext.request.contextPath}/quizzeslist">
+                            <i class="bi bi-bookmark-plus"></i>Quizzes List
+                        </a>
+                    </li>
+                </c:if>
             </ul>
         </nav>
 
         <div class="main-content">
-            <!-- Header with toggle and user info -->
-            <div class="d-flex justify-content-between align-items-center bg-white shadow-sm px-4 py-3 mb-4 sticky-top"
-                 style="z-index:1020; min-height:64px;">
+            <!-- Date Filter -->
+            <div class="d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-3">
                     <button class="btn btn-outline-secondary d-lg-none" id="sidebarToggle" aria-label="Toggle sidebar"><i
                             class="bi bi-list" style="font-size:1.5rem;"></i></button>
                     <h3 class="fw-bold mb-0">Marketing Dashboard</h3>
                 </div>
-                <div class="d-flex align-items-center gap-2">
-                    <!-- Nếu đã đăng nhập -->
-                    <c:if test="${not empty sessionScope.currentUser}">
-                        <div class="logged-in">
-                            <div class="dropdown">
-                                <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle"
-                                   id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <c:choose>
-                                        <c:when test="${empty sessionScope.currentUser.imageUrl}">
-                                            <img src="${pageContext.request.contextPath}/img/default-avatar.png"
-                                                 alt="User Avatar"
-                                                 class="rounded-circle me-2" width="32" height="32">
-                                        </c:when>
-                                        <c:otherwise>
-                                            <img src="${pageContext.request.contextPath}/${sessionScope.currentUser.imageUrl}"
-                                                 alt="User Avatar"
-                                                 class="rounded-circle me-2" width="32" height="32">
-                                        </c:otherwise>
-                                    </c:choose>
 
-                                    <span class="d-none d-md-inline">${sessionScope.currentUser.fullName}</span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" href="profile.jsp"><i class="fas fa-user me-2"></i>Profile</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="my-courses.jsp"><i
-                                                class="fas fa-graduation-cap me-2"></i>My Courses</a></li>
-                                    <li>
-                                        <hr class="dropdown-divider">
-                                    </li>
-                                    <li><a class="dropdown-item" href="${pageContext.request.contextPath}/auth/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </c:if>
-                </div>
-            </div>
-            <!-- Date Filter -->
-            <div>
                 <form id="dateForm"
-                      action="${pageContext.request.contextPath}/marketer/dashboard"
+                      action="${pageContext.request.contextPath}/admin/dashboard"
                       class="d-flex gap-2 mb-3 justify-content-end align-items-center"
                       method="GET"
                       >
@@ -149,7 +131,7 @@
                 </form>
             </div>
             <!-- Grouped Statistics Cards + Order Trend Chart -->
-            <div class="row g-2 mb-3">
+            <div class="row g-2 mb-3 mt-2">
                 <div class="col-12 col-md-5">
                     <div class="row">
                         <!-- Subjects Group -->
@@ -327,17 +309,18 @@
                 </div>
 
                 <div id="samplePrompts" class="p-2">
-                    <div class="mb-2">💡 Bạn muốn hỏi gì?</div>
+                    <div class="mb-2">What would you like to ask?</div>
                     <button class="btn btn-sm btn-outline-primary d-block mb-1" onclick="handleSuggestionClick('marketer')">
-                        Môn học nào đang đóng góp doanh thu tốt nhất, và nên dùng chiến lược nào để tăng doanh thu, bán được nhiều khoá học hơn?
+                        Which courses are generating the most revenue, and what strategies should be used to boost sales and increase course enrollments?
                     </button>
-                    <button class="btn btn-sm btn-outline-primary d-block mb-1" onclick="handleSuggestionClick('re  venue')">
-                        Xu hướng đơn hàng qua thời gian đang biến động như thế nào và cần làm gì để duy trì tăng trưởng?
+                    <button class="btn btn-sm btn-outline-primary d-block mb-1" onclick="handleSuggestionClick('revenue')">
+                        How are order trends changing over time, and what should be done to maintain growth?
                     </button>
                     <button class="btn btn-sm btn-outline-primary d-block mb-1" onclick="handleSuggestionClick('course')">
-                        Người dùng mới có đang thật sự mang lại giá trị doanh thu không?
+                        Are new users actually contributing valuable revenue?
                     </button>
-                </div>  
+                </div>
+
 
             </div>
         </div>
@@ -349,7 +332,7 @@
 
         <!-- Popup chat -->
         <div class="chat-popup" id="chatPopup">
-            <div class="chat-header">💬 Miss - Your Assistant</div>
+            <div class="chat-header">Miss - Your Assistant</div>
             <div class="chat-box" id="chatBox"></div>
             <form class="chat-input" id="chatForm">
                 <input type="text" id="messageInput" placeholder="Enter your question..." required/>
@@ -365,7 +348,7 @@
         <script>
             const submitForm = () => {
                 document.getElementById("dateForm").submit();
-            }
+            };
             window.addEventListener('DOMContentLoaded', function () {
                 const startDateInput = document.getElementById('startDate');
                 const endDateInput = document.getElementById('endDate');

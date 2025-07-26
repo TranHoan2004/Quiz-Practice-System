@@ -85,7 +85,7 @@
                                 <button type="button" class="btn btn-success btn-sm w-100">
                                     <i class="bi bi-plus-circle me-1 text-white"></i> Add New
                                 </button>
-                                <button type="button" class="btn btn-info btn-sm w-100">
+                                <button type="button" class="btn btn-info btn-sm w-100" onclick="redirectToSimulationExam()">
                                     <i class="bi bi-lightning-charge-fill me-1 text-white"></i> Simulation Exam
                                 </button>
                             </div>

@@ -15,12 +15,6 @@ import java.util.logging.Logger;
 
 public class ContactDAO extends DBContext {
 
-    private final Logger logger;
-
-    public ContactDAO() {
-        logger = Logger.getLogger(this.getClass().getName());
-    }
-
     public List<Contact> getAllContacts() throws Exception {
         List<Contact> contacts = new ArrayList<>();
         var sql = "SELECT * FROM `swp391`.contact";
@@ -30,9 +24,6 @@ public class ContactDAO extends DBContext {
             while (rs.next()) {
                 contacts.add(getContact(rs));
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return contacts;
     }
@@ -47,9 +38,6 @@ public class ContactDAO extends DBContext {
                     contact = getContact(rs);
                 }
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return contact;
     }

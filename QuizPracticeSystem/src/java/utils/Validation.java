@@ -36,11 +36,8 @@ public class Validation {
         if (listPrice < 0) {
             return "List price cannot be negative.";
         }
-        if (salePrice < 0) {
-            return "Sale price cannot be negative.";
-        }
-        if (salePrice >= listPrice) {
-            return "Sale price must be less than list price.";
+        if (salePrice < 0 || salePrice > 100) {
+            return "Sale price is between 0% and 100%";
         }
         return null; 
     }

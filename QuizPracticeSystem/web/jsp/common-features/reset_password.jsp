@@ -154,7 +154,7 @@
                                                     Verify Code
                                                 </button>
                                             </div>
-                                            <div class="mt-3 text-center">
+                                            <div class="mt-3 text-center" id="previous">
                                                 <a id="resendCode"
                                                    class="link-primary text-decoration-none">
                                                     Resend Code

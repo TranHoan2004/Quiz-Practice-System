@@ -58,7 +58,7 @@ public class AddQuizController extends HttpServlet {
             request.setAttribute("levelList", levelList);
 
 
-            request.getRequestDispatcher("/jsp/course-features/add_quiz.jsp").forward(request, response);
+            request.getRequestDispatcher("jsp/test-content-features/add_quiz.jsp").forward(request, response);
         } catch (Exception e) {
             request.setAttribute("error", "Error retrieving data: " + e.getMessage());
             request.getRequestDispatcher("/error.jsp").forward(request, response);

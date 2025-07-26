@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -61,6 +62,7 @@
                             <div class="tab-pane fade show active" id="overview" role="tabpanel"
                                  aria-labelledby="overview-tab">
                                 <div class="card mb-4">
+
                                     <div class="card-header bg-primary text-white">
                                         Subject General Information
                                     </div>
@@ -68,12 +70,16 @@
                                         <div class="row">
                                             <!-- Left: Info -->
                                             <div class="col-md-8">
-                                                <form>
+                                                <form method="post" action="${pageContext.request.contextPath}/subject-detail">
+                                                    <input type="hidden" name="action" value="updateOverview">
+                                                    <input type="hidden" name="subjectId" value="${subjectDetail.id}">
+                                                    <input type="hidden" name="courseId" value="${subjectDetail.courseId}">
+
                                                     <!-- Subject Name -->
                                                     <div class="row mb-3">
                                                         <label class="col-sm-4 col-form-label">Subject Name</label>
                                                         <div class="col-sm-8">
-                                                            <input type="text" class="form-control" value="${subjectDetail.name}">
+                                                            <input type="text" class="form-control" name="subjectName" value="${subjectDetail.name}">
                                                         </div>
                                                     </div>
 
@@ -81,8 +87,9 @@
                                                     <div class="row mb-3">
                                                         <label class="col-sm-4 col-form-label">Category</label>
                                                         <div class="col-sm-8">
-                                                            <select class="form-select" title="Category" >
-                                                                <option selected>${subjectDetail.category}</option>
+                                                            <select class="form-select" name="categoryId" title="Category" >
+                                                                <option selected value="${subjectDetail.category}">${subjectDetail.category}</option>
+                                                                <!-- Có thể thêm các option động nếu cần -->
                                                             </select>
                                                         </div>
                                                     </div>
@@ -91,15 +98,39 @@
                                                     <div class="row mb-3 align-items-center">
                                                         <label class="col-sm-4 col-form-label">Featured Subject</label>
                                                         <div class="col-sm-2">
-                                                            <input class="form-check-input" type="checkbox" id="featured" 
+                                                            <input class="form-check-input" type="checkbox" id="featured"
+                                                                   name="featured"
                                                                    ${subjectDetail.featured ? "checked" : ""}>
                                                         </div>
                                                         <label class="col-sm-2 col-form-label text-end">Status</label>
-                                                        <div class="col-sm-4">
-                                                            <select class="form-select" id="subject-status" >
-                                                                <option ${subjectDetail.published ? "selected" : ""}>Published</option>
-                                                                <option ${!subjectDetail.published ? "selected" : ""}>Unpublished</option>
-                                                            </select>
+                                                        <c:if test="${sessionScope.userRole eq 'Admin'}">
+                                                            <div class="col-sm-4">
+                                                                <select class="form-select" id="subject-status" name="subjectStatus">
+                                                                    <option value="true" ${subjectDetail.published ? "selected" : ""}>Published</option>
+                                                                    <option value="false" ${!subjectDetail.published ? "selected" : ""}>Unpublished</option>
+                                                                </select>
+                                                            </div>
+                                                        </c:if>
+                                                        <c:if test="${sessionScope.userRole ne 'Admin'}">
+                                                            <div class="col-sm-4">
+                                                                <input class="form-control" disabled value="${subjectDetail.published ? 'Published' : 'Unpublished'}" />
+                                                            </div>
+                                                        </c:if>
+                                                    </div>
+
+                                                    <!-- Description -->
+                                                    <div class="row mt-4">
+                                                        <div class="col-12">
+                                                            <label class="form-label fw-bold">Description</label>
+                                                            <textarea class="form-control" name="description" rows="4">${subjectDetail.description}</textarea>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Button -->
+                                                    <div class="row mt-3">
+                                                        <div class="col-12 text-end">
+                                                            <button type="submit" class="btn btn-success me-2">Submit</button>
+                                                            <a href="${pageContext.request.contextPath}/subject-list" class="btn btn-secondary">Back</a>
                                                         </div>
                                                     </div>
                                                 </form>
@@ -109,22 +140,6 @@
                                             <div class="col-md-4 d-flex align-items-start justify-content-center">
                                                 <img src="${subjectDetail.thumbnailUrl}" alt="Subject Image" class="img-fluid rounded shadow-sm"
                                                      style="max-width: 250px;">
-                                            </div>
-                                        </div>
-
-                                        <!-- Description -->
-                                        <div class="row mt-4">
-                                            <div class="col-12">
-                                                <label class="form-label fw-bold">Description</label>
-                                                <textarea class="form-control" rows="4" >${subjectDetail.description}</textarea>
-                                            </div>
-                                        </div>
-
-                                        <!-- Button -->
-                                        <div class="row mt-3">
-                                            <div class="col-12 text-end">
-                                                <button type="submit" class="btn btn-success me-2">Submit</button>
-                                                <button type="button" class="btn btn-secondary" onclick="history.back()">Back</button>
                                             </div>
                                         </div>
                                     </div>
@@ -184,6 +199,8 @@
                                         Price Packages
                                     </div>
                                     <div class="card-body">
+                                        <input type="hidden" id="price-course-id" value="${subjectDetail.courseId}">
+                                        <input type="hidden" id="price-subject-id" value="${subjectDetail.id}">
                                         <table class="table table-bordered align-middle">
                                             <thead>
                                                 <tr>
@@ -193,7 +210,9 @@
                                                     <th>List Price</th>
                                                     <th>Sale Price</th>
                                                     <th>Status</th>
-                                                    <th>Action</th>
+                                                        <c:if test="${sessionScope.userRole eq 'Admin'}">
+                                                        <th>Action</th>
+                                                        </c:if>
                                                 </tr>
                                             </thead>
                                             <tbody id="price-table-body"></tbody>
@@ -202,7 +221,7 @@
                                                     <tr>
                                                         <td>${loop.index + 1}</td>
                                                         <td>
-                                                            <a href="${pageContext.request.contextPath}/user/subject_lesson?id=${p.courseId}" 
+                                                            <a href="${pageContext.request.contextPath}/subject-lesson?id=${p.courseId}" 
                                                                class="text-decoration-none text-primary d-block w-100 h-100">
                                                                 ${p.title}
                                                             </a>
@@ -215,37 +234,44 @@
                                                                 ${p.status ? 'Active' : 'Inactive'}
                                                             </span>
                                                         </td>
-                                                        <td>
-                                                            <button type="button"
-                                                                    class="btn btn-sm btn-outline-primary open-edit-price"
-                                                                    data-id="${p.id}"
-                                                                    data-title="${p.title}"
-                                                                    data-duration="${p.accessDuration}"
-                                                                    data-price="${p.price}"
-                                                                    data-status="${p.status}"
-                                                                    data-course="${p.courseId}"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#editPricePackageModal">
-                                                                <i class="fas fa-edit"></i> Edit
-                                                            </button>
-                                                            <button type="button"
-                                                                    class="btn btn-sm btn-outline-danger open-delete-modal"
-                                                                    data-id="${p.id}"
-                                                                    data-type="pricePackage"
-                                                                    data-subject="${subjectDetail.id}"
-                                                                    data-bs-toggle="modal"
-                                                                    data-bs-target="#confirmDeleteModal">
-                                                                <i class="fas fa-trash"></i> Delete
-                                                            </button>
-                                                        </td>
+                                                        <c:if test="${sessionScope.userRole eq 'Admin'}">
+                                                            <td>
+
+                                                                <button type="button"
+                                                                        class="btn btn-sm btn-outline-primary open-edit-price"
+                                                                        data-id="${p.id}"
+                                                                        data-title="${p.title}"
+                                                                        data-duration="${p.accessDuration}"
+                                                                        data-price="${p.price}"
+                                                                        data-status="${p.status}"
+                                                                        data-course="${p.courseId}"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#editPricePackageModal">
+                                                                    <i class="fas fa-edit"></i> Edit
+                                                                </button>
+                                                                <button type="button"
+                                                                        class="btn btn-sm btn-outline-danger open-delete-modal"
+                                                                        data-id="${p.id}"
+                                                                        data-type="pricePackage"
+                                                                        data-subject="${subjectDetail.id}"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#confirmDeleteModal">
+                                                                    <i class="fas fa-trash"></i> Delete
+                                                                </button>
+
+                                                            </td>
+                                                        </c:if>
+
                                                     </tr>
                                                 </c:forEach>
                                             </tbody>
                                         </table>
-                                        <button class="btn btn-success" data-bs-toggle="modal"
-                                                data-bs-target="#addPricePackageModal">
-                                            <i class="fas fa-plus me-1"></i>Add Price Package
-                                        </button>
+                                        <c:if test="${sessionScope.userRole eq 'Admin'}">
+                                            <button class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#addPricePackageModal">
+                                                <i class="fas fa-plus me-1"></i>Add Price Package
+                                            </button>
+                                        </c:if>
                                     </div>
                                 </div>
                             </div>
@@ -262,7 +288,13 @@
         <!-- Confirm Delete Modal -->
         <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <form method="post" class="modal-content">
+                <form method="post" class="modal-content" action="${pageContext.request.contextPath}/subject-detail">
+                    <input type="hidden" name="action" value="deleteItem" />
+                    <input type="hidden" name="courseId" value="${subjectDetail.courseId}" />
+                    <input type="hidden" name="subjectId" value="${subjectDetail.id}" />
+
+                    <input type="hidden" name="deleteId" id="modalDeleteId" />
+                    <input type="hidden" name="deleteType" id="modalDeleteType" />
                     <div class="modal-header">
                         <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Delete</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -284,8 +316,13 @@
         <!-- Edit Price Package -->
         <div class="modal fade" id="editPricePackageModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog">
+                <c:if test="${not empty message && showModal eq 'add'}">
+                    <div class="alert alert-danger" role="alert">
+                        ${message}
+                    </div>
+                </c:if>
 
-                <form class="modal-content" method="post" action="${pageContext.request.contextPath}/user/subject_detail">
+                <form class="modal-content" method="post" action="${pageContext.request.contextPath}/subject-detail">
                     <input type="hidden" name="action" value="editPricePackage">
                     <input type="hidden" name="packageId" id="editPackageId">
                     <input type="hidden" name="courseId" id="editCourseId">
@@ -296,11 +333,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <c:if test="${not empty message && showModal == 'edit'}">
-                            <div class="alert alert-danger" role="alert">
-                                ${message}
-                            </div>
-                        </c:if>
+
                         <div class="mb-3">
                             <label>Package Name</label>
                             <input type="text" class="form-control" name="packageName" id="editPackageName" readonly>
@@ -336,9 +369,9 @@
         <!-- Add Dimension Modal -->
         <div class="modal fade" id="addDimensionModal" tabindex="-1" aria-labelledby="addDimensionModalLabel" aria-hidden="true">
             <div class="modal-dialog">
-                <form class="modal-content" method="post" action="${pageContext.request.contextPath}/user/subject_detail">
+                <form class="modal-content" method="post" action="${pageContext.request.contextPath}/subject-detail">
                     <!-- Xác định action để servlet biết xử lý gì -->
-
+                    <input type="hidden" name="courseId" value="${subjectDetail.courseId}" />      
                     <input type="hidden" name="action" value="addDimension">
 
                     <!-- ID của subject (đã encode) -->
@@ -377,7 +410,7 @@
         <div class="modal fade" id="addPricePackageModal" tabindex="-1" aria-labelledby="addPricePackageModalLabel" aria-hidden="true">
             <div class="modal-dialog">
 
-                <form class="modal-content" method="post" action="${pageContext.request.contextPath}/user/subject_detail">
+                <form class="modal-content" method="post" action="${pageContext.request.contextPath}/subject-detail">
                     <input type="hidden" name="action" value="addPricePackage">
                     <input type="hidden" name="courseId" value="${subjectDetail.courseId}">
                     <input type="hidden" name="id" value="${subjectDetail.id}">
@@ -387,11 +420,13 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <c:if test="${not empty message && showModal == 'add'}">
+
+                        <c:if test="${not empty message && showModal eq 'add'}">
                             <div class="alert alert-danger" role="alert">
                                 ${message}
                             </div>
                         </c:if>
+
                         <div class="mb-3">
                             <label class="form-label">Package Name</label>
                             <input type="text" class="form-control" name="packageName" required>
@@ -429,6 +464,8 @@
 
 
 
+
+
         <script src="${pageContext.request.contextPath}/js/lib/jquery-3.4.1.min.js"></script>
         <script src="${pageContext.request.contextPath}/js/lib/bootstrap.bundle.min.js"></script>
         <script src="${pageContext.request.contextPath}/lib/wow/wow.min.js"></script>
@@ -438,13 +475,13 @@
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
         <script src="${pageContext.request.contextPath}/js/Notification.js"></script>
 
-        <c:if test="${not empty message}">
+        <c:if test="${not empty showModal}">
             <script>
-                                                    document.addEventListener("DOMContentLoaded", function () {
-                                                        var modalId = "${showModal == 'edit' ? 'editPricePackageModal' : 'addPricePackageModal'}";
-                                                        var modal = new bootstrap.Modal(document.getElementById(modalId));
-                                                        modal.show();
-                                                    });
+                document.addEventListener("DOMContentLoaded", function () {
+                    var modalId = '<c:out value="${showModal == 'edit' ? 'editPricePackageModal' : 'addPricePackageModal'}"/>';
+                    var modal = new bootstrap.Modal(document.getElementById(modalId));
+                    modal.show();
+                });
             </script>
         </c:if>
         <script>
@@ -545,7 +582,21 @@
                 });
             });
 
+            document.addEventListener('DOMContentLoaded', function () {
+                const showModal = "${showModal}";
+                const message = "${message}";
+                if (showModal === "add") {
+                    const myModal = new bootstrap.Modal(document.getElementById('addPricePackageModal'));
+                    myModal.show();
+                }
+                if (message) {
+                    console.log("Message:", message);
+                }
+            });
+
         </script>
+
+
     </body>
 
 </html>

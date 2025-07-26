@@ -41,49 +41,47 @@
                 </div>
                 <div class="row g-4">
                     <div class="col-sm-2 d-flex flex-column">
-                        <div class="wow fadeInUp shadow mt-2" data-wow-delay="0.1s">
-                            <form action="${pageContext.request.contextPath}/user/subject_list" method="get"
-                                  class="p-3 rounded shadow-sm bg-white h-100 d-flex flex-column justify-content-center align-items-center">
-                                <label for="practiceSearcher" class="form-label mb-2">
-                                    <span class="fw-semibold text-primary"><i class="bi bi-search me-1"></i>Search</span>
-                                </label>
-                                <div class="input-group input-group-sm">
-                                    <input type="text" name="keyword" id="practiceSearcher" class="form-control"
-                                           placeholder="Search by name">
-                                    <button class="btn btn-primary" type="submit" id="searchBtn"><i class="bi bi-search"></i>
-                                    </button>
+                        <form action="${pageContext.request.contextPath}/subject-list" method="get">
+                            <div class="wow fadeInUp shadow mt-2" data-wow-delay="0.1s">
+                                <div class="p-3 rounded shadow-sm bg-white h-100 d-flex flex-column justify-content-center align-items-center">
+                                    <label for="practiceSearcher" class="form-label mb-2">
+                                        <span class="fw-semibold text-primary"><i class="bi bi-search me-1"></i>Search</span>
+                                    </label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" name="keyword" id="practiceSearcher" class="form-control"
+                                               placeholder="Search by name" value="${param.keyword}">
+                                        <button class="btn btn-primary" type="submit" id="searchBtn"><i class="bi bi-search"></i></button>
+                                    </div>
                                 </div>
-                            </form>
-                        </div>
-                        <div class="wow fadeInUp shadow mt-2" data-wow-delay="0.2s">
-                            <div
-                                class="p-3 rounded shadow-sm bg-white h-100 d-flex flex-column justify-content-center align-items-center">
-                                <label for="categoryFilter" class="form-label mb-2">
-                                    <span class="fw-semibold text-primary"><i class="bi bi-filter me-1"></i>Category</span>
-                                </label>
-                                <select class="form-select form-select-sm" id="categoryFilter" name="category">
-                                    <option value="all">All Categories</option>
-                                    <c:forEach items="${categories}" var="c">
-                                        <option value="${c}" ${param.category == c ? 'selected' : ''}>${c}</option>
-                                    </c:forEach>
-                                </select>
                             </div>
-                        </div>
-                        <div class="wow fadeInUp shadow mt-2" data-wow-delay="0.2s">
-                            <div
-                                class="p-3 rounded shadow-sm bg-white h-100 d-flex flex-column justify-content-center align-items-center">
-                                <label for="statusFilter" class="form-label mb-2">
-                                    <span class="fw-semibold text-primary">
-                                        <i class="bi bi-filter me-1"></i>Status
-                                    </span>
-                                </label>
-                                <select class="form-select form-select-sm" id="statusFilter" name="status">
-                                    <option value="all">All Status</option>
-                                    <option value="published">Published</option>
-                                    <option value="unpublished">Unpublished</option>
-                                </select>
+
+                            <div class="wow fadeInUp shadow mt-2" data-wow-delay="0.2s">
+                                <div class="p-3 rounded shadow-sm bg-white h-100 d-flex flex-column justify-content-center align-items-center">
+                                    <label for="categoryFilter" class="form-label mb-2">
+                                        <span class="fw-semibold text-primary"><i class="bi bi-filter me-1"></i>Category</span>
+                                    </label>
+                                    <select class="form-select form-select-sm" id="categoryFilter" name="category" onchange="this.form.submit()">
+                                        <option value="all">All Categories</option>
+                                        <c:forEach items="${categories}" var="c">
+                                            <option value="${c}" ${param.category == c ? 'selected' : ''}>${c}</option>
+                                        </c:forEach>
+                                    </select>
+                                </div>
                             </div>
-                        </div>
+
+                            <div class="wow fadeInUp shadow mt-2" data-wow-delay="0.2s">
+                                <div class="p-3 rounded shadow-sm bg-white h-100 d-flex flex-column justify-content-center align-items-center">
+                                    <label for="statusFilter" class="form-label mb-2">
+                                        <span class="fw-semibold text-primary"><i class="bi bi-filter me-1"></i>Status</span>
+                                    </label>
+                                    <select class="form-select form-select-sm" id="statusFilter" name="status" onchange="this.form.submit()">
+                                        <option value="all" ${param.status == 'all' ? 'selected' : ''}>All Status</option>
+                                        <option value="published" ${param.status == 'published' ? 'selected' : ''}>Published</option>
+                                        <option value="unpublished" ${param.status == 'unpublished' ? 'selected' : ''}>Unpublished</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
                         <c:if test="${contact ne null}">
                             <div class="wow fadeInUp shadow mt-2" data-wow-delay="0.2s">
                                 <div
@@ -148,7 +146,7 @@
                                             <tr>
                                                 <td>${loop.index + 1}</td>
                                                 <td>
-                                                    <a href="${pageContext.request.contextPath}/user/subject_detail?id=${c.subjectId}" 
+                                                    <a href="${pageContext.request.contextPath}/subject-detail?id=${c.id}" 
                                                        class="text-decoration-none text-primary">
                                                         ${c.title}
                                                     </a>
@@ -182,17 +180,17 @@
                                     <ul class="pagination mb-0">
                                         <li class="page-item ${currentIndex == 1 ? 'disabled' : ''}">
                                             <a class="page-link"
-                                               href="${pageContext.request.contextPath}/user/subject_list?page=${currentIndex - 1}">Prev</a>
+                                               href="${pageContext.request.contextPath}/subject-list?page=${currentIndex - 1}">Prev</a>
                                         </li>
                                         <c:forEach var="i" begin="1" end="${totalPages}">
                                             <li class="page-item ${i == currentIndex ? 'active' : ''}">
                                                 <a class="page-link"
-                                                   href="${pageContext.request.contextPath}/user/subject_list?page=${i}">${i}</a>
+                                                   href="${pageContext.request.contextPath}/subject-list?page=${i}">${i}</a>
                                             </li>
                                         </c:forEach>
                                         <li class="page-item ${currentIndex == totalPages ? 'disabled' : ''}">
                                             <a class="page-link"
-                                               href="${pageContext.request.contextPath}/user/subject_list?page=${currentIndex + 1}">Next</a>
+                                               href="${pageContext.request.contextPath}/subject-list?page=${currentIndex + 1}">Next</a>
                                         </li>
                                     </ul>
                                 </nav>
@@ -202,11 +200,6 @@
                 </div>
             </div>
         </div>
-
-        <button id="chat-button" onclick="toggleChat()">
-            <i class="fa fa-comment"></i>
-        </button>
-
 
         <jsp:include page="../../component/footer.html"/>
         <jsp:include page="../../component/back_to_top.html"/>
@@ -223,90 +216,90 @@
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
         <script src="${pageContext.request.contextPath}/js/Notification.js"></script>
         <script>
-                                            const baseHref = "${pageContext.request.contextPath}/user/subject_list"";
-                                                    const apiUrl = "${pageContext.request.contextPath}/ask";
-                                            document.getElementById('categoryFilter').addEventListener('change', function () {
-                                            const value = this.value;
-                                            const url = new URL(baseHref, window.location.origin);
-                                            if (value !== 'all') {
-                                            url.searchParams.set('category', value);
-                                            }
-                                            window.location.href = url.toString();
-                                            });
-                                            document.getElementById('statusFilter').addEventListener('change', function () {
-                                            const value = this.value;
-                                            const url = new URL(baseHref, window.location.origin);
-                                            if (value !== 'all') {
-                                            url.searchParams.set('status', value);
-                                            }
-                                            window.location.href = url.toString();
-                                            });
-                                            const chatPopup = document.getElementById("chat-popup");
-                                            const chatBox = document.getElementById("chat-box");
-                                            const chatForm = document.getElementById("chat-form");
-                                            const messageInput = document.getElementById("message-input");
-                                            const apiUrl = "/ask";
-                                            function appendMessage(text, sender) {
-                                            const msgDiv = document.createElement("div");
-                                            msgDiv.className = "bubble " + sender;
-                                            msgDiv.innerText = text;
-                                            chatBox.appendChild(msgDiv);
-                                            scrollToBottom();
-                                            }
+                    const baseHref = "${pageContext.request.contextPath}/subject-list"";
+                            const apiUrl = "${pageContext.request.contextPath}/ask";
+                    document.getElementById('categoryFilter').addEventListener('change', function () {
+                    const value = this.value;
+                    const url = new URL(baseHref, window.location.origin);
+                    if (value !== 'all') {
+                    url.searchParams.set('category', value);
+                    }
+                    window.location.href = url.toString();
+                    });
+                    document.getElementById('statusFilter').addEventListener('change', function () {
+                    const value = this.value;
+                    const url = new URL(baseHref, window.location.origin);
+                    if (value !== 'all') {
+                    url.searchParams.set('status', value);
+                    }
+                    window.location.href = url.toString();
+                    });
+                    const chatPopup = document.getElementById("chat-popup");
+                    const chatBox = document.getElementById("chat-box");
+                    const chatForm = document.getElementById("chat-form");
+                    const messageInput = document.getElementById("message-input");
+                    const apiUrl = "/ask";
+                    function appendMessage(text, sender) {
+                    const msgDiv = document.createElement("div");
+                    msgDiv.className = "bubble " + sender;
+                    msgDiv.innerText = text;
+                    chatBox.appendChild(msgDiv);
+                    scrollToBottom();
+                    }
 
-                                            function scrollToBottom() {
-                                            chatBox.scrollTop = chatBox.scrollHeight;
-                                            }
+                    function scrollToBottom() {
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                    }
 
-                                            function toggleChat() {
-                                            const isOpen = chatPopup.style.display === "flex";
-                                            chatPopup.style.display = isOpen ? "none" : "flex";
-                                            if (!isOpen && chatBox.innerHTML.trim() === "") {
-                                            fetch(apiUrl)
-                                                    .then(res => res.json())
-                                                    .then(data => appendMessage(data.response, "bot"))
-                                                    .catch(() => appendMessage("Xin chào! Tôi là Miss. Hãy bắt đầu trò chuyện!", "bot"));
-                                            }
-                                            }
+                    function toggleChat() {
+                    const isOpen = chatPopup.style.display === "flex";
+                    chatPopup.style.display = isOpen ? "none" : "flex";
+                    if (!isOpen && chatBox.innerHTML.trim() === "") {
+                    fetch(apiUrl)
+                            .then(res => res.json())
+                            .then(data => appendMessage(data.response, "bot"))
+                            .catch(() => appendMessage("Xin chào! Tôi là Miss. Hãy bắt đầu trò chuyện!", "bot"));
+                    }
+                    }
 
-                                            chatForm.addEventListener("submit", function (e) {
-                                            e.preventDefault();
-                                            const message = messageInput.value.trim();
-                                            if (!message)
-                                                    return;
-                                            appendMessage(message, "user");
-                                            messageInput.value = "";
-                                            const botBubble = document.createElement("div");
-                                            botBubble.className = "bubble bot";
-                                            botBubble.innerText = "Miss đang trả lời...";
-                                            chatBox.appendChild(botBubble);
-                                            scrollToBottom();
-                                            fetch(apiUrl, {
-                                            method: "POST",
-                                                    headers: {"Content-Type": "application/json"},
-                                                    body: JSON.stringify({prompt: message})
-                                            })
-                                                    .then(response => {
-                                                    const reader = response.body.getReader();
-                                                    const decoder = new TextDecoder("utf-8");
-                                                    let buffer = "";
-                                                    return readStream(reader, decoder, buffer, botBubble);
-                                                    })
-                                                    .catch(() => botBubble.innerText = "Xin lỗi, Miss gặp lỗi khi phản hồi.");
-                                            });
-                                            function readStream(reader, decoder, buffer, botBubble) {
-                                            return reader.read().then(({ done, value }) => {
-                                            if (done) {
-                                            return;
-                                            }
-                                            buffer += decoder.decode(value, {stream: true});
-                                            botBubble.innerText = buffer;
-                                            scrollToBottom();
-                                            return readStream(reader, decoder, buffer, botBubble);
-                                            }
-                                            );
-                                            });
-                                            }
+                    chatForm.addEventListener("submit", function (e) {
+                    e.preventDefault();
+                    const message = messageInput.value.trim();
+                    if (!message)
+                            return;
+                    appendMessage(message, "user");
+                    messageInput.value = "";
+                    const botBubble = document.createElement("div");
+                    botBubble.className = "bubble bot";
+                    botBubble.innerText = "Miss đang trả lời...";
+                    chatBox.appendChild(botBubble);
+                    scrollToBottom();
+                    fetch(apiUrl, {
+                    method: "POST",
+                            headers: {"Content-Type": "application/json"},
+                            body: JSON.stringify({prompt: message})
+                    })
+                            .then(response => {
+                            const reader = response.body.getReader();
+                            const decoder = new TextDecoder("utf-8");
+                            let buffer = "";
+                            return readStream(reader, decoder, buffer, botBubble);
+                            })
+                            .catch(() => botBubble.innerText = "Xin lỗi, Miss gặp lỗi khi phản hồi.");
+                    });
+                    function readStream(reader, decoder, buffer, botBubble) {
+                    return reader.read().then(({ done, value }) => {
+                    if (done) {
+                    return;
+                    }
+                    buffer += decoder.decode(value, {stream: true});
+                    botBubble.innerText = buffer;
+                    scrollToBottom();
+                    return readStream(reader, decoder, buffer, botBubble);
+                    }
+                    );
+                    });
+                    }
 
 
         </script>

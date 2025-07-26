@@ -48,7 +48,7 @@
                                 <div>
                                     <span style="color: red">${message}</span>
                                 </div>
-                                <form action="${pageContext.request.contextPath}/user/register" method="post" class="row g-3" id="emailForm">
+                                <form action="${pageContext.request.contextPath}/auth/register" method="post" class="row g-3" id="emailForm">
                                     <div class="row gy-3 gy-md-4 overflow-hidden">
                                         <div class="col-12">
                                             <label for="fullName" class="form-label">Full Name<span
@@ -125,7 +125,7 @@
                                     <div class="col-12">
                                         <hr class="mt-5 mb-4 border-secondary-subtle">
                                         <div class="d-flex gap-2 gap-md-4 flex-column flex-md-row justify-content-md-end">
-                                            <a href="${pageContext.request.contextPath}/qps/user/login"
+                                            <a href="${pageContext.request.contextPath}/auth/login"
                                                class="link-secondary text-decoration-none">
                                                 Already have an account?
                                                 <span style="color: blue">Log in</span>

@@ -40,9 +40,6 @@ public class LearningMaterialDAO extends DBContext {
                             .build();
                 }
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return material;
     }
@@ -69,9 +66,6 @@ public class LearningMaterialDAO extends DBContext {
             pre.setString(6, material.getHtmlContent());
 
             pre.executeUpdate();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
     }
 
@@ -101,9 +95,6 @@ public class LearningMaterialDAO extends DBContext {
             pre.setString(5, material.getHtmlContent());
             pre.setString(6, material.getId().toString());
             pre.executeUpdate();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
     }
 

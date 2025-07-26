@@ -41,15 +41,14 @@
         <div id="onboardingForm">
             <!--Step 1-->
             <div class="onboarding-step d-flex flex-column align-items-center justify-content-center" data-step="1">
-                <h2 class="mb-3">Mục tiêu học tập của bạn là gì?</h2>
+                <h2 class="mb-3 text-center">What is your learning goal?</h2>
                 <div class="form-group row justify-content-center">
                     <div class="col-md-8">
                         <div class="card p-3 mb-3 border-0 shadow-sm rounded-3 checkbox-option">
                             <label class="form-check-label">
                                 <input type="checkbox" name="goal" value="working" class="form-check-input me-2">
                                 <strong>Working</strong><br>
-                                <small class="text-muted">Tập trung vào kỹ năng phục vụ công việc hiện tại hoặc tương
-                                    lai.</small>
+                                <small class="text-muted">Focus on skills for your current or future job.</small>
                             </label>
                         </div>
                         <div class="card p-3 mb-3 border-0 shadow-sm rounded-3 checkbox-option">
@@ -57,7 +56,8 @@
                                 <input type="checkbox" name="goal" value="improve my knowledge"
                                        class="form-check-input me-2">
                                 <strong>Improve my knowledge</strong><br>
-                                <small class="text-muted">Bồi dưỡng và nâng cao hiểu biết trong lĩnh vực đã học.</small>
+                                <small class="text-muted">Enhance and deepen your understanding in a field you've
+                                    studied.</small>
                             </label>
                         </div>
                         <div class="card p-3 mb-3 border-0 shadow-sm rounded-3 checkbox-option">
@@ -65,7 +65,7 @@
                                 <input type="checkbox" name="goal" value="explore new knowledge"
                                        class="form-check-input me-2">
                                 <strong>Explore new knowledge</strong><br>
-                                <small class="text-muted">Khám phá những kiến thức hoàn toàn mới với bạn.</small>
+                                <small class="text-muted">Discover knowledge that is completely new to you.</small>
                             </label>
                         </div>
                     </div>
@@ -86,14 +86,14 @@
                             <label class="form-check-label">
                                 <input type="radio" name="occupation" value="pupil" class="form-check-input me-2">
                                 <strong>Pupil</strong><br>
-                                <small class="text-muted">Học sinh cấp 1, 2 hoặc 3.</small>
+                                <small class="text-muted">Primary, middle, or high school student.</small>
                             </label>
                         </div>
                         <div class="card p-3 mb-3 border-0 shadow-sm rounded-3">
                             <label class="form-check-label">
                                 <input type="radio" name="occupation" value="student" class="form-check-input me-2">
                                 <strong>Student</strong><br>
-                                <small class="text-muted">Sinh viên đang theo học tại đại học hoặc cao đẳng.</small>
+                                <small class="text-muted">Currently studying at a university or college.</small>
                             </label>
                         </div>
                         <div class="card p-3 mb-3 border-0 shadow-sm rounded-3">
@@ -101,7 +101,7 @@
                                 <input type="radio" name="occupation" value="working professional"
                                        class="form-check-input me-2">
                                 <strong>Working professional</strong><br>
-                                <small class="text-muted">Đã đi làm và đang phát triển sự nghiệp.</small>
+                                <small class="text-muted">Currently working and developing your career.</small>
                             </label>
                         </div>
                     </div>
@@ -127,7 +127,7 @@
                                 <input type="radio" name="education" value="secondary education or below"
                                        class="form-check-input me-2">
                                 <strong>Secondary education or below</strong><br>
-                                <small class="text-muted">THPT hoặc thấp hơn.</small>
+                                <small class="text-muted">High school or lower.</small>
                             </label>
                         </div>
                         <div class="card p-3 mb-3 border-0 shadow-sm rounded-3">
@@ -135,7 +135,7 @@
                                 <input type="radio" name="education" value="undergraduate level"
                                        class="form-check-input me-2">
                                 <strong>Undergraduate level</strong><br>
-                                <small class="text-muted">Đang học hoặc đã tốt nghiệp đại học.</small>
+                                <small class="text-muted">Currently studying or have graduated from university.</small>
                             </label>
                         </div>
                         <div class="card p-3 mb-3 border-0 shadow-sm rounded-3">
@@ -143,7 +143,7 @@
                                 <input type="radio" name="education" value="postgraduate level"
                                        class="form-check-input me-2">
                                 <strong>Postgraduate level</strong><br>
-                                <small class="text-muted">Cao học, thạc sĩ hoặc tiến sĩ.</small>
+                                <small class="text-muted">Master’s or doctoral level.</small>
                             </label>
                         </div>
                     </div>
@@ -161,25 +161,25 @@
 
             <!--Step 4-->
             <div class="onboarding-step d-none" data-step="4">
-                <h2 class="mb-3">Chủ đề bạn muốn tìm hiểu?</h2>
+                <h2 class="mb-3 text-center">Which topics are you interested in?</h2>
                 <div class="mb-3">
                     <div class="role-search-box mb-3">
-                        <input type="text" class="form-control" id="roleSearchInput" placeholder="Tìm kiếm chủ đề...">
+                        <input type="text" class="form-control" id="roleSearchInput" placeholder="Search topics...">
                     </div>
                     <div id="topic-card-list" class="row gx-3 gy-3"></div>
                     <div class="invalid-feedback d-block" id="topic-error">
-                        Vui lòng chọn ít nhất một chủ đề.
+                        Please select at least one topic.
                     </div>
                     <div class="mt-2">
                         <a href="#" id="viewMoreRoles">
-                            <span>+</span> Xem thêm chủ đề
+                            <span>+</span> View more topics
                         </a>
                     </div>
                 </div>
                 <div class="text-center mt-4">
                     <button type="button" class="btn btn-secondary prev-step mt-3">Back</button>
                     <button type="button" class="btn btn-success mt-3" onclick="submitForm()">
-                        Bắt đầu trải nghiệm
+                        Start your journey
                     </button>
                 </div>
             </div>
@@ -199,8 +199,8 @@
                         <form id="aiPromptFormCourse" class="gemini-form">
                             <div class="prompt-container">
                                 <input type="text" id="aiPromptInputCourse"
-                                       placeholder="Nhập yêu cầu tại đây..." required autocomplete="off">
-                                <button type="submit" title="Gửi"><i class="fas fa-arrow-up"></i></button>
+                                       placeholder="Enter your request here..." required autocomplete="off">
+                                <button type="submit" title="Send"><i class="fas fa-arrow-up"></i></button>
                             </div>
                         </form>
                         <div id="aiResponseCourse" class="gemini-response mt-4 d-none"></div>
@@ -303,7 +303,7 @@
                     </label>
                     <select class="form-select rounded-pill px-3 py-2" name="package"
                             id="registerPackageSelect" required>
-                        <option value="">-- Chọn gói --</option>
+                        <option value="">-- Select price package --</option>
                     </select>
                 </div>
                 <div id="userInfoFields">
@@ -311,7 +311,7 @@
                         <label class="form-label" for="fullname">
                             <i class="fa fa-user me-1"></i> Full Name</label>
                         <input type="text" class="form-control rounded-pill px-3 py-2" name="fullname"
-                               placeholder="<%=user != null ? user.getFullName() : "Nhập họ tên của bạn"%>" required
+                               placeholder="<%=user != null ? user.getFullName() : "Enter your full name"%>" required
                             <%=user != null ? "disabled" : ""%>
                                id="fullname">
                     </div>
@@ -373,7 +373,7 @@
                 </div>
                 <div id="userInfoNotice" class="alert alert-info d-none mt-3" role="alert">
                     <i class="fa fa-check-circle me-2"></i>
-                    Thông tin liên hệ của bạn đã được tự động điền.
+                    Your contact information has been auto-filled.
                 </div>
             </div>
             <div class="modal-footer border-0 d-flex flex-column gap-2">
@@ -381,7 +381,7 @@
                     <i class="fa fa-paper-plane me-2"></i> Confirm registered
                 </button>
                 <div class="text-center w-100">
-                    <i class="fa fa-lock me-1"></i> Thông tin của bạn được bảo mật
+                    <i class="fa fa-lock me-1"></i> Your information is secure
                 </div>
             </div>
         </form>
@@ -410,7 +410,7 @@
     let numberOfItems = 0;
     let featuredSubjects = [];
     let socket;
-    const path = `ws://localhost:8080/qps/answer`;
+    const path = `ws://localhost:9999/qps/answer`;
     let answer;
 </script>
 <script src="${pageContext.request.contextPath}/js/subjects-list/AssistantHandler.js" type="module"></script>

@@ -56,13 +56,13 @@
                 <input type="password" id="password" name="password" placeholder="******">
 
                 <div class="forgot">
-                    <a href="#">Forgot Password?</a>
+                    <a href="${pageContext.request.contextPath}/jsp/common-features/reset_password.jsp">Forgot Password?</a>
                 </div>
 
                 <button type="submit">LOGIN</button>
 
                 <div class="signup">
-                    Don’t have an account? <a href="${pageContext.request.contextPath}/user/register">Sign up</a>
+                    Don’t have an account? <a href="${pageContext.request.contextPath}/auth/register">Sign up</a>
                 </div>
             </div>
         </div>

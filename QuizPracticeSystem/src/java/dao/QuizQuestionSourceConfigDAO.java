@@ -8,21 +8,13 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import model.QuizQuestionSourceConfig;
 
 /**
- *
  * @author Admin
  */
 public class QuizQuestionSourceConfigDAO extends DBContext {
-
-    private final Logger logger;
-
-    public QuizQuestionSourceConfigDAO() {
-        logger = Logger.getLogger(this.getClass().getName());
-    }
 
     public List<QuizQuestionSourceConfig> getAllQuizQuestionSourceConfigByQuizId(String quizId) throws Exception {
         List<QuizQuestionSourceConfig> configList = new ArrayList<>();
@@ -35,9 +27,6 @@ public class QuizQuestionSourceConfigDAO extends DBContext {
                     configList.add(getQuizQuestionSourceConfig(rs));
                 }
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            throw e;
         }
         return configList;
     }
@@ -70,9 +59,6 @@ public class QuizQuestionSourceConfigDAO extends DBContext {
                     configList.add(getQuizQuestionSourceConfig(rs));
                 }
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return configList;
     }
@@ -88,10 +74,6 @@ public class QuizQuestionSourceConfigDAO extends DBContext {
                     return rs.getString("source_type");
                 }
             }
-
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return null; // Không tìm thấy
     }
@@ -102,12 +84,9 @@ public class QuizQuestionSourceConfigDAO extends DBContext {
         try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
             pre.setString(1, quizId);
             pre.executeUpdate();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            throw e;
         }
     }
-    
+
     public void insertListQuizQuestionSourceConfig(List<QuizQuestionSourceConfig> configList) throws Exception {
         var sql = "INSERT INTO `swp391`.quiz_question_source_config (id, quiz_id, source_type, source_id, number_of_questions) "
                 + "VALUES (?, ?, ?, ?, ?)";
@@ -127,9 +106,6 @@ public class QuizQuestionSourceConfigDAO extends DBContext {
                 pre.addBatch(); // Thêm vào batch
             }
             pre.executeBatch(); // Thực thi batch insert
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            throw e;
         }
     }
 

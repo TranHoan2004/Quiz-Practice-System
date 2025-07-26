@@ -35,7 +35,7 @@ import utils.Encoder;
  *
  * @author TuanKD
  */
-@WebServlet(name = "LessonStatusToggleController", urlPatterns = {"/user/subject_lesson/status-toggle"})
+@WebServlet(name = "LessonStatusToggleController", urlPatterns = {"/status-toggle"})
 public class LessonStatusToggleController extends HttpServlet {
 
     private final LessonDAO lessonDAO = new LessonDAO();
@@ -68,6 +68,6 @@ public class LessonStatusToggleController extends HttpServlet {
         } catch (Exception e) {
             Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, e.getMessage(), e);
         }
-        response.sendRedirect(request.getContextPath() + "/user/subject_lesson?id=" + encodedCourseId);
+        response.sendRedirect(request.getContextPath() + "subject-lesson?id=" + encodedCourseId);
     }
 }

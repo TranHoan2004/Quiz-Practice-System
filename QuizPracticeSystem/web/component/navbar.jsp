@@ -16,6 +16,7 @@
                 <a href="courses.html" class="nav-item nav-link">Courses</a>
                 <a href="${pageContext.request.contextPath}/blog-list" class="nav-item nav-link">Blog</a>
                 <a href="${pageContext.request.contextPath}/simulation-exams" class="nav-item nav-link">Simulation Exams</a>
+                <a href="${pageContext.request.contextPath}/user/practice" class="nav-item nav-link">Practice</a>
             </div>
             <!-- User Authentication Section -->
             <div class="d-flex align-items-center px-4 px-lg-5">
@@ -53,7 +54,7 @@
                                 <span class="d-none d-md-inline">${sessionScope.currentUser.fullName}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="profile.jsp"><i class="fas fa-user me-2"></i>Profile</a>
+                                <li><a class="dropdown-item" href="${pageContext.request.contextPath}/jsp/common-features/edit_profile.jsp"><i class="fas fa-user me-2"></i>Profile</a>
                                 </li>
                                 <li><a class="dropdown-item" href="my-courses.jsp"><i
                                             class="fas fa-graduation-cap me-2"></i>My Courses</a></li>

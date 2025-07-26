@@ -42,22 +42,17 @@ public class TopicDAO extends DBContext {
                             .build();
                 }
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return st;
     }
 
     public List<Topic> getAllTopic() throws Exception {
-        logger.info("getAllTopic");
         List<Topic> list = new ArrayList<>();
         var sql = "SELECT * FROM topic";
         return query(list, sql);
     }
 
     public void createTopic(Topic topic) throws Exception {
-        logger.info("createTopic");
         var sql = """
                 INSERT INTO `swp391`.topic (id, name, subject_id)
                 VALUES (?, ?, ?)
@@ -67,9 +62,6 @@ public class TopicDAO extends DBContext {
             pre.setString(2, topic.getName());
             pre.setString(3, topic.getSubjectId());
             pre.executeUpdate();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
     }
 
@@ -78,9 +70,6 @@ public class TopicDAO extends DBContext {
         try (var connection = getConnection(); var pre = connection.prepareStatement(sql)) {
             pre.setString(1, id);
             pre.executeUpdate();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
     }
 
@@ -108,17 +97,13 @@ public class TopicDAO extends DBContext {
             pre.setString(1, subjectId);
             try (var rs = pre.executeQuery()) {
                 while (rs.next()) {
-                    var topic = new Topic();
-                    topic.setId(UUID.fromString(rs.getString("id")));
-                    topic.setName(rs.getString("name"));
-                    topic.setSubjectId(rs.getString("subject_id"));
-
-                    topicList.add(topic);
+                    topicList.add(Topic.builder()
+                            .id(UUID.fromString(rs.getString("id")))
+                            .name(rs.getString("name"))
+                            .subjectId(rs.getString("subject_id"))
+                            .build());
                 }
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error getting topics by subjectId: " + e.getMessage(), e);
-            throw e;
         }
         return topicList;
     }
@@ -153,9 +138,6 @@ public class TopicDAO extends DBContext {
                         .subjectId(rs.getString("subject_id"))
                         .build());
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return st;
     }

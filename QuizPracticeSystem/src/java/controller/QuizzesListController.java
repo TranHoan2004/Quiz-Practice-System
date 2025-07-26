@@ -69,7 +69,7 @@ public class QuizzesListController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         loadQuizData(request, response);
-        request.getRequestDispatcher("/jsp/course-features/quizzes_list.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/test-content-features/quizzes_list.jsp").forward(request, response);
     }
 
     @Override
@@ -87,7 +87,7 @@ public class QuizzesListController extends HttpServlet {
 
             // Xử lý form Search
             loadQuizData(request, response);
-            request.getRequestDispatcher("/jsp/course-features/quizzes_list.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/test-content-features/quizzes_list.jsp").forward(request, response);
 
         } catch (Exception e) {
             request.setAttribute("error", "Error processing request: " + e.getMessage());

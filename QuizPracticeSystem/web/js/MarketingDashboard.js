@@ -8,76 +8,76 @@ const apiUrl = el.dataset.apiUrl;
 
 // --- Prompt Mapping ---
 const promptMap = {
-    marketer: ` Vai trò: Marketer – mục tiêu là tối ưu hóa doanh thu và chiến lược quảng bá.
-Dữ liệu hiện tại:
-- Tổng doanh thu: ${Number(el.dataset.totalRevenue).toLocaleString()}₫
-- Biến động doanh thu: Revenue change compared to last period is ${el.dataset.changeRevenue}%
-- Tổng đơn hàng thành công: ${ordersCountTrendSuccess.reduce((a, b) => a + b, 0)} đơn
-- Top 3 môn học có doanh thu cao: ${Object.entries(revenueMap).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([subject, revenue]) => `${subject} (${Number(revenue).toLocaleString()}₫)`).join(', ')}
+    marketer: `Role: Marketer – your goal is to optimize revenue and promotional strategies.
+Current data:
+- Total revenue: ${Number(el.dataset.totalRevenue).toLocaleString()}₫
+- Revenue change compared to last period: ${el.dataset.changeRevenue}%
+- Total successful orders: ${ordersCountTrendSuccess.reduce((a, b) => a + b, 0)} orders
+- Top 3 highest-revenue courses: ${Object.entries(revenueMap).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([subject, revenue]) => `${subject} (${Number(revenue).toLocaleString()}₫)`).join(', ')}
 
- Nhiệm vụ:
-1. Xác định nhóm sản phẩm (môn học) đang mang lại nhiều doanh thu nhất và lý do.
-2. Có nên chuyển trọng tâm quảng bá sang các môn học top đầu không?
-3. Những môn doanh thu thấp có tiềm năng không?
-4. Gợi ý điều chỉnh chiến lược tiếp thị phù hợp với từng nhóm.
-5. Trả lời ngắn gọn từ 7 đến 12 dòng, không trả lời quá dài.`,
-    
+Task:
+1. Identify which products (courses) generate the most revenue and why.
+2. Should the marketing focus shift toward these top courses?
+3. Do the low-revenue courses have potential?
+4. Suggest marketing strategy adjustments for each group.
+5. Answer concisely in 7–12 lines, avoid overly long responses.`,
 
-    revenue: ` Vai trò: Nhà phân tích dữ liệu – theo dõi xu hướng đơn hàng.
+    revenue: `Role: Data analyst – monitor order trends.
 
- Tổng quan:
-- Tổng số đơn hàng ghi nhận: ${ordersCountTrendAll.reduce((a, b) => a + b, 0)}
-- Ngày cao điểm nhất: ${Math.max(...ordersCountTrendAll)} đơn
-- Số ngày không có đơn hàng: ${ordersCountTrendAll.filter(x => x === 0).length} ngày
+Overview:
+- Total recorded orders: ${ordersCountTrendAll.reduce((a, b) => a + b, 0)}
+- Peak order day: ${Math.max(...ordersCountTrendAll)} orders
+- Number of days with no orders: ${ordersCountTrendAll.filter(x => x === 0).length} days
 
-Phân tích:
-1. Xu hướng đơn hàng đang tăng hay giảm?
-2. Thời điểm nào đơn hàng nhiều, khi nào giảm?
-3. Nguyên nhân dẫn đến biến động?
-4. Giải pháp duy trì đà tăng trưởng?
-5. Trả lời ngắn gọn từ 7 đến 12 dòng, không trả lời quá dài.`,
+Analysis:
+1. Are order trends increasing or decreasing?
+2. When are the peak and low order times?
+3. What factors are causing the fluctuations?
+4. How to maintain growth momentum?
+5. Answer concisely in 7–12 lines, avoid overly long responses.`,
 
-    course: `Vai trò: Phân tích hiệu quả người dùng mới.
+    course: `Role: Analyze the effectiveness of new users.
 
-Dữ liệu:
-- Người dùng mới: ${el.dataset.newAccounts} (${el.dataset.changeNewAccounts}%)
-- Số đơn hàng mới: ${el.dataset.newBought} (${el.dataset.changeNewBought}%)
-- Đăng ký khoá học thành công: ${el.dataset.coursesSuccess}
-- Khoá học doanh thu cao nhất: ${Object.entries(revenueMap).sort((a, b) => b[1] - a[1])[0][0]}
+Data:
+- New users: ${el.dataset.newAccounts} (${el.dataset.changeNewAccounts}%)
+- New orders: ${el.dataset.newBought} (${el.dataset.changeNewBought}%)
+- Successful course enrollments: ${el.dataset.coursesSuccess}
+- Top-revenue course: ${Object.entries(revenueMap).sort((a, b) => b[1] - a[1])[0][0]}
 
- Hãy phân tích:
-1. Người dùng mới có tỷ lệ chuyển đổi cao không?
-2. Có mang lại giá trị thực tế (doanh thu) hay chỉ là đăng ký thử?
-3. Gợi ý chiến lược nuôi dưỡng nhóm người dùng mới.
-4. Trả lời ngắn gọn từ 7 đến 12 dòng, không trả lời quá dài.`,
+Please analyze:
+1. Do new users have a high conversion rate?
+2. Do they bring real value (revenue), or just trial signups?
+3. Suggest nurturing strategies for new users.
+4. Answer concisely in 7–12 lines, avoid overly long responses.`,
 
-    timegap: ` Vai trò: Phân tích hành vi người mua theo thời gian.
+    timegap: `Role: Analyze buyer behavior over time.
 
-Nhận xét biểu đồ:
-- Đơn hàng xuất hiện không đều
-- Một số ngày có spike nhỏ (2–3 đơn), sau đó chững
-- Nhiều ngày trống đơn hàng
+Chart insights:
+- Orders are not evenly distributed
+- Some small spikes (2–3 orders), then stagnation
+- Many days with no orders
 
-Cần phân tích:
-1. Có mô hình thời điểm mua hàng không?
-2. Có đang bỏ lỡ giờ vàng/ngày vàng?
-3. Gợi ý cách lấp khoảng trống – thông báo, ưu đãi định kỳ?
-4. Làm sao để đều nhịp đơn hàng hơn?
-5. Trả lời ngắn gọn từ 7 đến 12 dòng, không trả lời quá dài.`,
+Please analyze:
+1. Are there patterns in buying time?
+2. Are we missing “golden hours/days”?
+3. Suggestions to fill the gaps – reminders, periodic promotions?
+4. How to achieve a more consistent order flow?
+5. Answer concisely in 7–12 lines, avoid overly long responses.`,
 
-    gaps: ` Vai trò: Quản trị thương mại điện tử – đảm bảo dòng đơn ổn định.
+    gaps: `Role: E-commerce manager – ensure stable order flow.
 
-Tình trạng hiện tại:
-- Có nhiều đoạn dài không có đơn hàng
-- Spike đơn hàng giữa tháng rồi giảm mạnh
-- Không có dấu hiệu phục hồi trong những ngày gần nhất
+Current situation:
+- Many long gaps with no orders
+- Order spike mid-month followed by sharp decline
+- No sign of recovery in recent days
 
- Yêu cầu phân tích:
-1. Nguyên nhân gây ra khoảng trống đơn hàng?
-2. Các chiến lược để kích hoạt lại hành vi mua sắm?
-3. Gợi ý kịch bản marketing bù lại thời gian mất đơn?
-4. Trả lời ngắn gọn từ 7 đến 12 dòng, không trả lời quá dài.`
+Required analysis:
+1. What caused the order gaps?
+2. What strategies can re-activate buying behavior?
+3. Suggest marketing scenarios to compensate for lost sales periods.
+4. Answer concisely in 7–12 lines, avoid overly long responses.`
 };
+
 
 // --- Chart Configurations ---
 const orderChart = new Chart(document.getElementById('orderTrendChart'), {
@@ -281,7 +281,7 @@ function toggleChat() {
 
         const welcomeMsg = document.createElement("div");
         welcomeMsg.className = "bubble bot";
-        welcomeMsg.innerText = "👋 Can I help you? You can ask about revenue, users, or courses.";
+        welcomeMsg.innerText = "Can I help you? You can ask about revenue, users, or courses.";
         chatBox.appendChild(welcomeMsg);
         scrollToBottom();
     }
@@ -319,14 +319,14 @@ chatForm.addEventListener("submit", function (e) {
                 const reader = response.body?.getReader?.();
                 const decoder = new TextDecoder("utf-8");
                 if (!reader) {
-                    botBubble.innerText = "❌ Miss did not respond (no stream).";
+                    botBubble.innerText = "Miss did not respond (no stream).";
                     return;
                 }
 
                 return readStream("", reader, decoder, botBubble);
             })
             .catch(() => {
-                botBubble.innerText = "❌ Sorry, Miss encountered an error while responding.";
+                botBubble.innerText = "Sorry, Miss encountered an error while responding.";
             });
 });
 
@@ -335,7 +335,8 @@ async function readStream(buffer, reader, decoder, targetDiv) {
         targetDiv.innerText = "";
         while (true) {
             const {done, value} = await reader.read();
-            if (done) break;
+            if (done)
+                break;
             const chunk = decoder.decode(value, {stream: true});
             buffer += chunk;
 
@@ -359,8 +360,8 @@ async function readStream(buffer, reader, decoder, targetDiv) {
         targetDiv.innerText = fullText;
         scrollToBottom();
     } catch (err) {
-        console.error("❌ Stream processing failed:", err);
-        targetDiv.innerText = "❌ Miss encountered an error while processing the response.";
+        console.error("Stream processing failed:", err);
+        targetDiv.innerText = "Miss encountered an error while processing the response.";
     }
 }
 
@@ -379,7 +380,7 @@ function sendDetailedPrompt(type) {
         return;
     }
 
-    const prompt = promptMap[type] || "📊 Hãy phân tích dữ liệu hiện tại và đưa ra các gợi ý tiếp thị phù hợp.";
+    const prompt = promptMap[type] || "Please analyze the current data and suggest suitable marketing strategies.";
     appendMessage(prompt.split("\n")[0], "user");
 
     messageInput.value = "";
@@ -401,14 +402,14 @@ function sendDetailedPrompt(type) {
             insightContext: JSON.stringify(generateInsightContext())
         })
     })
-        .then(response => {
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder("utf-8");
-            return readStream("", reader, decoder, botBubble);
-        })
-        .catch(() => {
-            botBubble.innerText = "❌ Sorry, Miss encountered an error while responding.";
-        });
+            .then(response => {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                return readStream("", reader, decoder, botBubble);
+            })
+            .catch(() => {
+                botBubble.innerText = "Sorry, Miss encountered an error while responding.";
+            });
 }
 
 function handleSuggestionClick(type) {

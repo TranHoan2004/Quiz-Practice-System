@@ -51,10 +51,6 @@
                         </ol>
                     </nav>
 
-                    <a href="${pageContext.request.contextPath}/blog-list" class="btn btn-outline-secondary mb-3">
-                        <i class="bi bi-arrow-left"></i> Back to blog list
-                    </a>
-
                     <article class="p-4 shadow-sm post-container">
                         <!-- Post title -->
                         <h1 class="post-title mb-3 text-center">${blogDetails.title}</h1>
@@ -97,12 +93,12 @@
                                                                         || fn:endsWith(media.file_path, '.mkv')}">
                                                                 <video style="width: 80%;" controls class="rounded shadow">
                                                                     <source src="${pageContext.request.contextPath}/${media.file_path}" />
-                                                                    Trình duyệt của bạn không hỗ trợ video.
+                                                                    The browser only support .mp4, .mov, .avi, .mkv file type;
                                                                 </video>
                                                         </c:when>
                                                         <c:otherwise>
                                                             <img src="${pageContext.request.contextPath}/${media.file_path}"
-                                                                 alt="${media.caption}" width="400" class="rounded shadow" />
+                                                                 alt="${media.caption}" style="width: 80%;" class="rounded shadow" />
                                                         </c:otherwise>
                                                     </c:choose>
 
@@ -114,7 +110,7 @@
                                 </div>
 
                                 <!-- Full Content -->
-                                <div>
+                                <div style="white-space: pre-line;">
                                     <c:out value="${blogDetails.content}" escapeXml="false" />
                                 </div>
                             </div>
@@ -126,20 +122,20 @@
                 <!-- Sidebar -->
                 <div class="col-lg-3 col-md-4 mb-4 sidebar">
                     <form action="${pageContext.request.contextPath}/blog-list" method="get">
-                        <h5 class="section-title"><label for="search">🔍 Tìm kiếm</label></h5>
-                        <input type="text" name="keyword" class="form-control mb-3" id="search" placeholder="Tìm bài viết...">
-                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                        <h5 class="section-title"><label for="search">🔍 Search</label></h5>
+                        <input type="text" name="keyword" class="form-control mb-3" id="search" placeholder="Search blog...">
+                        <button type="submit" class="btn btn-primary">Search</button>
                     </form>
 
 
-                    <h5 class="section-title">📂 Danh mục</h5>
+                    <h5 class="section-title">📂 Category</h5>
                     <ul class="list-group mb-3 sidebar-categories" id="category-list">
                         <c:forEach items="${categories}" var="category">
                             <a href="${pageContext.request.contextPath}/blog-list?category=${category.categoryId}" class="list-group-item">${category.category}</a>
                         </c:forEach>
                     </ul>
 
-                    <h5 class="section-title">🕒 Bài viết mới</h5>
+                    <h5 class="section-title">🕒 Latest Blogs</h5>
                     <ul class="list-group mb-3 gap-3">
                         <c:forEach var="blog" items="${latestBlogs}">
                             <li class="list-group-item p-3 latest-blog-item">
@@ -169,7 +165,7 @@
                         </c:forEach>
                     </ul>
 
-                    <h5 class="section-title">📌 Liên hệ</h5>
+                    <h5 class="section-title">📌 Contact</h5>
                     <ul class="list-group">
                         <li class="list-group-item">📞 1900 0000</li>
                         <li class="list-group-item">✉ support@abc.com</li>

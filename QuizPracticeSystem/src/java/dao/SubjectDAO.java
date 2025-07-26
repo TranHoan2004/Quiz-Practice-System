@@ -21,14 +21,11 @@ public class SubjectDAO extends DBContext {
 
     public List<Subject> getAllSubjects() throws Exception {
         List<Subject> list = new ArrayList<>();
-        String sql = "SELECT * FROM `swp391`.subject";
+        var sql = "SELECT * FROM `swp391`.subject";
         try (var connection = getConnection(); var pre = connection.prepareStatement(sql); var rs = pre.executeQuery()) {
             while (rs.next()) {
                 list.add(getEntity(rs));
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return list;
     }
@@ -43,11 +40,48 @@ public class SubjectDAO extends DBContext {
                     s = getEntity(rs);
                 }
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return s;
+    }
+
+    public String getSubjectIdByCourseId(String courseId) throws Exception {
+        String sql = """
+        SELECT s.id
+        FROM subject s
+        JOIN topic t ON s.id = t.subject_id
+        JOIN course c ON t.id = c.topic_id
+        WHERE c.id = ?
+    """;
+
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
+            pre.setString(1, courseId);
+            var rs = pre.executeQuery();
+            if (rs.next()) {
+                return rs.getString("id");
+            }
+        }
+
+        return null;
+    }
+
+    public String getCourseIdBySubjectId(String subjectId) throws Exception {
+        String sql = """
+        SELECT c.id
+        FROM course c
+        JOIN topic t ON c.topic_id = t.id
+        WHERE t.subject_id = ?
+        LIMIT 1
+    """;
+
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
+            pre.setString(1, subjectId);
+            var rs = pre.executeQuery();
+            if (rs.next()) {
+                return rs.getString("id");
+            }
+        }
+
+        return null;
     }
 
     public void create(Subject s) throws Exception {
@@ -59,9 +93,6 @@ public class SubjectDAO extends DBContext {
             pre.setString(1, s.getId().toString());
             pre.setString(2, s.getName());
             pre.executeQuery();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
     }
 
@@ -75,7 +106,7 @@ public class SubjectDAO extends DBContext {
         }
     }
 
-    public List<Subject> getTopSubjectsFlag(int top) throws SQLException {
+    public List<Subject> getTopSubjectsFlag(int top) throws SQLException, ClassNotFoundException {
         List<Subject> list = new ArrayList<>();
 
         var sql = "SELECT * FROM `swp391`.subject WHERE feature_flag = ? ORDER BY RAND() LIMIT ?";
@@ -89,8 +120,6 @@ public class SubjectDAO extends DBContext {
                     list.add(getEntity(rs));
                 }
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
         return list;
     }
@@ -115,23 +144,28 @@ public class SubjectDAO extends DBContext {
         return null;
     }
 
-    public List<String> getAllCategories() throws Exception {
+    public List<String> getAllCategories(String name) throws Exception {
         List<String> result = new ArrayList<>();
 
+        // ❗❗❗ Lưu ý: IN = (?) là sai cú pháp
         var sql = """
-                    SELECT DISTINCT s.value
-                    FROM `swp391`.setting_subject ss
-                    JOIN `swp391`.setting s ON ss.setting_id = s.id
-                    JOIN `swp391`.settingtype stt ON s.setting_type_id = stt.id
-                    WHERE stt.name IN ('Domain', 'Group')
-                """;
-        // WHERE stt.name = 'Blog Category'
+        SELECT DISTINCT s.value
+        FROM `swp391`.setting_subject ss
+        JOIN `swp391`.setting s ON ss.setting_id = s.id
+        JOIN `swp391`.settingtype stt ON s.setting_type_id = stt.id
+        WHERE stt.name IN (?)
+    """;
 
-        try (var conn = getConnection(); var ps = conn.prepareStatement(sql); var rs = ps.executeQuery()) {
-            while (rs.next()) {
-                result.add(rs.getString("value"));
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name); // ✔ Bắt buộc set giá trị trước executeQuery()
+
+            try (var rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    result.add(rs.getString("value"));
+                }
             }
         }
+
         return result;
     }
 
@@ -172,7 +206,7 @@ public class SubjectDAO extends DBContext {
         return 0;
     }
 
-    public int getCountAllSubjects() {
+    public int count() {
         var sql = "SELECT COUNT(*) FROM `swp391`.subject";
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql); var rs = ps.executeQuery()) {
             if (rs.next()) {
@@ -206,7 +240,7 @@ public class SubjectDAO extends DBContext {
 
     public Map<String, Double> getRevenueBySubjectCategory(String startDate, String endDate) {
         var sql = """
-                SELECT s.name AS category, SUM(pp.sale_price) AS total_revenue
+                SELECT s.name AS category, SUM(pp.price) AS total_revenue
                 FROM `swp391`.subject s
                 JOIN `swp391`.topic t ON t.subject_id = s.id
                 JOIN `swp391`.course c ON c.topic_id = t.id
@@ -289,6 +323,28 @@ public class SubjectDAO extends DBContext {
         return total;
     }
 
+    // startIndex must start by 0
+    public List<Subject> getSubjectsByPagination(int size, int startIndex) {
+        var query = """
+                SELECT * FROM `swp391`.subject s
+                ORDER BY id
+                LIMIT ? OFFSET ?
+                """;
+        List<Subject> subjects = new ArrayList<>();
+        try (var conn = getConnection(); var pre = conn.prepareStatement(query)) {
+            pre.setInt(1, size);
+            pre.setInt(2, startIndex * size);
+            try (var rs = pre.executeQuery()) {
+                while (rs.next()) {
+                    subjects.add(getEntity(rs));
+                }
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return subjects;
+    }
+
     public boolean existsById(String id) {
         var sql = "SELECT COUNT(*) FROM `swp391`.subject WHERE id = ?";
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
@@ -304,7 +360,7 @@ public class SubjectDAO extends DBContext {
         return false;
     }
 
-    public int getTopNCoursePriceOfSubject(String subjectId, int limit) {
+    public int getTotalPriceOfTopNCourse(String subjectId, int limit) {
         var sql = """
                 SELECT SUM(pp.price)
                 FROM `swp391`.course c
@@ -329,6 +385,35 @@ public class SubjectDAO extends DBContext {
         return 0;
     }
 
+    public void insert(Subject subject) throws Exception {
+        var sql = """
+                    INSERT INTO subject (id, name, thumbnail_url, feature_flag, author, updated_date)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """;
+
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            ps.setString(1, subject.getId().toString());
+            ps.setString(2, subject.getName());
+            ps.setString(3, subject.getThumbnailURL());
+            ps.setBoolean(4, subject.isFeatureFlag());
+            ps.setString(5, subject.getAuthorId());
+            ps.setDate(6, java.sql.Date.valueOf(subject.getUpdatedDate()));
+            ps.executeUpdate();
+        }
+    }
+
+    public String getNameBySubjectId(String subjectId) throws Exception {
+        var sql = "SELECT name FROM `swp391`.subject WHERE id = ?";
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
+            pre.setString(1, subjectId);
+            var rs = pre.executeQuery();
+            if (rs.next()) {
+                return rs.getString("name");
+            }
+        }
+        return null;
+    }
+
     private Subject getEntity(ResultSet rs) throws SQLException {
         return Subject.builder()
                 .id(UUID.fromString(rs.getString("id")))
@@ -340,24 +425,8 @@ public class SubjectDAO extends DBContext {
                 .build();
     }
 
-    public void insert(Subject subject) throws Exception {
-        String sql = """
-                    INSERT INTO subject (id, name, thumbnail_url, feature_flag, author, updated_date)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                """;
 
-        try (Connection conn = getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, subject.getId().toString());
-            ps.setString(2, subject.getName());
-            ps.setString(3, subject.getThumbnailURL());
-            ps.setBoolean(4, subject.isFeatureFlag());
-            ps.setString(5, subject.getAuthorId());
-            ps.setDate(6, java.sql.Date.valueOf(subject.getUpdatedDate()));
-            ps.executeUpdate();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
-        }
-    }
+
+
 
 }

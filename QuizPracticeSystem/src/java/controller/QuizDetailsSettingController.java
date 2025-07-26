@@ -63,7 +63,7 @@ public class QuizDetailsSettingController extends HttpServlet {
             session.setAttribute("sourceItem", sourceItem);
             session.setAttribute("sourceItemList", sourceItemList);
 
-            request.getRequestDispatcher("/jsp/course-features/quiz_detail_setting.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/test-content-features/quiz_detail_setting.jsp").forward(request, response);
         } catch (Exception ex) {
             Logger.getLogger(QuizDetailsSettingController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -200,6 +200,6 @@ public class QuizDetailsSettingController extends HttpServlet {
         }
 
         session.setAttribute("QuizQuestionSourceConfigList", masterConfigList);
-        request.getRequestDispatcher("/jsp/course-features/quiz_detail_setting.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/test-content-features/quiz_detail_setting.jsp").forward(request, response);
     }
 }

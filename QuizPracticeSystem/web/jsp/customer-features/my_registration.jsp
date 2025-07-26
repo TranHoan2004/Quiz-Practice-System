@@ -139,7 +139,7 @@
                             <c:set var="size" value="${courses.size()}"/>
                             <c:if test="${empty courses}">
                                 <tr>
-                                    <td colspan="9" class="text-danger">Không có dữ liệu khóa học nào</td>
+                                    <td colspan="9" class="text-danger">No course data available</td>
                                 </tr>
                             </c:if>
                             <c:if test="${not empty courses}">
@@ -174,11 +174,11 @@
                                                 <button class="btn btn-sm btn-danger me-1" type="button"
                                                         onclick="updateCourse('${c.getCourseId()}')">
                                                     <i class="bi bi-x-circle"></i>
-                                                    Hủy
+                                                    Cancel
                                                 </button>
                                                 <a href="${pageContext.request.contextPath}/user/registration?edit=1001"
                                                    class="btn btn-sm btn-secondary">
-                                                    <i class="bi bi-pencil-square"></i> Chỉnh sửa
+                                                    <i class="bi bi-pencil-square"></i> Edit
                                                 </a>
                                             </c:if>
                                             <c:if test="${c.status ne 'sent'}">

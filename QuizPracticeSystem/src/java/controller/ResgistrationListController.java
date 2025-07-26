@@ -4,7 +4,7 @@ import dao.CourseDAO;
 import dao.PersonalCourseDAO;
 import dao.SubjectDAO;
 import dto.RegistrationDTO;
-import dto.StasusPersonalCourseDTO;
+import dto.StatusPersonalCourseDTO;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -15,13 +15,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.Subject;
 
-@WebServlet(name = "ResgistrationListController", urlPatterns = {"/resgistrationList"})
+@WebServlet(name = "ResgistrationListController", urlPatterns = {"/registration-list"})
 public class ResgistrationListController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        // Gọi phương thức load dữ liệu.
+        // Phương thức này sẽ xử lý các lỗi nội bộ và đặt thuộc tính lỗi nếu có.
         loadResgistrationDtoDataAndCheck(request, response);
+        
+        // Sau khi load dữ liệu (hoặc đặt lỗi), luôn forward đến JSP cuối cùng.
+        // Đảm bảo chỉ có MỘT lệnh forward duy nhất trong doGet.
         request.getRequestDispatcher("/jsp/sale-features/resgistration_list.jsp").forward(request, response);
     }
 
@@ -56,6 +61,7 @@ public class ResgistrationListController extends HttpServlet {
                     request.setAttribute("validateError", "Ngày bắt đầu phải nhỏ hơn ngày kết thúc.");
                 }
             } catch (Exception e) {
+                // Chỉ đặt thuộc tính lỗi, không forward ở đây
                 request.setAttribute("validateError", "Định dạng ngày tháng không hợp lệ.");
             }
 
@@ -75,17 +81,14 @@ public class ResgistrationListController extends HttpServlet {
                 }
             }
 
-            // Tính toán endPage chính xác
             int endPage = (totalRegistrationDto > 0) ? (totalRegistrationDto / numberOfLine + (totalRegistrationDto % numberOfLine == 0 ? 0 : 1)) : 1;
-            // ================= KẾT THÚC SỬA =================
-
-            // Ràng buộc trang hợp lệ
+            
             if (page < 1) page = 1;
             if (page > endPage) page = endPage;
 
             List<Subject> subjectList = subjectDao.getAllSubjects();
             List<RegistrationDTO> registrationDtoList = courseDao.pagingRegistrationDto(page, numberOfLine, subject, status, validFrom, validTo, email);
-            List<StasusPersonalCourseDTO> statusList = personalCourseDao.getStatus();
+            List<StatusPersonalCourseDTO> statusList = personalCourseDao.getStatus();
 
             boolean[] columnVisibility = new boolean[9];
             if (selectedColumns != null) {
@@ -115,18 +118,18 @@ public class ResgistrationListController extends HttpServlet {
             request.setAttribute("RegistrationDtoList", registrationDtoList);
             request.setAttribute("endPage", endPage);
             request.setAttribute("currentPage", page);
-            request.setAttribute("subjectId", subject); 
+            request.setAttribute("subjectId", subject);
             request.setAttribute("email", email);
             request.setAttribute("status", status);
             request.setAttribute("validFrom", validFromStr);
             request.setAttribute("validTo", validToStr);
             request.setAttribute("numberOfLine", numberOfLine);
-            request.setAttribute("selectedColumns", selectedColumns); 
+            request.setAttribute("selectedColumns", selectedColumns);
 
         } catch (Exception e) {
             e.printStackTrace();
+            // Đặt thuộc tính lỗi vào request, nhưng KHÔNG forward ở đây
             request.setAttribute("error", "Lỗi khi lấy dữ liệu: " + e.getMessage());
-            request.getRequestDispatcher("/jsp/sale-features/resgistration_list.jsp").forward(request, response);
         }
     }
 

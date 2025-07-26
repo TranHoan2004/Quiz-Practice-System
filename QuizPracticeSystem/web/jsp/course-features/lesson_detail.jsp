@@ -24,6 +24,84 @@
 
 
     </head>
+    <!-- Miss Assistant Floating Chat -->
+    <style>
+        #miss-assistant-button {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background-color: #6610f2;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        #miss-assistant-panel.active {
+            display: flex;
+        }
+
+        #miss-assistant-panel {
+            position: fixed;
+            bottom: 90px;
+            left: 2rem;
+            width: 360px;
+            max-height: 500px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #miss-assistant-header {
+            background-color: #6610f2;
+            color: white;
+            padding: 0.75rem 1rem;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        #miss-assistant-body {
+            padding: 1rem;
+            flex: 1;
+            overflow-y: auto;
+            font-size: 14px;
+        }
+
+        #miss-assistant-input {
+            display: flex;
+            border-top: 1px solid #eee;
+        }
+
+        #miss-assistant-input textarea {
+            flex: 1;
+            border: none;
+            resize: none;
+            padding: 0.75rem;
+            font-size: 14px;
+        }
+
+        #miss-assistant-input button {
+            background-color: #6610f2;
+            color: white;
+            border: none;
+            padding: 0 1rem;
+            cursor: pointer;
+        }
+    </style>
+
 
     <body>
         <jsp:include page="component.subject/header.jsp"/>
@@ -43,7 +121,7 @@
                 </c:if>
             </div>
             <div class="modal-dialog modal-xl modal-dialog-centered">
-                <form id="lessonForm" method="post" action="${pageContext.request.contextPath}/user/subject_lesson/lesson_detail">
+                <form id="lessonForm" method="post" action="${pageContext.request.contextPath}/lesson-detail">
                     <input type="hidden" name="lessonId" id="lessonId" value="${lesson.lessonId}"/>
                     <input type="hidden" name="courseId" id="modalCourseId" value="${courseId}"/>
 
@@ -93,15 +171,43 @@
                             </div>
                         </div>
 
+
+
                         <div class="modal-footer border-0">
-                            <a href="${pageContext.request.contextPath}/user/subject_lesson?id=${courseId}" class="btn btn-outline-secondary">Back</a>
+                            <a href="${pageContext.request.contextPath}/subject-lesson?id=${courseId}" class="btn btn-outline-secondary">Back</a>
 
                             <button type="submit" class="btn btn-primary">
                                 ${mode == 'edit' ? 'Update Lesson' : 'Add Lesson'}
                             </button>
                         </div>
                     </div>
+                    <!-- Floating button -->
                 </form>
+
+
+            </div>
+            <!-- ✅ Các nút gợi ý -->
+            <div id="lesson-suggestions" style="padding: 0.5rem 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <button onclick="sendLessonPrompt('summary')" class="btn btn-sm btn-outline-secondary">📝 Tóm tắt</button>
+                <button onclick="sendLessonPrompt('explainConcepts')" class="btn btn-sm btn-outline-secondary">📘 Giải thích</button>
+                <button onclick="sendLessonPrompt('exampleHelp')" class="btn btn-sm btn-outline-secondary">🔍 Giải ví dụ</button>
+                <button onclick="sendLessonPrompt('quizMe')" class="btn btn-sm btn-outline-secondary">❓ Câu hỏi</button>
+                <button onclick="sendLessonPrompt('misunderstanding')" class="btn btn-sm btn-outline-secondary">⚠️ Hiểu nhầm</button>
+            </div>
+
+            <!-- ✅ Giao diện Miss Assistant -->
+            <button id="miss-assistant-button" type="button" title="Ask Miss Assistant">
+                <i class="fas fa-robot"></i>
+            </button>
+            <div id="miss-assistant-panel">
+                <div id="miss-assistant-header">Miss Assistant</div>
+                <div id="miss-assistant-body">
+                    <div><i>Ask me about this lesson content!</i></div>
+                </div>
+                <div id="miss-assistant-input">
+                    <textarea id="miss-assistant-text" rows="2" placeholder="Type your question..."></textarea>
+                    <button id="miss-assistant-send" type="button"><i class="fas fa-paper-plane"></i></button>
+                </div>
             </div>
         </div>
 
@@ -118,9 +224,143 @@
         <script src="${pageContext.request.contextPath}/js/main.js"></script>
         <script src="${pageContext.request.contextPath}/js/Notification.js"></script>
         <script>
+        const lessonPrompts = {
+        summary: "📝 Hãy tóm tắt bài học này trong 5–7 dòng.",
+        explainConcepts: "📘 Giải thích các khái niệm chính trong bài học.",
+        exampleHelp: "🔍 Giải thích ví dụ khó trong bài học.",
+        quizMe: "❓ Hãy đặt 3 câu hỏi trắc nghiệm dựa trên bài học này.",
+        misunderstanding: "⚠️ Nêu các hiểu nhầm thường gặp liên quan đến bài học này."
+    };
 
+    document.addEventListener('DOMContentLoaded', function () {
+        const toggleBtn = document.getElementById('miss-assistant-button');
+        const panel = document.getElementById('miss-assistant-panel');
+        const sendBtn = document.getElementById('miss-assistant-send');
+        const textInput = document.getElementById('miss-assistant-text');
+        const chatBody = document.getElementById('miss-assistant-body');
 
+        toggleBtn.addEventListener('click', () => {
+            panel.classList.toggle('active');
+        });
+
+        sendBtn.addEventListener('click', sendPrompt);
+        textInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendPrompt();
+            }
+        });
+
+        function appendMessage(sender, message) {
+            if (!message || message.trim() === '') return;
+            const div = document.createElement('div');
+            div.style.margin = '0.5rem 0';
+            div.innerHTML = "<b>" + sender + ":</b> " + escapeHTML(message).replace(/\n/g, '<br>');
+            chatBody.appendChild(div);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, function (m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+
+        window.sendLessonPrompt = function (type) {
+            const prompt = lessonPrompts[type];
+            if (!prompt) return;
+            textInput.value = prompt;
+            sendPrompt();
+        };
+
+        async function sendPrompt() {
+            const prompt = textInput.value.trim();
+            if (!prompt) {
+                alert("Please enter a question for Miss.");
+                return;
+            }
+
+            appendMessage("You", prompt);
+            textInput.value = '';
+
+            const context = document.getElementById('lessonContent')?.value || '';
+            appendMessage("Miss Assistant", "Thinking...");
+
+            const fullPrompt = `
+You are Miss, a friendly teaching assistant.
+Please answer the question using the lesson content below.
+
+Lesson Content:
+${context}
+
+Question:
+${prompt}
+            `;
+
+            try {
+                const response = await fetch('<%= request.getContextPath() %>/ask', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        prompt: fullPrompt,
+                        insightContext: '',
+                        target: 'lesson'
+                    })
+                });
+
+                if (!response.ok)
+                    throw new Error("Failed to contact Miss Assistant.");
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let fullText = '';
+                let partialDiv = document.createElement('div');
+                partialDiv.innerHTML = `<b>Miss Assistant:</b> <em>Thinking...</em>`;
+                chatBody.appendChild(partialDiv);
+                let thinkingRemoved = false;
+
+                while (true) {
+                    const {done, value} = await reader.read();
+                    if (done) break;
+
+                    const chunkText = decoder.decode(value, {stream: true}).trim();
+                    const lines = chunkText.split('\n');
+                    for (const line of lines) {
+                        if (!line.trim()) continue;
+                        try {
+                            const json = JSON.parse(line);
+                            if (typeof json.response === 'string') {
+                                fullText += json.response;
+                                const cleanText = fullText.replace(/\*\*(.*?)\*\*/g, '$1');
+
+                                if (!thinkingRemoved) {
+                                    partialDiv.innerHTML = `<b>Miss Assistant:</b> `;
+                                    thinkingRemoved = true;
+                                }
+
+                                partialDiv.innerHTML = `<b>Miss Assistant:</b> ` + escapeHTML(cleanText).replace(/\n/g, '<br>');
+                                chatBody.scrollTop = chatBody.scrollHeight;
+                            }
+                        } catch (e) {
+                            console.error("Invalid JSON line:", line);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                appendMessage("Miss Assistant", "<span class='text-danger'>Something went wrong while contacting Miss.</span>");
+            }
+        }
+    });
         </script>
+
+
     </body>
 
 </html>

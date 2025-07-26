@@ -37,9 +37,6 @@ public class PersonalQuizDAO extends DBContext {
             try (var rs = pre.executeQuery()) {
                 list = getEntitiesList(rs);
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return list;
     }
@@ -50,10 +47,20 @@ public class PersonalQuizDAO extends DBContext {
              var pre = conn.prepareStatement(sql)) {
             pre.setString(1, id);
             pre.executeUpdate();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
+    }
+
+    public PersonalQuiz getById(String id) throws Exception {
+        var query = "SELECT * FROM `swp391`.personalquiz WHERE id = ?";
+        try (var conn = getConnection(); var pre = conn.prepareStatement(query)) {
+            pre.setString(1, id);
+            try (var rs = pre.executeQuery()) {
+                if (rs.next()) {
+                    return getEntity(rs);
+                }
+            }
+        }
+        return null;
     }
 
     private List<PersonalQuiz> getEntitiesList(ResultSet rs) throws Exception {

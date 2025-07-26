@@ -3,8 +3,11 @@ package dao;
 import dto.SourceItemDTO;
 import dto.SubjectDimensionDTO;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,9 +34,6 @@ public class SettingDAO extends DBContext {
                     settingId.add(rs.getString("setting_id"));
                 }
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
 
         var secondQuery = "SELECT value FROM `swp391`.setting WHERE id = ?";
@@ -47,9 +47,6 @@ public class SettingDAO extends DBContext {
                         }
                     }
                 }
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, e.getMessage());
-                throw e;
             }
         }
         return values;
@@ -58,15 +55,11 @@ public class SettingDAO extends DBContext {
     public List<String> getLessonTypes() throws Exception {
         List<String> types = new ArrayList<>();
         var sql = "SELECT value FROM `swp391`.setting WHERE setting_type_id = ?";
-        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql); var rs = ps.executeQuery()) {
             ps.setString(1, LESSON_TYPE_SETTING_ID); // UUID cố định
-            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 types.add(rs.getString("value"));
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return types;
     }
@@ -78,9 +71,6 @@ public class SettingDAO extends DBContext {
             while (rs.next()) {
                 map.put(rs.getString("id"), rs.getString("value"));
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return map;
     }
@@ -128,7 +118,7 @@ public class SettingDAO extends DBContext {
                     VALUES (?, ?, ?, ?, ?, ?)
                 """;
 
-        String link = """
+        var link = """
                     INSERT INTO `swp391`.setting_subject (setting_id, subject_id)
                     VALUES (?, ?)
                 """;
@@ -152,9 +142,6 @@ public class SettingDAO extends DBContext {
             }
 
             conn.commit();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
     }
 
@@ -175,14 +162,11 @@ public class SettingDAO extends DBContext {
                     settingList.add(getSetting(rs));
                 }
             }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw e;
         }
         return settingList;
     }
 
-    public List<SourceItemDTO> getListSourceItemSetting(List<Setting> settingList, String domainorGroup) {
+    public List<SourceItemDTO> getListSourceItemSetting(List<Setting> settingList, String domainGroup) {
         List<SourceItemDTO> sourceItemDTOList = new ArrayList<>();
 
         if (settingList == null || settingList.isEmpty()) {
@@ -196,22 +180,90 @@ public class SettingDAO extends DBContext {
             var sourceItem = new SourceItemDTO();
             sourceItem.setId(setting.getId());
             sourceItem.setValue(setting.getValue());
-            sourceItem.setSourceType(domainorGroup);
+            sourceItem.setSourceType(domainGroup);
             sourceItemDTOList.add(sourceItem);
         }
         return sourceItemDTOList;
     }
 
-    private Setting getSetting(ResultSet rs) throws Exception {
-        return Setting.builder()
-                .id(UUID.fromString(rs.getString("id")))
-                .value(rs.getString("value"))
-                .status(rs.getBoolean("status"))
-                .description(rs.getString("description"))
-                .updatedDate(rs.getDate("updated_date") != null
-                        ? rs.getDate("updated_date").toLocalDate() : null)
-                .settingTypeId(rs.getString("setting_type_id"))
-                .build();
+    /**
+     * Lấy danh sách các Dimension (Setting) liên quan đến một Subject cụ thể.
+     * Các Dimension này được định nghĩa là những Setting có setting_type_id
+     * liên quan đến 'Group' hoặc 'Domain' và được gán cho Subject đó
+     * thông qua bảng setting_subject.
+     *
+     * @param subjectId ID của Subject.
+     * @return Danh sách các đối tượng Setting (Dimension).
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình truy cập cơ sở dữ liệu.
+     */
+    public List<Setting> getDimensionsBySubject(String subjectId) throws Exception {
+        List<Setting> dimensions = new ArrayList<>();
+
+        var sql = """
+                SELECT s.id, s.value, s.status, s.description, s.updated_date, s.setting_type_id
+                FROM `swp391`.setting s
+                JOIN `swp391`.setting_subject ss ON s.id = ss.setting_id
+                WHERE ss.subject_id = ?
+                AND s.setting_type_id IN (?, ?);
+                """;
+
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
+            pre.setString(1, subjectId);
+            try (var rs = pre.executeQuery()) {
+                while (rs.next()) {
+                    // Xử lý LocalDate
+                    LocalDate updatedDate = null;
+                    var sqlDate = rs.getDate("updated_date");
+                    if (sqlDate != null) {
+                        updatedDate = sqlDate.toLocalDate(); // Chuyển đổi java.sql.Date sang java.time.LocalDate
+                    }
+                    dimensions.add(Setting.builder()
+                            .id(UUID.fromString(rs.getString("id")))
+                            .value(rs.getString("value"))
+                            .status(rs.getBoolean("status"))
+                            .description(rs.getString("description"))
+                            .updatedDate(updatedDate) // Sử dụng LocalDate
+                            .settingTypeId(rs.getString("setting_type_id"))
+                            .build());
+                }
+            }
+        }
+        return dimensions;
+    }
+
+    /**
+     * Lấy ID của một SettingType dựa trên tên của nó.
+     *
+     * @param typeName Tên của SettingType (ví dụ: "Group", "Domain").
+     * @return ID của SettingType dưới dạng String, hoặc null nếu không tìm thấy.
+     * @throws Exception Nếu có lỗi xảy ra trong quá trình truy cập cơ sở dữ liệu.
+     */
+    public String getSettingTypeIdByName(String typeName) throws Exception {
+        String settingTypeId = null;
+        var sql = "SELECT id FROM `swp391`.settingtype WHERE name = ?";
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
+            pre.setString(1, typeName);
+            try (var rs = pre.executeQuery()) {
+                if (rs.next()) {
+                    settingTypeId = rs.getString("id");
+                }
+            }
+        }
+        return settingTypeId;
+    }
+
+    public Setting getSettingById(String id) throws Exception {
+        Setting setting = null;
+        var sql = "SELECT id, value, status, description, updated_date, setting_type_id FROM `swp391`.setting WHERE id = ?";
+        try (var conn = getConnection(); var pre = conn.prepareStatement(sql)) {
+            pre.setString(1, id);
+            try (var rs = pre.executeQuery()) {
+                if (rs.next()) {
+                    setting = getSetting(rs);
+                }
+            }
+        }
+        return setting;
     }
 
     public String getSettingIdByName(String value, String settingTypeName) throws Exception {
@@ -248,76 +300,38 @@ public class SettingDAO extends DBContext {
 
     public List<Setting> getSettingsByType(String typeName) throws Exception {
         List<Setting> settings = new ArrayList<>();
-
-        String sql = """
-        SELECT s.*
-        FROM setting s
-        JOIN settingtype st ON s.setting_type_id = st.id
-        WHERE st.name = ?
-    """;
+        var sql = """
+                    SELECT s.*
+                    FROM setting s
+                    JOIN settingtype st ON s.setting_type_id = st.id
+                    WHERE st.name = ?
+                """;
 
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
-
             ps.setString(1, typeName);
-
-            try (ResultSet rs = ps.executeQuery()) {
+            try (var rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    Setting setting = Setting.builder()
-                            .id(UUID.fromString(rs.getString("id")))
-                            .value(rs.getString("value"))
-                            .status(rs.getBoolean("status"))
-                            .description(rs.getString("description"))
-                            .updatedDate(rs.getDate("updated_date") != null
-                                    ? rs.getDate("updated_date").toLocalDate()
-                                    : null)
-                            .settingTypeId(rs.getString("setting_type_id"))
-                            .build();
-
-                    settings.add(setting);
+                    settings.add(getSetting(rs));
                 }
             }
-
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            throw e;
         }
-
         return settings;
     }
 
-    public String getSettingTypeIdByName(String name) throws Exception {
-        String sql = "SELECT id FROM `swp391`.settingtype WHERE name = ?";
-        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
-            ps.setString(1, name);
-            try (var rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getString("id");
-                }
-            }
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            throw e;
-        }
-        return null;
-    }
-
     public void insertSettingSubjectLink(String settingId, String subjectId) throws Exception {
-        String sql = "INSERT INTO `swp391`.setting_subject (setting_id, subject_id) VALUES (?, ?)";
+        var sql = "INSERT INTO `swp391`.setting_subject (setting_id, subject_id) VALUES (?, ?)";
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             ps.setString(1, settingId);
             ps.setString(2, subjectId);
             ps.executeUpdate();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-            throw e;
         }
     }
 
     public void insert(Setting setting) throws Exception {
-        String sql = """
-        INSERT INTO `swp391`.setting (id, value, status, description, updated_date, setting_type_id)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """;
+        var sql = """
+                    INSERT INTO `swp391`.setting (id, value, status, description, updated_date, setting_type_id)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """;
 
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             ps.setString(1, setting.getId().toString());
@@ -328,21 +342,18 @@ public class SettingDAO extends DBContext {
             ps.setString(6, setting.getSettingTypeId());
 
             ps.executeUpdate();
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "❌ insert() failed: " + e.getMessage(), e);
-            throw e;
         }
     }
 
     public String getCategoryIdBySubjectId(String subjectId) throws Exception {
         var sql = """
-        SELECT s.id
-        FROM setting_subject ss
-        JOIN setting s ON ss.setting_id = s.id
-        JOIN settingtype st ON s.setting_type_id = st.id
-        WHERE ss.subject_id = ? AND st.name = 'Blog Category'
-        LIMIT 1
-    """;
+                    SELECT s.id
+                    FROM setting_subject ss
+                    JOIN setting s ON ss.setting_id = s.id
+                    JOIN settingtype st ON s.setting_type_id = st.id
+                    WHERE ss.subject_id = ? AND st.name = 'Blog Category'
+                    LIMIT 1
+                """;
 
         try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
             ps.setString(1, subjectId);
@@ -353,6 +364,43 @@ public class SettingDAO extends DBContext {
             }
         }
         return null;
+    }
+
+    public List<Setting> getAllDimensionsByDomainOrGroup() {
+        List<Setting> settings = new ArrayList<>();
+        var sql = """
+                SELECT *
+                FROM `swp391`.setting s
+                JOIN `swp391`.settingtype st ON s.setting_type_id = st.id
+                WHERE st.name = 'Domain' or st.name = 'Group'
+                """;
+        try (var conn = getConnection(); var ps = conn.prepareStatement(sql)) {
+            try (var rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Setting setting = Setting.builder()
+                            .id(UUID.fromString(rs.getString("id")))
+                            .value(rs.getString("value"))
+                            .build();
+                    settings.add(setting);
+                }
+            }
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return settings;
+    }
+
+    private Setting getSetting(ResultSet rs) throws Exception {
+        return Setting.builder()
+                .id(UUID.fromString(rs.getString("id")))
+                .value(rs.getString("value"))
+                .status(rs.getBoolean("status"))
+                .description(rs.getString("description"))
+                .updatedDate(rs.getDate("updated_date") != null
+                        ? rs.getDate("updated_date").toLocalDate() : null)
+                .settingTypeId(rs.getString("setting_type_id"))
+                .build();
     }
 
 }
