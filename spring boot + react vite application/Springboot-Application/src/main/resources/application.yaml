@@ -1,0 +1,67 @@
+spring:
+  profiles:
+    active: dev
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+        hbm2ddl:
+          auto: none
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          starttls:
+            enable: true
+
+#  data:
+#    redis:
+#      client-name: qps-be
+#      host: ${REDIS_HOST:localhost}
+#      port: 6379
+#      database: 0
+#      timeout: 10s
+
+  config:
+    openAPIPath: "http://localhost:8080/v3/api-docs"
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_OAUTH2_CLIENT_ID}
+            client-secret: ${GOOGLE_OAUTH2_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+
+  mvc:
+    view:
+      prefix: classpath:/templates/
+      suffix: .html
+
+jwt:
+  secret: mySecretKey123!#123adgasdgagafvzrgavafgarbadfzdfvadfadfadf # dai hon 32 ky tu
+  expirationMs: 60000
+  signerKey: 6SjMf1ukIpm75rRJgzNsbo7n2LqJWgKe+SwPqchr+IG2dLkqqY74TF1LSiOXRRdn
+
+server:
+  port: 8000
+
+springdoc:
+  show-actuator: true
+  version: 0.0.1

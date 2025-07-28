@@ -1,0 +1,133 @@
+/* editProfile.css (Nội dung cuối cùng) */
+
+/* Wrapper chính cho nội dung trang profile */
+.edit-profile-main-content {
+    display: block; /* Buộc nó phải là một khối đơn giản */
+    width: 100%;
+}
+
+/* Container chính của box Edit Profile */
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    background: white;
+    padding: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+
+    /* GIẢI PHÁP MẠNH: Dùng !important để ghi đè mọi style khác */
+    display: block !important;
+    width: 95% !important;
+    float: none !important;
+    clear: both !important;
+}
+
+/*
+  Style cho Footer để đảm bảo nó cũng xuống hàng
+*/
+.edit-profile-main-content .footer {
+    display: block !important;
+    width: 100% !important;
+    float: none !important;
+    clear: both !important;
+    margin-top: auto;
+}
+
+/* --- CÁC STYLE GIAO DIỆN KHÁC (GIỮ NGUYÊN TỪ LẦN TRƯỚC) --- */
+.header {
+    background-color: #f7f9fc;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    border-bottom: 1px solid #e0e0e0;
+}
+.header h1 {
+    color: #06BBCC;
+    font-size: 24px;
+    margin: 0;
+    font-weight: bold;
+}
+.back-btn {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 8px 18px;
+    background-color: #06BBCC;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+.back-btn:hover { background-color: #05a5b4; }
+.profile-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px;
+    gap: 30px;
+}
+.profile-picture, .personal-details {
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    text-align: center;
+}
+.profile-picture {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 35%;
+}
+.personal-details {
+    width: 65%;
+    text-align: left;
+}
+.profile-img {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #e0e0e0;
+}
+.upload-btn {
+    padding: 10px 20px;
+    background-color: #06BBCC;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+.upload-btn:hover { background-color: #05a5b4; }
+.personal-details h2 {
+    color: #333;
+    font-size: 20px;
+    margin-top: 0;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #06BBCC;
+    display: inline-block;
+}
+table { width: 100%; border-collapse: collapse; }
+table td { padding: 15px 5px; vertical-align: middle; }
+table label { font-weight: 600; font-size: 14px; color: #555; }
+input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+input[readonly] { background-color: #f0f0f0; cursor: not-allowed; }
+.error { color: red; font-size: 12px; display: block; margin-top: 5px; min-height: 18px; }
+.save-btn {
+    padding: 12px 25px;
+    background-color: #fb8c00;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+.save-btn:hover { background-color: #e67e00; }

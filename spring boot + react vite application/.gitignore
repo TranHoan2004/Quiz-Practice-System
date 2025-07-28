@@ -1,0 +1,47 @@
+QuizPracticeSystem/nbproject/
+QuizPracticeSystem/build/
+QuizPracticeSystem/target/
+QuizPracticeSystem/src/java/common/Constants.java
+QuizPracticeSystem/web/index.html
+QuizPracticeSystem/dist/
+QuizPracticeSystem/out/
+QuizPracticeSystem/src/java/dao/DBContext.java
+.idea
+QuizPracticeSystem/.idea/
+QuizPracticeSystem/.env
+Springboot-Application/src/main/resources/application.dev.yaml
+
+# =========================
+# IntelliJ IDEA
+# =========================
+.idea/
+*.iml
+*.iws
+out/
+
+# =========================
+# Build output folders
+# =========================
+/build/
+/dist/
+/target/
+
+# =========================
+# Compiled class files
+# =========================
+*.class
+
+# =========================
+# OS generated files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Temporary files
+# =========================
+*.log
+*.lck
+*.bak
+*.swp
+*~

@@ -1,0 +1,116 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.3'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springAiVersion', "1.0.0")
+}
+
+dependencies {
+    // Spring Boot starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+
+    // Spring Security OAuth2 (JOSE for JWT)
+    implementation 'org.springframework.security:spring-security-oauth2-jose'
+
+    // Thymeleaf Security Extras
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+    // WebSocket API (Jakarta)
+    implementation 'jakarta.websocket:jakarta.websocket-api:2.2.0'
+
+    // Hibernate & Validation
+    implementation 'org.hibernate:hibernate-core:6.5.3.Final'
+    implementation 'org.hibernate.validator:hibernate-validator'
+    implementation 'org.hibernate.common:hibernate-commons-annotations:7.0.3.Final'
+    implementation 'jakarta.validation:jakarta.validation-api'
+
+    // Jackson (JSON)
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.18.4'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.0'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.18.4'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.1'
+
+    // Gson
+    implementation 'com.google.code.gson:gson:2.13.1'
+
+    // Spring AI
+    implementation 'org.springframework.ai:spring-ai-starter-model-ollama'
+
+    // Google Authenticator
+    implementation 'com.warrenstrange:googleauth:1.4.0'
+
+    // Dotenv (load .env file)
+    implementation 'io.github.cdimascio:dotenv-java:2.2.0'
+
+    // JWT
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.37.3'
+
+    // Springdoc OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+    // QR Code (ZXing)
+    implementation 'com.google.zxing:core:3.5.3'
+    implementation 'com.google.zxing:javase:3.5.3'
+
+    // Apache Commons Codec
+    implementation 'commons-codec:commons-codec:1.18.0'
+
+    // Apache POI (Excel)
+    implementation 'org.apache.poi:poi:5.4.0'
+    implementation 'org.apache.poi:poi-ooxml:5.4.0'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // Devtools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // MySQL JDBC driver
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
