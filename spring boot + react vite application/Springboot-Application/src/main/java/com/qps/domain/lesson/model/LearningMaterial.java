@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"lesson"})
 @Table(name = "learningmaterial", schema = "swp391")
 public class LearningMaterial {
     @Id

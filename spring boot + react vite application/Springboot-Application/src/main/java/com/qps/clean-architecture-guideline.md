@@ -57,6 +57,43 @@ Dưới đây là sơ đồ tổng quan về cấu trúc dự án:
 
 ---
 
+## Các Loại Commit Thường Dùng
+
+Danh sách các loại commit thường dùng và ý nghĩa của chúng:
+
+- feat: Một tính năng mới cho người dùng hoặc hệ thống.
+
+  - Ví dụ: feat: cho phép người dùng tải ảnh đại diện lên
+
+- fix: Một bản sửa lỗi giúp khắc phục sự cố trong code.
+
+  - Ví dụ: fix: khắc phục lỗi căn lề trên nút đăng nhập
+
+- refactor: Thay đổi mã mà không sửa lỗi hoặc thêm tính năng mới.
+
+  - Ví dụ: refactor: đơn giản hóa logic của user service
+
+- docs: Chỉ thay đổi liên quan đến tài liệu (ví dụ: cập nhật README, thêm tài liệu API).
+
+  - Ví dụ: docs: cập nhật hướng dẫn cài đặt trong README.md
+
+- chore: Các thay đổi nhỏ không ảnh hưởng đến mã sản phẩm (ví dụ: cập nhật script build, cấu hình package manager).
+
+  - Ví dụ: chore: thêm file cấu hình prettier
+
+- style: Các thay đổi không ảnh hưởng đến logic code (ví dụ: khoảng trắng, định dạng, thiếu dấu chấm phẩy, thay đổi CSS/giao diện).
+
+  - Ví dụ: style: định dạng lại mã theo hướng dẫn của dự án
+
+- perf: Thay đổi mã giúp cải thiện hiệu suất.
+
+  - Ví dụ: perf: tối ưu truy vấn cơ sở dữ liệu cho dashboard người dùng
+
+- vendor: Cập nhật các gói hoặc thư viện bên thứ ba.
+  - Ví dụ: vendor: nâng cấp react lên phiên bản 18.3.0
+
+---
+
 ## Ghi chú
 
 - Mỗi `domain/*` là một **bounded context**, được tổ chức độc lập và có thể tái sử dụng.

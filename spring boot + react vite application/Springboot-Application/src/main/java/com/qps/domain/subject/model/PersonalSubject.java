@@ -16,6 +16,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"subject", "account"})
 @Table(name = "personalsubject", schema = "swp391")
 public class PersonalSubject {
     @EmbeddedId

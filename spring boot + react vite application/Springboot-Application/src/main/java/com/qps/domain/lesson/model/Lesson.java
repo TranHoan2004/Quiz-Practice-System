@@ -14,6 +14,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"course", "lessonType"})
 @Table(name = "lesson", schema = "swp391")
 public class Lesson {
     @Id

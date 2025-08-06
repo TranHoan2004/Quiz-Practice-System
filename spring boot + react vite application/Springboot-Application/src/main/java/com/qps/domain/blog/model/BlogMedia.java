@@ -14,6 +14,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"blog"})
 @Table(name = "blogmedia", schema = "swp391")
 public class BlogMedia {
     @Id

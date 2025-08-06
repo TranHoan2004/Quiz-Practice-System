@@ -13,6 +13,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"question"})
 @Table(name = "`option`", schema = "swp391")
 public class Option {
     @Id

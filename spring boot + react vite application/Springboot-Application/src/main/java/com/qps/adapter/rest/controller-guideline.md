@@ -70,6 +70,7 @@ public class AccountController {
     // ApiResponse mô tả luồng dữ liệu api trả ra
 }
 ```
+Truy cap bang http://localhost:8000/api/v1/swagger-ui/index.html#/
 
 ### ✅ 3.3. Sử dụng đúng giao thức HTTP cho từng loại yêu cầu:
 

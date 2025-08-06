@@ -2,7 +2,7 @@ Cách gỡ theo dõi 1 file:
 git rm --cached <tên file>
 git commit -m '...gỡ theo dõi file <tên file>' commit nó lại
 
-application.dev.yaml:
+Tạo file application.dev.yaml:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

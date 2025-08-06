@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.3'
+    id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -38,6 +38,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    implementation 'org.springframework.security:spring-security-oauth2-jose'
 
     // Spring Security OAuth2 (JOSE for JWT)
     implementation 'org.springframework.security:spring-security-oauth2-jose'
@@ -68,9 +69,6 @@ dependencies {
 
     // Google Authenticator
     implementation 'com.warrenstrange:googleauth:1.4.0'
-
-    // Dotenv (load .env file)
-    implementation 'io.github.cdimascio:dotenv-java:2.2.0'
 
     // JWT
     implementation 'com.nimbusds:nimbus-jose-jwt:9.37.3'

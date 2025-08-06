@@ -10,6 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"subject", "tagline"})
 @Table(name = "subject_tagline", schema = "swp391")
 public class SubjectTagline {
     @EmbeddedId

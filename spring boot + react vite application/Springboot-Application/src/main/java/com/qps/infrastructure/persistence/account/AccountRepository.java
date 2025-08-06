@@ -18,9 +18,6 @@ public interface AccountRepository extends JpaRepository<Account, String> {
     // AccountDAO.isPhoneNumberExist(String phoneNumber)
     boolean existsByPhone(String phone);
 
-    // AccountDAO.findUserByEmailAndPassword(String email, String password)
-    Account findByEmailAndPassword(String email, String password);
-
     // AccountDAO.getCountNewAccountByDate(String startDate, String endDate)
     int countByCreatedDateBetween(LocalDate createdDateAfter, LocalDate createdDateBefore);
 }

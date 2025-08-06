@@ -1,0 +1,88 @@
+package com.qps.adapter.rest.user;
+
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.oauth2.sdk.TokenResponse;
+import com.qps.application.dto.request.LoginRequest;
+import com.qps.application.usecase.auth.ProfileUtil;
+import com.qps.application.usecase.auth.TokenHandlerUseCase;
+import com.qps.application.usecase.auth.UsernameAndPasswordHandlerUseCase;
+import com.qps.domain.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.InvalidObjectException;
+import java.text.ParseException;
+import java.util.Map;
+
+@Slf4j
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/auth")
+@Tag(
+        name = "Authentication API",
+        description = "Endpoints for user authentication, including login and token generation. Handles credential verification and issues access/refresh tokens for secure access."
+)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class AuthController {
+    TokenHandlerUseCase tokenHandlerUseCase;
+    UsernameAndPasswordHandlerUseCase upUseCase;
+    AuthenticationManager authenticationManager;
+    UserService uSrv;
+
+    @Operation(
+            summary = "Login with username and password",
+            description = "Authenticate user using email and password. Returns access and refresh tokens if authentication is successful."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Login successful, tokens returned",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TokenResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Bad request: malformed input or JOSE/Parse errors",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "401", description = "Authentication failed",
+                    content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content)
+    })
+    @PostMapping(value = "/login", produces = "application/json", consumes = "application/json")
+    public ResponseEntity<?> login(
+            @RequestBody
+            @Parameter(description = "Login request containing email and password", required = true)
+            @Valid
+            LoginRequest request) throws JOSEException {
+        // Get user information, who has that email and password
+        var userDetails = upUseCase.getUserDetailsFromRequest(request.email(), request.password(), authenticationManager);
+        var profile = uSrv.getAccountByEmail(userDetails.getUsername());
+
+        // Get access data and refresh data from this email
+        Map<String, Object> data = tokenHandlerUseCase.getToken(userDetails.getUsername());
+        ProfileUtil.getProfile(profile, data);
+
+        return ResponseEntity.ok(data);
+    }
+
+    /*
+     * React chuyen huong ve security cua spring: localhost:8000/oauth2/authorization/google
+     * Spring security chuyen huong den Google Authorization Endpoint (https://accounts.google.com/o/oauth2/v2/auth?client_id=...&redirect_uri=...&response_type=code&scope=openid email profile)
+     * Google chuyen huong ve endpoint da dang ky (/oauth2/google/login) kem code
+     * Spring boot tu dong goi token-uri de lay access token, goi user-info-uri de lay thong tin nguoi dung
+     */
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@RequestBody String refreshToken) throws InvalidObjectException, ParseException, JOSEException {
+        return ResponseEntity.ok(tokenHandlerUseCase.getTokenByRefreshToken(refreshToken));
+    }
+}

@@ -13,6 +13,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"course"})
 @Table(name = "pricepackage", schema = "swp391")
 public class PricePackage {
     @EmbeddedId

@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"subject", "type", "level"})
 @Table(name = "quiz", schema = "swp391")
 public class Quiz {
     @Id

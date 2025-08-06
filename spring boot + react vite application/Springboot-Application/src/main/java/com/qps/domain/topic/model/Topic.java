@@ -12,6 +12,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"subject"})
 @Table(name = "topic", schema = "swp391")
 public class Topic {
     @Id

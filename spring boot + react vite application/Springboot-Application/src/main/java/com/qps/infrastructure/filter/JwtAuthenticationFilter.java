@@ -2,6 +2,7 @@ package com.qps.infrastructure.filter;
 
 import com.qps.infrastructure.config.security.UserDetailsServiceImpl;
 import com.qps.infrastructure.service.jwt.JwtService;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

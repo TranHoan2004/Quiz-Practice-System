@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"settingType"})
 @Table(name = "setting", schema = "swp391")
 public class Setting {
     @Id

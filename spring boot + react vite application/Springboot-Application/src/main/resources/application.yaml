@@ -36,18 +36,27 @@ spring:
 #      timeout: 10s
 
   config:
-    openAPIPath: "http://localhost:8080/v3/api-docs"
+    openAPIPath: ${OPENAPI_PATH}
 
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_OAUTH2_CLIENT_ID}
-            client-secret: ${GOOGLE_OAUTH2_CLIENT_SECRET}
-            scope:
-              - email
-              - profile
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          google:
+#            client-id: ${GOOGLE_CLIENT_ID}
+#            client-secret: ${GOOGLE_CLIENT_SECRET}
+#            redirect-uri: ${GOOGLE_REDIRECT_URI}
+#            authorization-grant-type: ${GOOGLE_GRANT_TYPE}
+#            scope:
+#              - email
+#              - profile
+#              - openid
+#        provider:
+#          google:
+#            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+#            token-uri: https://oauth2.googleapis.com/token
+#            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+#            user-name-attribute: sub
 
   mvc:
     view:
@@ -61,7 +70,24 @@ jwt:
 
 server:
   port: 8000
+  servlet:
+    context-path: /api/v1
 
 springdoc:
   show-actuator: true
   version: 0.0.1
+
+logging:
+  level:
+    org.springdoc: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.boot.autoconfigure.web: DEBUG
+
+cors:
+  allowed-origins:
+    - ${WEB_FRONTEND}
+
+qr:
+  bank-code: ${BANK_CODE}
+  account-number: ${ACCOUNT_NUMBER}
+

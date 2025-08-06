@@ -31,27 +31,6 @@ public class ChatWebSocketEndpoints {
 
     @OnMessage
     public void onMessage(@PathParam("conversationId") String conversationId, String msg, Session session) {
-        // Retrieve the sender's role from the session properties
-//        String role = (String) session.getUserProperties().get("role");
-
-        // Create and populate ChatDetail object
-//        ChatDetail cd = new ChatDetail();
-//        Chat chat = new Chat();
-//        chat.setId(Integer.parseInt(conversationId));
-//        cd.setChat(chat);
-//        cd.setMessage(msg);
-//        cd.setSender(role);
-//        cd.setTimestamp(new Date());
-//
-//         Save chat details to the database
-//        ChatDetailRepositoryImpl chatDetailRepository = SpringContext.getBean(ChatDetailRepositoryImpl.class);
-//        try {
-//            chatDetailRepository.saveChatDetail(cd);
-//            System.out.println("Message saved to DB for conversationId: " + conversationId);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
         broadcast(conversationId, msg, session);
     }
 

@@ -1,11 +1,13 @@
 package com.qps.domain.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qps.domain.setting.model.Setting;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
@@ -18,6 +20,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"role"})
 @Table(name = "account", schema = "swp391")
 public class Account implements UserDetails {
     @Id
@@ -75,7 +78,8 @@ public class Account implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        GrantedAuthority auth = new SimpleGrantedAuthority(getRole().getValue());
+        return List.of(auth);
     }
 
     @Override
