@@ -42,7 +42,7 @@ This project is developed as a part of the **SWP391 course** at **FPT University
 ## ⏰ Timeline
 
 - **Start Date**: May 15th, 2025  
-- **End Date**: July 9th, 2025
+- **End Date**: July 26th, 2025
 
 ---
 
