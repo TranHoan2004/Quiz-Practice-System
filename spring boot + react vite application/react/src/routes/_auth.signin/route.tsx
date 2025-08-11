@@ -3,7 +3,7 @@ import { Link } from "react-router";
 
 const SignInPage = () => {
   return (
-    <div className="w-full h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
+    <div className="w-full min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-0 w-72 h-72 bg-blue-400/10 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
@@ -19,9 +19,9 @@ const SignInPage = () => {
         <div className="absolute top-2/3 right-1/4 w-1 h-1 bg-indigo-400/40 rounded-full animate-bounce animation-delay-3000"></div>
       </div>
 
-      <div className="relative z-10 flex items-center justify-center w-full h-full p-4">
+      <div className="relative z-10 flex items-center justify-center w-full min-h-screen p-4">
         <div className="w-full flex justify-center">
-          <div className="w-full sm:w-96 md:w-[450px] mx-auto p-6 sm:p-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 relative overflow-hidden">
+          <div className="w-full sm:w-96 md:w-[450px] lg:w-[500px] xl:w-[520px] 2xl:w-[540px] mx-auto p-4 sm:p-6 md:p-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-white/20 relative overflow-hidden">
             {/* Background decoration */}
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-purple-50/50"></div>
             <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-xl"></div>
@@ -51,9 +51,9 @@ const SignInPage = () => {
               </div>
               <SignInForm />
 
-              <div className="mt-8 text-center">
+              <div className="mt-8 flex flex-col items-center gap-2">
                 <p className="text-sm text-gray-600">
-                  Don't have an account?{" "}
+                  Don't have an account?{' '}
                   <a
                     href="#"
                     className="font-semibold text-blue-600 hover:text-blue-500 transition-colors duration-200 border-b decoration-2 underline-offset-2"
@@ -61,18 +61,14 @@ const SignInPage = () => {
                     Sign up
                   </a>
                 </p>
+                <Link
+                  className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium hover:border-b decoration-2 underline-offset-2"
+                  to="/forgot-password"
+                >
+                  Forgot your password?
+                </Link>
               </div>
             </div>
-          </div>
-
-          {/* Forgot Password Link */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-            <Link
-              className="text-sm text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium hover:border-b decoration-2 underline-offset-2"
-              to="/forgot-password"
-            >
-              Forgot your password?
-            </Link>
           </div>
         </div>
       </div>

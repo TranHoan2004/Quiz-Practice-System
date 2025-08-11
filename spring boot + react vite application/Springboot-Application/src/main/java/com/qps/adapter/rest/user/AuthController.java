@@ -3,6 +3,8 @@ package com.qps.adapter.rest.user;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.oauth2.sdk.TokenResponse;
 import com.qps.application.dto.request.LoginRequest;
+import com.qps.application.dto.request.TokenRequest;
+import com.qps.application.dto.response.WrapperApiResponse;
 import com.qps.application.usecase.auth.ProfileUtil;
 import com.qps.application.usecase.auth.TokenHandlerUseCase;
 import com.qps.application.usecase.auth.UsernameAndPasswordHandlerUseCase;
@@ -68,7 +70,7 @@ public class AuthController {
         var profile = uSrv.getAccountByEmail(userDetails.getUsername());
 
         // Get access data and refresh data from this email
-        Map<String, Object> data = tokenHandlerUseCase.getToken(userDetails.getUsername());
+        Map<String, Object> data = tokenHandlerUseCase.getTokenFromEmail(userDetails.getUsername());
         ProfileUtil.getProfile(profile, data);
 
         return ResponseEntity.ok(data);
@@ -81,8 +83,54 @@ public class AuthController {
      * Spring boot tu dong goi token-uri de lay access token, goi user-info-uri de lay thong tin nguoi dung
      */
 
+    @Operation(
+            summary = "Refresh access token",
+            description = "Receive a refresh token and return a new access token if valid."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Token refreshed successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TokenResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Bad request: malformed input, JOSEException, ParseException, validation errors, or I/O errors",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = WrapperApiResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "406",
+                    description = "Not acceptable: invalid object",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = WrapperApiResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = WrapperApiResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "501",
+                    description = "Not implemented: operation not supported",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = WrapperApiResponse.class)
+                    )
+            )
+    })
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@RequestBody String refreshToken) throws InvalidObjectException, ParseException, JOSEException {
-        return ResponseEntity.ok(tokenHandlerUseCase.getTokenByRefreshToken(refreshToken));
+    public ResponseEntity<?> refreshToken(@RequestBody TokenRequest req) throws InvalidObjectException, ParseException, JOSEException {
+        return ResponseEntity.ok(tokenHandlerUseCase.getTokenByRefreshToken(req.refreshToken()));
     }
 }

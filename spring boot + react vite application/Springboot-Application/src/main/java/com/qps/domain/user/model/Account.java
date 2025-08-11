@@ -1,6 +1,5 @@
 package com.qps.domain.user.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qps.domain.setting.model.Setting;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -67,7 +66,7 @@ public class Account implements UserDetails {
     private String imageUrl;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     private Setting role;
 

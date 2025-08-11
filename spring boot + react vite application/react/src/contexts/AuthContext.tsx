@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useState, useEffect, type ReactNode, useRef } from "react";
 import { useNavigate } from "react-router";
 
 interface User {
@@ -48,11 +48,11 @@ const EmptyUser: User = {
 const apiUrl = `${import.meta.env.VITE_API_URL}/auth/refresh-token`;
 
 const isAccessTokenValid = (user: User) => {
-    return user.accessToken && user.expiration * 1000 > Date.now()
+    return user.accessToken && user.expiration > Date.now()
 }
 
 const isRefreshTokenValid = (user: User) => {
-    return user.refreshExpiration && user.refreshExpiration > Date.now()
+    return !!user.refreshExpiration && user.refreshExpiration > Date.now()
 }
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -62,10 +62,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     })
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
-    const isAuthenticated = !loading || !!user
+    const isAuthenticated = isRefreshTokenValid(user)
 
+    // ngăn gửi thông tin 2 lần về backend
+    const isMounted = useRef(true);
+    const initialized = useRef(false);
     useEffect(() => {
+
         const initialize = async () => {
+            if (initialized.current) return;
+            initialized.current = true;
+
             if (isAccessTokenValid(user)) {
                 setUser(user)
             } else if (isRefreshTokenValid(user)) {
@@ -73,17 +80,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 if (!saved) return
 
                 try {
+                    console.log("Go here")
                     const res = await fetch(apiUrl, {
                         method: "POST",
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${user.refreshToken}`
                         },
                         body: JSON.stringify({
                             refreshToken: user.refreshToken
                         })
                     })
                     const data = await res.json();
-                    console.log(data);
 
                     const savedUser = JSON.parse(saved);
                     const updatedUser = {
@@ -95,7 +103,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     }
 
                     localStorage.setItem("auth", JSON.stringify(updatedUser));
-                    setUser(updatedUser);
+                    // setUser(updatedUser);
+                    if (isMounted.current) setUser(updatedUser);
                 } catch (e) {
                     console.error(e);
                     logout()
@@ -108,6 +117,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         initialize().then(r => {
             console.log(r)
         })
+
+        return () => { isMounted.current = false; }
     }, [])
 
     const login = (data: User) => {

@@ -21,9 +21,6 @@ import java.util.Date;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class JwtService {
-    @Value("${jwt.secret}")
-    String secret;
-
     @Getter
     @Value("${jwt.expirationMs}")
     Long expirationMs;
@@ -40,9 +37,9 @@ public class JwtService {
     }
 
     public JWTClaimsSet validateToken(String token) throws ParseException, JOSEException {
-        log.info("Validating token: {}", token);
+//        log.info("Validating token: {}", token);
         var signedJWT = SignedJWT.parse(token);
-        var verifier = new MACVerifier(secret);
+        var verifier = new MACVerifier(signer);
         if (!signedJWT.verify(verifier)) {
             throw new JOSEException("Invalid JWT token");
         }
@@ -56,7 +53,7 @@ public class JwtService {
     }
 
     private String generateToken(String id, String type) throws JOSEException {
-        log.info("Generating JWT token for {}", id);
+//        log.info("Generating JWT token for {}", id);
         var claimsSet = new JWTClaimsSet.Builder()
                 .subject(id)
                 .issuer("qps-be")

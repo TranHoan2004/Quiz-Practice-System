@@ -60,10 +60,10 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated()
                 )
-                .oauth2Login(oauth -> oauth
-                        .successHandler(oauth2SuccessHandler)
-                        .failureUrl("http://localhost:5173/signin?error=true")
-                )
+//                .oauth2Login(oauth -> oauth
+//                        .successHandler(oauth2SuccessHandler)
+//                        .failureUrl("http://localhost:5173/signin?error=true")
+//                )
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

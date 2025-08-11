@@ -65,7 +65,7 @@ spring:
 
 jwt:
   secret: mySecretKey123!#123adgasdgagafvzrgavafgarbadfzdfvadfadfadf # dai hon 32 ky tu
-  expirationMs: 60000
+  expirationMs: 900000
   signerKey: 6SjMf1ukIpm75rRJgzNsbo7n2LqJWgKe+SwPqchr+IG2dLkqqY74TF1LSiOXRRdn
 
 server:
@@ -77,11 +77,11 @@ springdoc:
   show-actuator: true
   version: 0.0.1
 
-logging:
-  level:
-    org.springdoc: DEBUG
-    org.springframework.web: DEBUG
-    org.springframework.boot.autoconfigure.web: DEBUG
+#logging:
+#  level:
+#    org.springdoc: DEBUG
+#    org.springframework.web: DEBUG
+#    org.springframework.boot.autoconfigure.web: DEBUG
 
 cors:
   allowed-origins:

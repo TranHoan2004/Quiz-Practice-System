@@ -11,6 +11,8 @@ import { useNavigate } from "react-router";
 import { useOAuth2 } from "../../hooks/useOAuth2.ts";
 import { traditionalLogin } from "../../services/auth.service.ts";
 import { useAuth } from "../../hooks/useAuth.ts";
+import { useState } from "react";
+// import { useEffect, useState } from "react";
 
 // Create schema for validation
 const schema = z.object({
@@ -29,6 +31,7 @@ const schema = z.object({
 });
 
 const SignInForm = () => {
+  // const [rememberMe, setRememberMe] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
   const { control, handleSubmit } = useForm({
@@ -38,14 +41,20 @@ const SignInForm = () => {
     },
     resolver: zodResolver(schema),
   });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     const email = data.email;
     const password = data.password;
     const response = await traditionalLogin(email, password);
+    console.log(response)
     if (response) {
-      login(response);
-      navigate("/");
+      if (response.status === 500) {
+        setErrorMessage('Wrong email or password')
+      } else {
+        login(response);
+        navigate("/");
+      }
     }
   };
 
@@ -55,6 +64,10 @@ const SignInForm = () => {
     const link = import.meta.env.VITE_GOOGLE_AUTHORIZATION_LINK;
     window.location.href = link;
   };
+
+  // const handleRememberMe = () => {
+
+  // }
 
   return (
     <>
@@ -78,9 +91,10 @@ const SignInForm = () => {
                   onBlur={onBlur}
                   type="email"
                   placeholder=" "
-                  className={`peer h-14 w-full px-4 pt-6 text-base rounded-xl bg-white/60 backdrop-blur-sm border border-gray-200/50 hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${
-                    invalid ? "border-red-500" : ""
-                  }`}
+                  className={
+                    `peer h-14 w-full px-4 pt-6 text-base rounded-xl bg-white/60 backdrop-blur-sm border border-gray-200/50 hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 
+                    ${invalid ? "border-red-500" : ""}`
+                  }
                   required
                 />
                 <label
@@ -116,9 +130,8 @@ const SignInForm = () => {
                   onBlur={onBlur}
                   type="password"
                   placeholder=" "
-                  className={`peer h-14 w-full px-4 pt-6 text-base rounded-xl bg-white/60 backdrop-blur-sm border border-gray-200/50 hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${
-                    invalid ? "border-red-500" : ""
-                  }`}
+                  className={`peer h-14 w-full px-4 pt-6 text-base rounded-xl bg-white/60 backdrop-blur-sm border border-gray-200/50 hover:bg-white/80 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 ${invalid ? "border-red-500" : ""
+                    }`}
                   required
                 />
                 <label
@@ -130,10 +143,22 @@ const SignInForm = () => {
                 {error && (
                   <p className="mt-1 text-sm text-red-500">{error.message}</p>
                 )}
+                {errorMessage && (
+                  <p className="mt-1 text-sm text-red-500">{errorMessage}</p>
+                )}
               </div>
             )}
           />
         </div>
+
+        {/* <div className="flex gap-2">
+          <Checkbox
+            id="rememberMe"
+            size="lg"
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+          <label htmlFor="rememberMe" className="text-gray-700 text-sm font-medium">Remember me</label>
+        </div> */}
 
         {/* Sign In Button */}
         <div className="w-full">

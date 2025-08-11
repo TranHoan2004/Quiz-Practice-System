@@ -8,7 +8,7 @@ const Main = () => {
         <div className="w-full h-full">
             <HeroUIProvider navigate={navigate} useHref={useHref}>
                 <ToastProvider
-                    placement="top-center"
+                    placement="bottom-right"
                     maxVisibleToasts={1}
                     toastProps={{radius: 'sm', timeout: 5000}}
                 />
