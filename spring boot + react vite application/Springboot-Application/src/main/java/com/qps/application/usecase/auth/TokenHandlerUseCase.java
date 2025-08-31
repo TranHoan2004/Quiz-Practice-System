@@ -23,6 +23,14 @@ public class TokenHandlerUseCase {
         return createToken(email);
     }
 
+    public String getEmailFromAccessToken(String accessToken) throws InvalidObjectException, ParseException, JOSEException {
+        var claims = jwtService.validateToken(accessToken);
+        if (!"access".equals(claims.getStringClaim("type"))) {
+            throw new InvalidObjectException("Invalid token type");
+        }
+        return claims.getSubject();
+    }
+
     public Map<String, Object> getTokenByRefreshToken(String refreshToken) throws InvalidObjectException, ParseException, JOSEException {
         checkBlacklisted(refreshToken);
 

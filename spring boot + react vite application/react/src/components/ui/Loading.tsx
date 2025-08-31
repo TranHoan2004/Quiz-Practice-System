@@ -1,7 +1,10 @@
-import React from 'react';
+import React from "react";
 
-const Loading: React.FC<{ className?: string }> = ({ className = '' }) => (
-  <div className={`flex items-center justify-center ${className}`} aria-label="Loading">
+const Loading: React.FC<{ className?: string }> = ({ className = "" }) => (
+  <div
+    aria-label="Loading"
+    className={`flex items-center justify-center ${className}`}
+  >
     <span className="loading-dot bg-neutral-400 dark:bg-neutral-600" />
     <span className="loading-dot bg-neutral-400 dark:bg-neutral-600" />
     <span className="loading-dot bg-neutral-400 dark:bg-neutral-600" />
@@ -25,4 +28,4 @@ const Loading: React.FC<{ className?: string }> = ({ className = '' }) => (
   </div>
 );
 
-export default Loading; 
+export default Loading;

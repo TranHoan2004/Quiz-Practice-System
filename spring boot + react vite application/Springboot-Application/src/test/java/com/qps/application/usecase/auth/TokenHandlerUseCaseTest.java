@@ -5,13 +5,11 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.qps.infrastructure.service.jwt.JwtService;
 import com.qps.infrastructure.service.jwt.TokenStoreService;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.InvalidObjectException;
@@ -47,12 +45,12 @@ class TokenHandlerUseCaseTest {
             System.out.println(map);
 
             assertTrue(map.containsKey("accessToken"));
-            assertTrue(map.containsKey("refreshToken"));
+            assertTrue(map.containsKey("token"));
             assertTrue(map.containsKey("expiration"));
             assertTrue(map.containsKey("refreshExpiration"));
 
             assertNotNull(map.get("accessToken"));
-            assertNotNull(map.get("refreshToken"));
+            assertNotNull(map.get("token"));
             assertNotNull(map.get("expiration"));
             assertNotNull(map.get("refreshExpiration"));
 
@@ -91,7 +89,7 @@ class TokenHandlerUseCaseTest {
             System.out.println(result);
 
             assertEquals("new-access-token", result.get("accessToken"));
-            assertEquals("new-refresh-token", result.get("refreshToken"));
+            assertEquals("new-refresh-token", result.get("token"));
             assertEquals(604800000L, result.get("expiration"));
             assertEquals(604800000L * 7 * 24 * 60 * 60 * 1000, result.get("refreshExpiration"));
 

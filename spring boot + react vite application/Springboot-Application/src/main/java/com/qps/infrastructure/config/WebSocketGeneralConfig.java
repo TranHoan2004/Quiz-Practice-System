@@ -1,5 +1,6 @@
 package com.qps.infrastructure.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -21,6 +22,7 @@ public class WebSocketGeneralConfig implements WebSocketMessageBrokerConfigurer 
     }
 
     @Bean
+    @ConditionalOnWebApplication
     public ServerEndpointExporter serverEndpointExporter() {
         return new ServerEndpointExporter();
     }

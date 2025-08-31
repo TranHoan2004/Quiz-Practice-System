@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ProfileUtil {
     public static void getProfile(Account account, Map<String, Object> responseMap) {
-        responseMap.put("id", EncodeUtil.encode(account.getId()));
+        responseMap.put("id", EncodeUtil.encode(account.getId().toString()));
         responseMap.put("fullName", account.getFullName());
         responseMap.put("gender", account.getEmail());
         responseMap.put("phoneNumber", account.getPhone());

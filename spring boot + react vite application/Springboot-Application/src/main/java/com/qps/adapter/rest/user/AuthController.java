@@ -2,6 +2,7 @@ package com.qps.adapter.rest.user;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.oauth2.sdk.TokenResponse;
+import com.qps.adapter.GlobalExceptionHandler;
 import com.qps.application.dto.request.LoginRequest;
 import com.qps.application.dto.request.TokenRequest;
 import com.qps.application.dto.response.WrapperApiResponse;
@@ -49,15 +50,119 @@ public class AuthController {
             description = "Authenticate user using email and password. Returns access and refresh tokens if authentication is successful."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login successful, tokens returned",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = TokenResponse.class))),
-            @ApiResponse(responseCode = "400", description = "Bad request: malformed input or JOSE/Parse errors",
-                    content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "401", description = "Authentication failed",
-                    content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content)
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Login successful, tokens returned",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TokenResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Bad request: malformed input or JOSE/Parse errors",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example =
+                                            """
+                                                    {
+                                                        "status": 400,
+                                                        "message": "Error happens when encoding token: Error",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:44:06.6938447"
+                                                    }
+                                                    Or
+                                                    {
+                                                        "status": 400,
+                                                        "message": "Token parsing error: Error",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:45:34.5341059"
+                                                    }
+                                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Authentication failed",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = WrapperApiResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example =
+                                            """
+                                                    {
+                                                        "status": 500,
+                                                        "message": "Error happens in the server: Not implemented",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:39:56.3586874"
+                                                    }
+                                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Username not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example =
+                                            """
+                                                    {
+                                                        "status": 404,
+                                                        "message": "Username not found: org.springframework.security.core.userdetails.UsernameNotFoundException: Error",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:53:50.9674283"
+                                                    }
+                                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "406",
+                    description = "Not acceptable: invalid object",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example =
+                                            """
+                                                    {
+                                                        "status": 406,
+                                                        "message": "Invalid object: Error",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:46:57.5261482"
+                                                    }
+                                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "501",
+                    description = "Not implemented: operation not supported",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example =
+                                            """
+                                                    {
+                                                        "status": 501,
+                                                        "message": "Operation is not supported: Error",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:42:30.949409"
+                                                    }
+                                                    """
+                            )
+                    )
+            )
     })
     @PostMapping(value = "/login", produces = "application/json", consumes = "application/json")
     public ResponseEntity<?> login(
@@ -101,7 +206,24 @@ public class AuthController {
                     description = "Bad request: malformed input, JOSEException, ParseException, validation errors, or I/O errors",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = WrapperApiResponse.class)
+                            schema = @Schema(
+                                    example =
+                                            """
+                                                    {
+                                                        "status": 400,
+                                                        "message": "Error happens when encoding token: Error",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:44:06.6938447"
+                                                    }
+                                                    Or
+                                                    {
+                                                        "status": 400,
+                                                        "message": "Token parsing error: Error",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:45:34.5341059"
+                                                    }
+                                                    """
+                            )
                     )
             ),
             @ApiResponse(
@@ -109,15 +231,17 @@ public class AuthController {
                     description = "Not acceptable: invalid object",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = WrapperApiResponse.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server error",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = WrapperApiResponse.class)
+                            schema = @Schema(
+                                    example =
+                                            """
+                                                    {
+                                                        "status": 406,
+                                                        "message": "Invalid object: Error",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:46:57.5261482"
+                                                    }
+                                                    """
+                            )
                     )
             ),
             @ApiResponse(
@@ -125,12 +249,58 @@ public class AuthController {
                     description = "Not implemented: operation not supported",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = WrapperApiResponse.class)
+                            schema = @Schema(
+                                    example =
+                                            """
+                                                    {
+                                                        "status": 501,
+                                                        "message": "Operation is not supported: Error",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:42:30.949409"
+                                                    }
+                                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example =
+                                            """
+                                                    {
+                                                        "status": 500,
+                                                        "message": "Error happens in the server: Not implemented",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:39:56.3586874"
+                                                    }
+                                                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Username not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(
+                                    example =
+                                            """
+                                                    {
+                                                        "status": 404,
+                                                        "message": "Username not found: org.springframework.security.core.userdetails.UsernameNotFoundException: Error",
+                                                        "data": null,
+                                                        "timestamp": "2025-08-25T16:53:50.9674283"
+                                                    }
+                                                    """
+                            )
                     )
             )
     })
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestBody TokenRequest req) throws InvalidObjectException, ParseException, JOSEException {
-        return ResponseEntity.ok(tokenHandlerUseCase.getTokenByRefreshToken(req.refreshToken()));
+        return ResponseEntity.ok(tokenHandlerUseCase.getTokenByRefreshToken(req.token()));
     }
 }
