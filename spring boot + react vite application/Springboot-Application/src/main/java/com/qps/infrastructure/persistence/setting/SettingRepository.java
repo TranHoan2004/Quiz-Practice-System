@@ -19,4 +19,6 @@ public interface SettingRepository extends JpaRepository<Setting, String> {
             SELECT value FROM Setting WHERE settingType.id = :id
             """)
     List<String> findValueBySettingTypeId(@Param("id") String id);
+
+    Setting findByValueIgnoreCase(String value);
 }

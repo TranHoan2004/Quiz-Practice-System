@@ -49,21 +49,65 @@ public class SecurityConfig {
         private List<String> allowedOrigins;
     }
 
+    String[] PUBLIC_URLS = {
+            "/api/v1/auth/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html",
+            "/**"
+    };
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain publicFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers("/**", "/v3/api-docs")
+                        .requestMatchers(PUBLIC_URLS)
                         .permitAll()
                         .anyRequest()
                         .authenticated()
                 )
-//                .oauth2Login(oauth -> oauth
-//                        .successHandler(oauth2SuccessHandler)
-//                        .failureUrl("http://localhost:5173/signin?error=true")
-//                )
+                .oauth2Login(oauth -> oauth
+                        .successHandler(oauth2SuccessHandler)
+                        .failureUrl("http://localhost:5173/signin?error=true")
+                )
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(authenticationProvider)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint()))
+                .build();
+    }
+
+    @Bean
+    public SecurityFilterChain notificationFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .securityMatcher("/api/v1/notification/")
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/**")
+                        .hasAnyRole(Role.getAuthorities())
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
+                .authenticationProvider(authenticationProvider)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exception -> exception.authenticationEntryPoint(authenticationEntryPoint()))
+                .build();
+    }
+
+    @Bean
+    public SecurityFilterChain userFilterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .securityMatcher("/api/v1/user/")
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/**")
+                        .hasRole(Role.ADMIN.name())
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
                 .authenticationProvider(authenticationProvider)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

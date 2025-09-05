@@ -1,146 +1,151 @@
 import {
-  createContext,
-  useState,
-  useEffect,
-  type ReactNode,
-  useRef,
+    createContext,
+    useState,
+    useEffect,
+    type ReactNode,
+    useRef,
 } from "react";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
-import { AuthContextType, User } from "@/types/user.ts";
+import {AuthContextType, User} from "@/types/user.ts";
 
 const AuthContext = createContext<AuthContextType>({
-  user: undefined,
-  loading: true,
-  login: () => {},
-  logout: () => {},
-  updateUser: () => {},
-  isAuthenticated: false,
+    user: undefined,
+    loading: true,
+    login: () => {
+    },
+    logout: () => {
+    },
+    updateUser: () => {
+    },
+    isAuthenticated: false,
 });
 
 const EmptyUser: User = {
-  id: "",
-  fullName: "",
-  gender: "",
-  phoneNumber: "",
-  avatarUrl: "",
-  username: "",
-  accessToken: "",
-  refreshToken: "",
-  expiration: 0,
-  refreshExpiration: 0,
+    id: "",
+    fullName: "",
+    gender: "",
+    phoneNumber: "",
+    avatarUrl: "",
+    email: "",
+    accessToken: "",
+    refreshToken: "",
+    expiration: 0,
+    refreshExpiration: 0,
+    role: "",
 };
 
 const apiUrl = `${import.meta.env.VITE_API_URL}/auth/refresh-token`;
 
 const isAccessTokenValid = (user: User) => {
-  return user.accessToken && user.expiration > Date.now();
+    return user.accessToken && user.expiration > Date.now();
 };
 
 const isRefreshTokenValid = (user: User) => {
-  return !!user.refreshExpiration && user.refreshExpiration > Date.now();
+    return !!user.refreshExpiration && user.refreshExpiration > Date.now();
 };
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("auth");
+export const AuthProvider = ({children}: { children: ReactNode }) => {
+    const [user, setUser] = useState(() => {
+        const saved = localStorage.getItem("auth");
 
-    return saved ? JSON.parse(saved) : { ...EmptyUser };
-  });
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const isAuthenticated = isRefreshTokenValid(user);
+        return saved ? JSON.parse(saved) : {...EmptyUser};
+    });
+    const navigate = useNavigate();
+    const [loading, setLoading] = useState(true);
+    const isAuthenticated = isRefreshTokenValid(user);
 
-  // ngăn gửi thông tin 2 lần về backend
-  const isMounted = useRef(true);
-  const initialized = useRef(false);
+    // ngăn gửi thông tin 2 lần về backend
+    const isMounted = useRef(true);
+    const initialized = useRef(false);
 
-  useEffect(() => {
-    const initialize = async () => {
-      if (initialized.current) return;
-      initialized.current = true;
+    useEffect(() => {
+        const initialize = async () => {
+            if (initialized.current) return;
+            initialized.current = true;
 
-      if (isAccessTokenValid(user)) {
-        setUser(user);
-      } else if (isRefreshTokenValid(user)) {
+            if (isAccessTokenValid(user)) {
+                setUser(user);
+            } else if (isRefreshTokenValid(user)) {
+                const saved = localStorage.getItem("auth");
+
+                if (!saved) return;
+
+                try {
+                    const res = await fetch(apiUrl, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${user.accessToken}`,
+                        },
+                        body: JSON.stringify({
+                            token: user.refreshToken,
+                        }),
+                    });
+                    const data = await res.json();
+
+                    const savedUser = JSON.parse(saved);
+                    const updatedUser = {
+                        ...savedUser,
+                        accessToken: data.accessToken,
+                        refreshToken: data.refreshToken,
+                        expiration: data.expiration,
+                        refreshExpiration: data.refreshExpiration,
+                    };
+
+                    localStorage.setItem("auth", JSON.stringify(updatedUser));
+                    // setUser(updatedUser);
+                    if (isMounted.current) setUser(updatedUser);
+                } catch (e) {
+                    logout();
+                }
+            } else {
+                logout();
+            }
+            setLoading(false);
+        };
+
+        initialize().then(() => {
+        });
+
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
+
+    const login = (data: User) => {
+        localStorage.setItem("auth", JSON.stringify(data));
+        setUser(data);
+    };
+
+    const logout = () => {
+        localStorage.removeItem("auth");
+        setUser(EmptyUser);
+        navigate("/signin");
+    };
+
+    const updateUser = (data: Partial<User>) => {
         const saved = localStorage.getItem("auth");
 
         if (!saved) return;
 
-        try {
-          const res = await fetch(apiUrl, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${user.accessToken}`,
-            },
-            body: JSON.stringify({
-              token: user.refreshToken,
-            }),
-          });
-          const data = await res.json();
+        const user = JSON.parse(saved);
+        const updatedUser = {
+            ...user,
+            ...data,
+        };
 
-          const savedUser = JSON.parse(saved);
-          const updatedUser = {
-            ...savedUser,
-            accessToken: data.accessToken,
-            refreshToken: data.refreshToken,
-            expiration: data.expiration,
-            refreshExpiration: data.refreshExpiration,
-          };
-
-          localStorage.setItem("auth", JSON.stringify(updatedUser));
-          // setUser(updatedUser);
-          if (isMounted.current) setUser(updatedUser);
-        } catch (e) {
-          logout();
-        }
-      } else {
-        logout();
-      }
-      setLoading(false);
+        localStorage.setItem("auth", JSON.stringify(updatedUser));
+        setUser(updatedUser);
     };
 
-    initialize().then(() => {});
-
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  const login = (data: User) => {
-    localStorage.setItem("auth", JSON.stringify(data));
-    setUser(data);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("auth");
-    setUser(EmptyUser);
-    navigate("/signin");
-  };
-
-  const updateUser = (data: Partial<User>) => {
-    const saved = localStorage.getItem("auth");
-
-    if (!saved) return;
-
-    const user = JSON.parse(saved);
-    const updatedUser = {
-      ...user,
-      ...data,
-    };
-
-    localStorage.setItem("auth", JSON.stringify(updatedUser));
-    setUser(updatedUser);
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{ user, loading, login, logout, updateUser, isAuthenticated }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+        <AuthContext.Provider
+            value={{user, loading, login, logout, updateUser, isAuthenticated}}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export default AuthContext;

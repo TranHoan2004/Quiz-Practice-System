@@ -2,13 +2,17 @@ package com.qps.adapter;
 
 import com.nimbusds.jose.JOSEException;
 import com.qps.application.dto.response.WrapperApiResponse;
+import com.qps.domain.user.UserException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -288,6 +292,85 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleUsernameNotFoundException(UsernameNotFoundException e) {
         var message = "Username not found: " + e;
         return buildErrorResponse(HttpStatus.NOT_FOUND, message, null);
+    }
+
+    @Operation(
+            summary = "Handle LockedException",
+            description = "Catches LockedException and returns HTTP 403 Forbidden",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Account locked",
+                            content = @Content(
+                                    schema = @Schema(
+                                            implementation = WrapperApiResponse.class,
+                                            example =
+                                                    """
+                                                            {
+                                                                "status": 403,
+                                                                "message": "Account has been locked: org.springframework.security.authentication.LockedException: Error",
+                                                                "data": null,
+                                                                "timestamp": "2025-08-25T16:53:50.9674283"
+                                                            }
+                                                            """
+                                    )
+                            )
+                    )
+            }
+    )
+    @ExceptionHandler(LockedException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<?> handleLockedException(LockedException e) {
+        var message = "Account has been locked: " + e;
+        return buildErrorResponse(HttpStatus.FORBIDDEN, message, null);
+    }
+
+    @Operation(
+            summary = "Handle UserException",
+            description = "Catches email and phone number exceptions then returns HTTP 409 Forbidden",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Email or Phone number existed",
+                            content = @Content(
+                                    schema = @Schema(
+                                            implementation = WrapperApiResponse.class,
+                                            example =
+                                                    """
+                                                            {
+                                                                "status": 409,
+                                                                "message": "Email or Phone number is existed",
+                                                                "data": null,
+                                                                "timestamp": "2025-08-25T16:53:50.9674283"
+                                                            }
+                                                            """
+                                    )
+                            )
+                    )
+            }
+    )
+    @ExceptionHandler(UserException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<?> handleUserException(UserException e) {
+        return buildErrorResponse(HttpStatus.CONFLICT, e.getMessage(), null);
+    }
+
+    @ExceptionHandler(TransactionSystemException.class)
+    public ResponseEntity<?> handleTransactionException(TransactionSystemException e) {
+        Throwable rootCause = e.getRootCause();
+        return buildErrorResponse(HttpStatus.BAD_REQUEST,
+                "Transaction failed: " + (rootCause != null ? rootCause.getMessage() : e.getMessage()),
+                null);
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<?> handleMessagingException(MessagingException e) {
+        return buildErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Email sending failed: " + e.getMessage(),
+                null
+        );
     }
 
     private ResponseEntity<WrapperApiResponse<?>> buildErrorResponse(

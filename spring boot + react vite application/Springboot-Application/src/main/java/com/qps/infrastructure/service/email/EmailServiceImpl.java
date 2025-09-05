@@ -1,5 +1,6 @@
 package com.qps.infrastructure.service.email;
 
+import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -7,7 +8,6 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -19,37 +19,28 @@ import java.nio.charset.StandardCharsets;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class EmailServiceImpl {
+public class EmailServiceImpl implements EmailService {
     JavaMailSender mailSender;
 
     @NonFinal
     @Value("${spring.mail.username}")
     String SENDER_EMAIL;
 
-    public void sendSimpleMail(String to, String subject, String text) {
-        var message = new SimpleMailMessage();
-
-        message.setFrom(SENDER_EMAIL);
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-
-        mailSender.send(message);
-    }
-
-    public void sendHtmlMail(String to, String subject, String htmlText) throws Exception {
+    @Override
+    public void sendNormalEmail(String to, String subject, String body) throws MessagingException {
         var message = mailSender.createMimeMessage();
         var helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
 
         helper.setFrom(SENDER_EMAIL);
         helper.setTo(to);
         helper.setSubject(subject);
-        helper.setText(htmlText, true); // true = html
+        helper.setText(body, true); // true = html
 
         mailSender.send(message);
     }
 
-    public void sendEmailWithAttachment(String to, String subject, String htmlText, String path) throws Exception {
+    @Override
+    public void sendEmailAttachFile(String to, String subject, String body, String path) throws MessagingException {
         var message = mailSender.createMimeMessage();
         var helper = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());
 

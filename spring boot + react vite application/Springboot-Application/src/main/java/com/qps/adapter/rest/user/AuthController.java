@@ -2,7 +2,6 @@ package com.qps.adapter.rest.user;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.oauth2.sdk.TokenResponse;
-import com.qps.adapter.GlobalExceptionHandler;
 import com.qps.application.dto.request.LoginRequest;
 import com.qps.application.dto.request.TokenRequest;
 import com.qps.application.dto.response.WrapperApiResponse;

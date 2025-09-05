@@ -1,18 +1,22 @@
 export interface User {
-  id: string;
+  id?: string;
   fullName: string;
-  gender: string;
-  phoneNumber: string;
-  avatarUrl: string;
-  username: string;
+  gender?: string;
+  phoneNumber?: string;
+  avatarUrl?: string;
+  email: string;
   accessToken: string;
   refreshToken: string;
   expiration: number;
-  refreshExpiration?: number;
+  refreshExpiration: number;
+  role: string;
+  createdDate?: string;
+  dob?: string;
+  status: boolean;
 }
 
 export interface AuthContextType {
-  user?: User;
+  user: User | undefined;
   loading: boolean;
   login: (data: User) => void;
   logout: () => void;

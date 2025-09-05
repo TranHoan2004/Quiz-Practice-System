@@ -1,5 +1,6 @@
 package com.qps.domain.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.qps.domain.setting.model.Setting;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -68,35 +69,42 @@ public class Account implements UserDetails {
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "role_id", nullable = false)
+    @JsonIgnore
     private Setting role;
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         GrantedAuthority auth = new SimpleGrantedAuthority(getRole().getValue());
         return List.of(auth);
     }
 
     @Override
+    @JsonIgnore
     public String getUsername() {
         return email;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
-        return true;
+        return status;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }

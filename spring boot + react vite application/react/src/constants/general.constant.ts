@@ -13,3 +13,20 @@ export const SYSTEM_MESSAGE = {
     PASSWORD_REGEX_MESSAGE: "Password must have the upper cases, lower cases, and special characters",
     PASSWORD_MIN_LENGTH_MESSAGE: "Password must have at least 8 characters",
 }
+
+export const ROLE = {
+    ADMIN: "Admin",
+    USER: "User",
+    MARKETING: "Marketing",
+    EXPERT: "Expert",
+    SALES: "Sales",
+} as const;
+
+export type Role = (typeof ROLE)[keyof typeof ROLE];
+
+export const STATUS = {
+    ACTIVE: "Active",
+    INACTIVE: "Inactive",
+}
+
+export const WEB_NAME = 'Quezee';
