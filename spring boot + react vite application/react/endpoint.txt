@@ -1,0 +1,3 @@
+/: home page
+/signin: trang đăng nhập
+/dashboard: trang chủ của nhân viên

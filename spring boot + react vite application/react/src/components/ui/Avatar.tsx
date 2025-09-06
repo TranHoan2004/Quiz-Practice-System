@@ -6,36 +6,45 @@ import {
     User,
 } from "@heroui/react";
 
-import {useAuth} from "@/hooks/useAuth.ts";
+import { useAuth } from "@/hooks/useAuth.ts";
 
 type AvatarProps = {
     description?: string
 }
 
-const Avatar = ({description}: AvatarProps) => {
-    const {user, logout} = useAuth();
+const Avatar = ({ description }: AvatarProps) => {
+    const { user, logout } = useAuth();
 
     return (
         <div>
-            {/*{user && (*/}
-            {/*  <>*/}
-            {/*    <Dropdown>*/}
-            {/*      <DropdownTrigger>*/}
-            {/*        <User*/}
-            {/*          avatarProps={{*/}
-            {/*            src: user.avatarUrl,*/}
-            {/*            alt: user.fullName,*/}
-            {/*          }}*/}
-            {/*          className="cursor-pointer"*/}
-            {/*          name={user.fullName}*/}
-            {/*        />*/}
-            {/*      </DropdownTrigger>*/}
-            {/*      <DropdownMenu aria-label={"Static actions of user"}>*/}
-            {/*        <DropdownItem key={"profile"}>Profile</DropdownItem>*/}
-            {/*      </DropdownMenu>*/}
-            {/*    </Dropdown>*/}
-            {/*  </>*/}
-            {/*)}*/}
+            {/* {user && (
+                <>
+                    <Dropdown>
+                        <DropdownTrigger>
+                            <User
+                                avatarProps={{
+                                    src: user.avatarUrl ? user.avatarUrl : "https://avatars.githubusercontent.com/u/123456789?v=4",
+                                    alt: user.fullName,
+                                }}
+                                className="cursor-pointer"
+                                description={description}
+                                name={user.fullName}
+                            />
+                        </DropdownTrigger>
+                        <DropdownMenu aria-label={"Static actions of user"}>
+                            <DropdownItem key={"profile"}>Profile</DropdownItem>
+                            <DropdownItem
+                                key="logout"
+                                className="font-semibold"
+                                color={"danger"}
+                                onPress={logout}
+                            >
+                                Logout
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                </>
+            )} */}
             {/* Sample avatar */}
             <Dropdown>
                 <DropdownTrigger>

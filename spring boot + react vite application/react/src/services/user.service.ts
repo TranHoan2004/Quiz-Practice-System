@@ -31,7 +31,6 @@ export const getUsers = async (
 
         return await response.json();
     } catch (e: Error | any) {
-        console.error("Error fetching users:", e);
         addToast({
             title: "Error fetching users",
             description: e.message,
@@ -74,7 +73,6 @@ export const createUser = async (
         }
 
     } catch (e: Error | any) {
-        console.error("Error creating users:", e);
         addToast({
             title: "Error when creating users",
             description: e.message,
@@ -84,3 +82,85 @@ export const createUser = async (
         });
     }
 }
+
+export const editUser = async (
+    // token: string,
+    params: {
+        id: string,
+        fullName: string,
+        email: string,
+        status: string,
+        phoneNumber?: string,
+    }
+) => {
+    try {
+        const response = await fetch(`${api}/user/edit`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                // Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(params)
+        });
+
+        if (response.ok) {
+            addToast({
+                title: "Edit user successful",
+                color: "success",
+                closeIcon: true,
+                variant: "flat",
+            });
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+        } else {
+            const errorData = await response.json();
+
+            throw new Error(errorData.message || `HTTP error: ${response.status}`);
+        }
+    } catch (e: Error | any) {
+        addToast({
+            title: "Error when editing user",
+            description: e.message,
+            color: "danger",
+            closeIcon: true,
+            variant: "flat",
+        });
+    }
+};
+
+export const lockUser = async (id: string) => {
+    try {
+        const response = await fetch(`${api}/user/lock`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ id })
+        });
+
+        if (response.ok) {
+            addToast({
+                title: "Lock user successful",
+                color: "success",
+                closeIcon: true,
+                variant: "flat",
+            });
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+        } else {
+            const errorData = await response.json();
+
+            throw new Error(errorData.message || `HTTP error: ${response.status}`);
+        }
+    } catch (e: Error | any) {
+        addToast({
+            title: "Error when locking user",
+            description: e.message,
+            color: "danger",
+            closeIcon: true,
+            variant: "flat",
+        });
+    }
+};

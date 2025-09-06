@@ -33,6 +33,7 @@ const EmptyUser: User = {
     expiration: 0,
     refreshExpiration: 0,
     role: "",
+    status: true,
 };
 
 const apiUrl = `${import.meta.env.VITE_API_URL}/auth/refresh-token`;
@@ -94,7 +95,6 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
                     };
 
                     localStorage.setItem("auth", JSON.stringify(updatedUser));
-                    // setUser(updatedUser);
                     if (isMounted.current) setUser(updatedUser);
                 } catch (e) {
                     logout();
@@ -116,6 +116,7 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     const login = (data: User) => {
         localStorage.setItem("auth", JSON.stringify(data));
         setUser(data);
+        navigate("/");
     };
 
     const logout = () => {

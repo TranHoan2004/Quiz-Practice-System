@@ -1,5 +1,4 @@
 import {Button} from "@heroui/button";
-import {Trash2} from "lucide-react";
 import {
     Card, CardHeader, Chip
 } from "@heroui/react";
@@ -7,20 +6,21 @@ import {useEffect, useState} from "react";
 
 import {User} from "@/types/user.ts";
 import SearchBar from "@/components/ui/SearchBar.tsx";
-import {EditIcon, EyeIcon} from "@/components/icons.tsx";
+import {EyeIcon, LockIcon} from "@/components/icons.tsx";
+import UserEditModal from "./UserEditModal";
 import {DataTable} from "@/components/ui/Table.tsx";
 import {getUsers} from "@/services/user.service.ts";
 import {useAuth} from "@/hooks/useAuth.ts";
 import {Role, ROLE, STATUS} from "@/constants/general.constant.ts";
 import DataSelect from "@/components/ui/Select.tsx";
 import CreateNewUser from "@/pages/_admin.user_management/CreateNewUser.tsx";
+import UserViewModal from "./UserViewModal";
+import UserLockModal from "./UserLockModal";
 
 const columns = [
     {name: "NAME", uid: "fullName"},
     {name: "EMAIL", uid: "email"},
     {name: "ROLE", uid: "role"},
-    {name: "CREATED DATE", uid: "createdDate"},
-    {name: "PHONE NUMBER", uid: "phoneNumber"},
     {name: "STATUS", uid: "status"},
     {name: "ACTIONS", uid: "actions"},
 ];
@@ -161,10 +161,6 @@ const UserManagement = () => {
                                         {item.role}
                                     </span>
                                 );
-                            case "createdDate":
-                                return item.createdDate;
-                            case "phoneNumber":
-                                return item.phoneNumber;
                             case "status":
                                 return (
                                     <Chip
@@ -178,28 +174,11 @@ const UserManagement = () => {
                             case "actions":
                                 return (
                                     <div className="flex justify-center gap-2">
-                                        <Button
-                                            isIconOnly
-                                            variant="bordered"
-                                            onPress={() => alert(`View ${item.id}`)}
-                                        >
-                                            <EyeIcon/>
-                                        </Button>
-                                        <Button
-                                            isIconOnly
-                                            variant="bordered"
-                                            onPress={() => alert(`Edit ${item.id}`)}
-                                        >
-                                            <EditIcon/>
-                                        </Button>
-                                        <Button
-                                            isIconOnly
-                                            className="rounded-full border hover:border-red-400"
-                                            variant="bordered"
-                                            onPress={() => handleDelete(item.id)}
-                                        >
-                                            <Trash2 className="w-4 h-4 text-red-500"/>
-                                        </Button>
+                                        <UserViewModal user={item} />
+
+                                        <UserEditModal user={item} />
+
+                                        <UserLockModal user={item} />
                                     </div>
                                 );
                             default:

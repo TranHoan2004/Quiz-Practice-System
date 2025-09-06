@@ -5,6 +5,7 @@ import NavigationItems from "@/components/ui/NavigationItem";
 import {useAuth} from "@/hooks/useAuth";
 import {LogoutIcon} from "@/components/icons.tsx";
 import {menuItems} from "@/components/layout/left-nav/LeftSidebar.tsx";
+import { Role } from "@/constants/general.constant";
 
 const color = 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600'
 
@@ -29,7 +30,7 @@ const AdministrationHeader = () => {
                             const status = active === item.key; // Kiem tra xem active co la key hay khong
 
                             // Phai chuyen ve !item sau khi test xong
-                            if (item.roles && item.roles.includes(user?.role.toLowerCase() as "admin" | "user" | "marketing" | "expert" | "sales")) {
+                            if (item.roles && item.roles.includes(user?.role.toLowerCase() as Role)) {
                                 return;
                             } else {
                                 return (
