@@ -1,5 +1,6 @@
 import { Button } from "@heroui/button";
 import {
+    addToast,
     Modal,
     ModalBody,
     ModalContent,
@@ -10,25 +11,39 @@ import { useState } from "react";
 
 import { lockUser } from "@/services/user.service";
 import { LockIcon } from "@/components/icons";
+import { useAuth } from "@/hooks/useAuth";
 
 interface UserLockModalProps {
-    user: {
+    userDetails: {
         id: string;
         name: string;
         email: string;
-        status?: string;
+        status?: boolean;
         phoneNumber?: string;
     };
 }
 
-const UserLockModal = ({ user }: UserLockModalProps) => {
+const UserLockModal = ({ userDetails }: UserLockModalProps) => {
     const [open, setOpen] = useState(false);
+    const { user } = useAuth();
 
-    if (!user) return null;
+    if (!userDetails) return null;
 
     const handleLock = () => {
-        lockUser(user.id);
+        if (userDetails.status == false) {
+            addToast({
+                title: "User Inactive",
+                description: "User account is already locked.",
+                color: "warning",
+                closeIcon: true,
+            })
+
+            return;
+        }
+        if (user) {
+            lockUser(userDetails.id, user.accessToken);
         setOpen(false);
+        }
     };
 
     return (
@@ -48,7 +63,7 @@ const UserLockModal = ({ user }: UserLockModalProps) => {
                             <ModalHeader>Lock User Account</ModalHeader>
                             <ModalBody>
                                 <div className="mb-2">
-                                    Are you sure you want to lock the account for <strong>{user.name}</strong> ({user.email})?
+                                    Are you sure you want to lock the account for <strong>{userDetails.name}</strong> ({userDetails.email})?
                                 </div>
                             </ModalBody>
                             <ModalFooter>

@@ -1,21 +1,21 @@
-import {Button} from "@heroui/button";
 import {
     Card, CardHeader, Chip
 } from "@heroui/react";
 import {useEffect, useState} from "react";
 
+import UserEditModal from "./UserEditModal";
+import UserViewModal from "./UserViewModal";
+import UserLockModal from "./UserLockModal";
+
 import {User} from "@/types/user.ts";
 import SearchBar from "@/components/ui/SearchBar.tsx";
-import {EyeIcon, LockIcon} from "@/components/icons.tsx";
-import UserEditModal from "./UserEditModal";
 import {DataTable} from "@/components/ui/Table.tsx";
 import {getUsers} from "@/services/user.service.ts";
 import {useAuth} from "@/hooks/useAuth.ts";
 import {Role, ROLE, STATUS} from "@/constants/general.constant.ts";
 import DataSelect from "@/components/ui/Select.tsx";
 import CreateNewUser from "@/pages/_admin.user_management/CreateNewUser.tsx";
-import UserViewModal from "./UserViewModal";
-import UserLockModal from "./UserLockModal";
+
 
 const columns = [
     {name: "NAME", uid: "fullName"},

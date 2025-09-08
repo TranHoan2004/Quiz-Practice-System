@@ -15,9 +15,10 @@ import { z } from "zod";
 import { EditIcon } from "@/components/icons";
 import { STATUS } from "@/constants/general.constant";
 import { editUser } from "@/services/user.service";
+import { useAuth } from "@/hooks/useAuth";
 
 interface UserEditModalProps {
-    user: {
+    userDetails: {
         id: string;
         fullName: string;
         email: string;
@@ -28,7 +29,7 @@ interface UserEditModalProps {
 
 const status = [STATUS.ACTIVE, STATUS.INACTIVE];
 
-const UserEditModal = ({ user }: UserEditModalProps) => {
+const UserEditModal = ({ userDetails }: UserEditModalProps) => {
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const userEditSchema = z.object({
         id: z.string().length(36, "ID must be exactly 36 characters"),
@@ -41,24 +42,25 @@ const UserEditModal = ({ user }: UserEditModalProps) => {
     });
     const [open, setOpen] = useState(false);
     const [form, setForm] = useState({
-        id: user?.id || '',
-        fullName: user?.fullName || '',
-        email: user?.email || '',
-        status: user?.status || '',
-        phoneNumber: user?.phoneNumber || '',
+        id: userDetails?.id || '',
+        fullName: userDetails?.fullName || '',
+        email: userDetails?.email || '',
+        status: userDetails?.status || '',
+        phoneNumber: userDetails?.phoneNumber || '',
     });
+    const { user } = useAuth();
 
     useEffect(() => {
         setForm({
-            id: user?.id || '',
-            fullName: user?.fullName || '',
-            email: user?.email || '',
-            status: user?.status || '',
-            phoneNumber: user?.phoneNumber || '',
+            id: userDetails?.id || '',
+            fullName: userDetails?.fullName || '',
+            email: userDetails?.email || '',
+            status: userDetails?.status || '',
+            phoneNumber: userDetails?.phoneNumber || '',
         });
-    }, [user]);
+    }, [userDetails]);
 
-    if (!user) return null;
+    if (!userDetails) return null;
 
     const handleChange = (field: string, value: string) => {
         setForm({ ...form, [field]: value });
@@ -82,8 +84,10 @@ const UserEditModal = ({ user }: UserEditModalProps) => {
             return;
         }
         setErrors({});
-        editUser(result.data);
-        setOpen(false);
+        if (user) {
+            editUser(user.accessToken, result.data);
+            setOpen(false);
+        }
     };
 
     return (

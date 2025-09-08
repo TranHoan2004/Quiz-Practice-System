@@ -1,7 +1,7 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import { z } from "zod";
-import {Button} from "@heroui/button";
-import {Plus} from "lucide-react";
+import { Button } from "@heroui/button";
+import { Plus } from "lucide-react";
 import {
     Modal,
     ModalBody,
@@ -12,17 +12,18 @@ import {
     SelectItem,
     useDisclosure
 } from "@heroui/react";
-import {Input} from "@heroui/input";
+import { Input } from "@heroui/input";
 
-import {Role} from "@/constants/general.constant.ts";
-import {createUser} from "@/services/user.service.ts";
+import { Role } from "@/constants/general.constant.ts";
+import { createUser } from "@/services/user.service.ts";
+import { useAuth } from '@/hooks/useAuth';
 
 interface CreateNewUserProps {
     roles: Role[];
 }
 
-const CreateNewUser = ({roles}: CreateNewUserProps) => {
-    const {isOpen, onClose, onOpen, onOpenChange} = useDisclosure();
+const CreateNewUser = ({ roles }: CreateNewUserProps) => {
+    const { isOpen, onClose, onOpen, onOpenChange } = useDisclosure();
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -30,6 +31,7 @@ const CreateNewUser = ({roles}: CreateNewUserProps) => {
         phoneNumber: "",
     });
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const { user } = useAuth();
 
     const userSchema = z.object({
         name: z.string().min(1, "Name is required"),
@@ -39,7 +41,7 @@ const CreateNewUser = ({roles}: CreateNewUserProps) => {
     });
 
     const handleChange = (field: string, value: string) => {
-        setForm((prev) => ({...prev, [field]: value}));
+        setForm((prev) => ({ ...prev, [field]: value }));
     };
 
     const handleSave = () => {
@@ -61,8 +63,10 @@ const CreateNewUser = ({roles}: CreateNewUserProps) => {
         }
         setErrors({});
         (async () => {
-            await createUser(result.data);
-            onClose();
+            if (user) {
+                await createUser(user.accessToken, result.data);
+                onClose();
+            }
         })();
     };
 
@@ -72,7 +76,7 @@ const CreateNewUser = ({roles}: CreateNewUserProps) => {
                 className="max-w-1/3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold px-4 py-2 rounded-xl shadow-md hover:opacity-90 transition"
                 onPress={onOpen}
             >
-                <Plus className="w-4 h-4 mr-2"/>
+                <Plus className="w-4 h-4 mr-2" />
                 Add User
             </Button>
 

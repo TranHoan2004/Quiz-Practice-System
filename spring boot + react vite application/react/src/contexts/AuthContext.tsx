@@ -8,6 +8,7 @@ import {
 import {useNavigate} from "react-router-dom";
 
 import {AuthContextType, User} from "@/types/user.ts";
+import { addToast } from "@heroui/toast";
 
 const AuthContext = createContext<AuthContextType>({
     user: undefined,
@@ -114,6 +115,17 @@ export const AuthProvider = ({children}: { children: ReactNode }) => {
     }, []);
 
     const login = (data: User) => {
+        if (data.status == false) {
+            addToast({
+                title: "Account Locked",
+                description: "Your account has been locked. Please contact admin for more information.",
+                color: "danger",
+                closeIcon: true,
+                variant: "flat",
+            });
+            
+            return;
+        }
         localStorage.setItem("auth", JSON.stringify(data));
         setUser(data);
         navigate("/");

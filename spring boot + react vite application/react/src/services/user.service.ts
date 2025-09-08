@@ -3,7 +3,7 @@ import {addToast} from "@heroui/toast";
 const api = import.meta.env.VITE_API_URL;
 
 export const getUsers = async (
-    // token: string,
+    token: string,
     page: number,
     size: number,
     options?: { role?: string; status?: string; search?: string }
@@ -21,7 +21,7 @@ export const getUsers = async (
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
-                // Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
         });
 
@@ -42,7 +42,7 @@ export const getUsers = async (
 };
 
 export const createUser = async (
-    // token: string,
+    token: string,
     params: {
         name: string,
         email: string,
@@ -55,7 +55,7 @@ export const createUser = async (
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                // Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(params)
         });
@@ -84,7 +84,7 @@ export const createUser = async (
 }
 
 export const editUser = async (
-    // token: string,
+    token: string,
     params: {
         id: string,
         fullName: string,
@@ -98,7 +98,7 @@ export const editUser = async (
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                // Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(params)
         });
@@ -129,12 +129,13 @@ export const editUser = async (
     }
 };
 
-export const lockUser = async (id: string) => {
+export const lockUser = async (id: string, token: string) => {
     try {
         const response = await fetch(`${api}/user/lock`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ id })
         });
